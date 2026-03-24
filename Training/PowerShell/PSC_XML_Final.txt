@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PowershellConnectorDefinition Description="SQL Connector (Users, Roles, UserInRole) - V4 with ModifiedBy" Version="1.0" Id="MSSQL">
+
+  <PluginAssemblies />
+
+  <ConnectionParameters>
+    <ConnectionParameter Name="PathToPSModule" Description="Path to the AllInOne PS Script" />
+    <ConnectionParameter Name="SqlServer" Description="SQL Server instance" />
+    <ConnectionParameter Name="SqlDatabase" Description="Database name" />
+    <ConnectionParameter Name="username" Description="SQL login" />
+    <ConnectionParameter Name="password" Description="SQL password" IsSensibleData="true" />
+  </ConnectionParameters>
+
+  <Initialization>
+    <CustomCommands>
+      <CustomCommand Name="Import-PowershellModule"><![CDATA[
+        param([parameter(Mandatory = $true)][string]$PathToPSModule)
+        Import-Module -Force -Verbose $PathToPSModule
+      ]]></CustomCommand>
+
+      <CustomCommand Name="Get-Authorization"><![CDATA[
+        param([string]$SqlServer,[string]$SqlDatabase,[string]$username,[string]$password)
+        $global:SqlServer   = $SqlServer
+        $global:SqlDatabase = $SqlDatabase
+        $global:SqlUser     = $username
+        $global:SqlPass     = $password
+      ]]></CustomCommand>
+    </CustomCommands>
+
+    <PredefinedCommands>
+      <Command Name="Get-Users" />
+      <Command Name="Get-Roles" />
+      <Command Name="Get-UserInRole" />
+      <Command Name="Create-User" />
+	  <Command Name="Create-Role" />
+      <Command Name="Create-UserInRole" />
+      <Command Name="Modify-User" />
+      <Command Name="Delete-User" />
+      <Command Name="Delete-UserInRole" />
+	  <Command Name="Delete-Role" />
+
+    </PredefinedCommands>
+
+    <EnvironmentInitialization>
+      <Connect>
+        <CommandSequence>
+          <Item Order="1" Command="Import-PowershellModule">
+            <SetParameter Param="PathToPSModule" Source="ConnectionParameter" Value="PathToPSModule" />
+          </Item>
+          <Item Order="2" Command="Get-Authorization">
+            <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+            <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+            <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+            <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+          </Item>
+        </CommandSequence>
+      </Connect>
+      <Disconnect />
+    </EnvironmentInitialization>
+  </Initialization>
+
+  <Schema>
+
+    <!-- Users -->
+    <Class Name="Users">
+      <Properties>
+        <Property Name="UserID" IsUniqueKey="true" IsDisplay="true" DataType="String">
+          <CommandMappings>
+            <Map Parameter="UserID" ToCommand="Get-Users" />
+            <Map Parameter="UserID" ToCommand="Create-User" />
+            <Map Parameter="UserID" ToCommand="Modify-User" />
+            <Map Parameter="UserID" ToCommand="Delete-User" />
+          </CommandMappings>
+          <ReturnBindings>
+            <Bind Path="UserID" CommandResultOf="Get-Users" />
+          </ReturnBindings>
+        </Property>
+        <Property Name="FirstName" DataType="String">
+          <CommandMappings>
+            <Map Parameter="FirstName" ToCommand="Get-Users" />
+            <Map Parameter="FirstName" ToCommand="Create-User" />
+            <Map Parameter="FirstName" ToCommand="Modify-User" />
+          </CommandMappings>
+          <ReturnBindings>
+            <Bind Path="FirstName" CommandResultOf="Get-Users" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Create-User" />
+            <ModBy Command="Modify-User" />
+          </ModifiedBy>
+        </Property>
+        <Property Name="LastName" DataType="String">
+          <CommandMappings>
+            <Map Parameter="LastName" ToCommand="Get-Users" />
+            <Map Parameter="LastName" ToCommand="Create-User" />
+            <Map Parameter="LastName" ToCommand="Modify-User" />
+          </CommandMappings>
+          <ReturnBindings>
+            <Bind Path="LastName" CommandResultOf="Get-Users" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Create-User" />
+            <ModBy Command="Modify-User" />
+          </ModifiedBy>
+        </Property>
+        <Property Name="JobDescription" DataType="String">
+          <CommandMappings>
+            <Map Parameter="JobDescription" ToCommand="Get-Users" />
+            <Map Parameter="JobDescription" ToCommand="Create-User" />
+            <Map Parameter="JobDescription" ToCommand="Modify-User" />
+          </CommandMappings>
+          <ReturnBindings>
+            <Bind Path="JobDescription" CommandResultOf="Get-Users" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Create-User" />
+            <ModBy Command="Modify-User" />
+          </ModifiedBy>
+        </Property>
+        <Property Name="EmailAddress" DataType="String">
+          <CommandMappings>
+            <Map Parameter="EmailAddress" ToCommand="Get-Users" />
+            <Map Parameter="EmailAddress" ToCommand="Create-User" />
+            <Map Parameter="EmailAddress" ToCommand="Modify-User" />
+          </CommandMappings>
+          <ReturnBindings>
+            <Bind Path="EmailAddress" CommandResultOf="Get-Users" />
+          </ReturnBindings>
+          <ModifiedBy>
+            <ModBy Command="Create-User" />
+            <ModBy Command="Modify-User" />
+          </ModifiedBy>
+        </Property>
+      </Properties>
+
+      <ReadConfiguration>
+        <ListingCommand Command="Get-Users">
+          <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+          <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+          <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+          <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+        </ListingCommand>
+        <CommandSequence>
+          <Item Order="1" Command="Get-Users">
+            <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+            <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+            <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+            <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+          </Item>
+        </CommandSequence>
+      </ReadConfiguration>
+
+      <MethodConfiguration>
+        <Method Name="Insert">
+          <CommandSequence>
+            <Item Order="1" Command="Create-User">
+              <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+              <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+              <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+              <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+            </Item>
+          </CommandSequence>
+        </Method>
+        <Method Name="Update">
+          <CommandSequence>
+            <Item Order="1" Command="Modify-User">
+              <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+              <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+              <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+              <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+            </Item>
+          </CommandSequence>
+        </Method>
+        <Method Name="Delete">
+          <CommandSequence>
+            <Item Order="1" Command="Delete-User">
+              <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+              <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+              <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+              <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+            </Item>
+          </CommandSequence>
+        </Method>
+      </MethodConfiguration>
+    </Class>
+
+	<!-- Role -->
+	<Class Name="Roles">
+	  <Properties>
+	    <Property Name="RoleID" IsUniqueKey="true" IsDisplay="true" DataType="String">
+	      <CommandMappings>
+	        <Map Parameter="RoleID" ToCommand="Get-Roles" />
+	        <Map Parameter="RoleID" ToCommand="Create-Role" />
+	        <Map Parameter="RoleID" ToCommand="Delete-Role" />
+	      </CommandMappings>
+	      <ReturnBindings>
+	        <Bind Path="RoleID" CommandResultOf="Get-Roles" />
+	      </ReturnBindings>
+	      <ModifiedBy>
+	        <ModBy Command="Create-Role" />
+	        <ModBy Command="Delete-Role" />
+	      </ModifiedBy>
+	    </Property>
+	
+	    <Property Name="RoleName" DataType="String">
+	      <CommandMappings>
+	        <Map Parameter="RoleName" ToCommand="Get-Roles" />
+	        <Map Parameter="RoleName" ToCommand="Create-Role" />
+	      </CommandMappings>
+	      <ReturnBindings>
+	        <Bind Path="RoleName" CommandResultOf="Get-Roles" />
+	      </ReturnBindings>
+	      <ModifiedBy>
+	        <ModBy Command="Create-Role" />
+	      </ModifiedBy>
+	    </Property>
+	  </Properties>
+	
+	  <ReadConfiguration>
+	    <ListingCommand Command="Get-Roles">
+	      <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+	      <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+	      <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+	      <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+	    </ListingCommand>
+	    <CommandSequence>
+	      <Item Order="1" Command="Get-Roles">
+	        <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+	        <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+	        <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+	        <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+	      </Item>
+	    </CommandSequence>
+	  </ReadConfiguration>
+	
+	  <MethodConfiguration>
+	    <Method Name="Insert">
+	      <CommandSequence>
+	        <Item Order="1" Command="Create-Role">
+	          <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+	          <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+	          <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+	          <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+	        </Item>
+	      </CommandSequence>
+	    </Method>
+	
+	    <Method Name="Delete">
+	      <CommandSequence>
+	        <Item Order="1" Command="Delete-Role">
+	          <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+	          <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+	          <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+	          <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+	        </Item>
+	      </CommandSequence>
+	    </Method>
+	  </MethodConfiguration>
+	</Class>
+
+
+    <!-- UserInRole -->
+    <Class Name="UserInRole">
+      <Properties>
+        <Property Name="UserID" IsMandatory="true" IsUniqueKey="true" DataType="String">
+          <CommandMappings>
+            <Map Parameter="UserID" ToCommand="Get-UserInRole" />
+            <Map Parameter="UserID" ToCommand="Create-UserInRole" />
+            <Map Parameter="UserID" ToCommand="Delete-UserInRole" />
+          </CommandMappings>
+		  <ModifiedBy>
+            <ModBy Command="Create-UserInRole" />
+			<ModBy Command="Delete-UserInRole" />
+          </ModifiedBy>
+          <ReturnBindings>
+            <Bind Path="UserID" CommandResultOf="Get-UserInRole" />
+          </ReturnBindings>
+        </Property>
+        <Property Name="RoleID" IsMandatory="true" IsUniqueKey="true" DataType="String">
+          <CommandMappings>
+            <Map Parameter="RoleID" ToCommand="Get-UserInRole" />
+            <Map Parameter="RoleID" ToCommand="Create-UserInRole" />
+            <Map Parameter="RoleID" ToCommand="Delete-UserInRole" />
+          </CommandMappings>
+		  <ModifiedBy>
+			<ModBy Command="Delete-UserInRole" />
+            <ModBy Command="Create-UserInRole" />
+          </ModifiedBy>
+          <ReturnBindings>
+            <Bind Path="RoleID" CommandResultOf="Get-UserInRole" />
+          </ReturnBindings>
+        </Property>
+      </Properties>
+      <ReadConfiguration>
+        <ListingCommand Command="Get-UserInRole">
+          <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+          <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+          <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+          <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+        </ListingCommand>
+        <CommandSequence>
+          <Item Order="1" Command="Get-UserInRole">
+            <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+            <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+            <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+            <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+          </Item>
+        </CommandSequence>
+      </ReadConfiguration>
+      <MethodConfiguration>
+        <Method Name="Insert">
+          <CommandSequence>
+            <Item Order="1" Command="Create-UserInRole">
+              <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+              <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+              <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+              <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+            </Item>
+          </CommandSequence>
+        </Method>
+        <Method Name="Delete">
+          <CommandSequence>
+            <Item Order="1" Command="Delete-UserInRole">
+              <SetParameter Param="SqlServer" Source="ConnectionParameter" Value="SqlServer" />
+              <SetParameter Param="SqlDatabase" Source="ConnectionParameter" Value="SqlDatabase" />
+              <SetParameter Param="username" Source="ConnectionParameter" Value="username" />
+              <SetParameter Param="password" Source="ConnectionParameter" Value="password" />
+            </Item>
+          </CommandSequence>
+        </Method>
+      </MethodConfiguration>
+    </Class>
+
+  </Schema>
+</PowershellConnectorDefinition>

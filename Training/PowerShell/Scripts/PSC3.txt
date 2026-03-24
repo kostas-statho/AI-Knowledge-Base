@@ -1,0 +1,473 @@
+<# ========================================================================
+  PSC3.ps1
+  Function: Modify-User
+
+  PURPOSE
+    Update existing user records in dbo.[User] using UserID to find the row
+    (UserID itself is never modified).
+
+  UPDATED BEHAVIOR (per request)
+    • If UserID does not exist → warn and re-prompt until an existing ID is entered.
+    • If EmailAddress is invalid → warn and re-prompt until a valid email is entered,
+      or press Enter to skip updating the email.
+
+  EXISTING GUARANTEES
+    • Only update fields that are provided, non-empty, and different from current values.
+    • Never overwrite with empty strings or $null.
+    • Detailed logging before/after each meaningful step.
+    • Reuses PSC1 helpers (logger, connection/retry, auth UX).
+
+  AUTH MODES
+    -Integrated  → Windows auth
+    -Credential  → switch (popup GUI)
+    -CredentialObject <PSCredential>
+
+  LOGS
+    C:\Users\OneIM\Desktop\PowerShell_Scripts\logs\Modify-User_yyyyMMdd_HHmmss.log
+======================================================================== #>
+
+Set-StrictMode -Version Latest
+
+function New-SqlConnectionString {
+<#
+.SYNOPSIS
+  Build a SqlClient connection string for either Integrated or SQL authentication.
+.DESCRIPTION
+  Returns a properly configured connection string:
+    - Integrated: uses Windows auth
+    - SQL Auth : uses PSCredential (User/Password)
+.PARAMETER Server
+  SQL Server host\instance.
+.PARAMETER Database
+  Database name.
+.PARAMETER Credential
+  PSCredential containing SQL username/password (only for SQL auth).
+.PARAMETER Integrated
+  Switch for Windows Integrated Security.
+.OUTPUTS
+  [string] - A valid SqlClient connection string.
+#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string]$Server,
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string]$Database,
+    [pscredential]$Credential,
+    [switch]$Integrated
+)
+    if ($Integrated) {
+        return "Server=$Server;Database=$Database;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+    }
+    elseif ($Credential) {
+        $u = $Credential.UserName
+        $p = $Credential.GetNetworkCredential().Password
+        return "Server=$Server;Database=$Database;User ID=$u;Password=$p;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+    }
+    else {
+        throw "Provide -Credential (SQL Auth) or -Integrated (Windows Auth)."
+    }
+}
+
+function Test-SqlConnection {
+<#
+.SYNOPSIS
+  Lightweight connection check that distinguishes wrong credentials.
+.DESCRIPTION
+  Attempts to open/close a SqlConnection. Returns $true on success.
+  Returns $false on "Login failed…" (bad username/password).
+  Rethrows other exceptions (DNS/network/availability).
+#>
+[CmdletBinding()]
+param([Parameter(Mandatory)][string]$ConnectionString)
+    try {
+        $cn = [System.Data.SqlClient.SqlConnection]::new($ConnectionString)
+        $cn.Open()
+        $cn.Close()
+        $cn.Dispose()
+        return $true
+    } catch {
+        if ($_.Exception.Message -like "*Login failed*") { return $false }
+        throw
+    }
+}
+
+function New-Logger {
+<#
+.SYNOPSIS
+  Create a per-run logger for the given function.
+.DESCRIPTION
+  - Writes to a timestamped file and mirrors to console.
+  - TRACE only shows with -Verbose.
+  - ERROR uses Write-Warning to avoid awkward scriptblock rendering in the console.
+.OUTPUTS
+  [scriptblock] - Closure accepting (Level, Message).
+#>
+[CmdletBinding()]
+param([Parameter(Mandatory)][string]$FunctionName)
+    $ts   = Get-Date -Format "yyyyMMdd_HHmmss"
+    $dir  = "C:\Users\OneIM\Desktop\PowerShell_Scripts\logs"
+    $path = Join-Path $dir ("{0}_{1}.log" -f $FunctionName,$ts)
+    New-Item -ItemType Directory -Force -Path $dir -ErrorAction SilentlyContinue | Out-Null
+
+    return {
+        param([ValidateSet("INFO","DEBUG","TRACE","ERROR")][string]$Level,[string]$Message)
+        $line = "{0} [{1}] {2}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"),$Level,$Message
+        try { $line | Out-File -FilePath $path -Append -Encoding utf8 } catch { Write-Verbose "[LOGGER] $($_.Exception.Message)" }
+        switch ($Level) {
+            "INFO"  { Write-Host    $line }
+            "DEBUG" { Write-Host    $line }
+            "TRACE" { Write-Verbose $line }  # shown with -Verbose
+            "ERROR" { Write-Warning $Message }
+        }
+    }.GetNewClosure()
+}
+
+function Get-ConnectionStringWithRetry {
+<#
+.SYNOPSIS
+  Centralized auth logic with retry & cancel handling for SQL Auth; pass-through for Integrated.
+.DESCRIPTION
+  - Integrated: immediately returns a connection string.
+  - SQL Auth:
+      * If allowed to prompt and no PSCredential yet → show GUI prompt.
+      * If user CANCELS prompt → log & return $null.
+      * If credentials are WRONG → warn and re-prompt until success or cancel.
+.PARAMETER AllowPromptWhenMissing
+  $true  → show credential prompt if we lack a credential
+  $false → if no credential is present, exit gracefully (no extra prompts)
+#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][string]$SqlServer,
+    [Parameter(Mandatory)][string]$SqlDatabase,
+    [pscredential]$Credential,
+    [switch]$Integrated,
+    [Parameter(Mandatory)][scriptblock]$Log,
+    [Parameter(Mandatory)][string]$FunctionName,
+    [bool]$AllowPromptWhenMissing = $true
+)
+    if ($Integrated) {
+        return (New-SqlConnectionString -Server $SqlServer -Database $SqlDatabase -Integrated)
+    }
+
+    $credLocal = $Credential
+    $attempted = $false
+
+    while ($true) {
+        if (-not $credLocal) {
+            if (-not $AllowPromptWhenMissing) {
+                & $Log 'INFO' "$($FunctionName): Authentication canceled by user."
+                return $null
+            }
+            $credLocal = Get-Credential -Message "Enter SQL Server credentials for $SqlServer"
+            if (-not $credLocal) {
+                & $Log 'INFO' "$($FunctionName): Authentication canceled by user."
+                return $null
+            }
+        }
+
+        $connStr = New-SqlConnectionString -Server $SqlServer -Database $SqlDatabase -Credential $credLocal
+        $ok = $false
+        try { $ok = Test-SqlConnection -ConnectionString $connStr } catch { throw }
+        $attempted = $true
+
+        if ($ok) { return $connStr }
+
+        Write-Warning "Wrong credentials. Please try again."
+        $credLocal = $null     # force re-prompt
+        $AllowPromptWhenMissing = $true
+    }
+}
+
+function Read-IntInteractive {
+<#
+.SYNOPSIS
+  Prompt until a valid integer is entered.
+.PARAMETER Name
+  Friendly label to show in the prompt.
+#>
+[CmdletBinding()]
+param([Parameter(Mandatory)][string]$Name)
+    while ($true) {
+        $inputText = Read-Host "Enter $Name (numeric)"
+        $parsed = 0
+        if ([int]::TryParse($inputText, [ref]$parsed)) { return $parsed }
+        Write-Warning "Please enter a valid number for $Name."
+    }
+}
+
+function Format-CriteriaMessage {
+<#
+.SYNOPSIS
+  Build a compact criteria description including only applied filters.
+.DESCRIPTION
+  Returns "{}" if no filters are applied; otherwise "{ key=value, ... }".
+#>
+[CmdletBinding()]
+param(
+    [Nullable[int]]$UserID,
+    [Nullable[int]]$RoleID
+)
+    $parts = @()
+    if ($null -ne $UserID) { $parts += "UserID=$UserID" }
+    if ($null -ne $RoleID) { $parts += "RoleID=$RoleID" }
+    if ($parts.Count -eq 0) { return "{}" }
+    return "{ " + ($parts -join ", ") + " }"
+}
+
+function global:Modify-User {
+<#
+.SYNOPSIS
+  Update fields of an existing user in dbo.[User] (UserID is used to find, not changed).
+
+.DESCRIPTION
+  - Validates the provided UserID exists; if not, warns and re-prompts until a valid one is entered.
+  - If EmailAddress is provided but invalid, warns and re-prompts until valid; Enter skips email update.
+  - Only updates fields you pass AND that are non-empty AND different from current values.
+  - Returns the updated row.
+
+.PARAMETER SqlServer
+  SQL Server host\instance.
+
+.PARAMETER SqlDatabase
+  Database name.
+
+.PARAMETER PromptCredential
+  SWITCH that opens a credential popup (SQL Auth). Alias: -Credential
+
+.PARAMETER CredentialObject
+  A PSCredential you already created (SQL Auth).
+
+.PARAMETER Integrated
+  Use Windows Integrated Security.
+
+.PARAMETER UserID
+  Required. Existing user's ID to modify (the key is not changed). If not found, you'll be re-prompted.
+
+.PARAMETER FirstName
+  Optional. New first name (ignored if null/empty or same as current).
+
+.PARAMETER LastName
+  Optional. New last name (ignored if null/empty or same as current).
+
+.PARAMETER JobDescription
+  Optional. New job title/description (ignored if null/empty or same as current).
+
+.PARAMETER EmailAddress
+  Optional. New email. If provided and invalid, you’ll be asked again; Enter to skip email update.
+
+.PARAMETER ObjectClass
+  Target table, default 'dbo.[User]'.
+
+.EXAMPLE
+  Modify-User -SqlServer "StathopoulosK" -SqlDatabase "CCC_PSC" -Integrated -UserID 12 `
+    -EmailAddress "new.email@example.com" -JobDescription "Senior Analyst"
+
+.EXAMPLE
+  Modify-User -SqlServer "StathopoulosK" -SqlDatabase "CCC_PSC" -Credential -UserID 7 `
+    -FirstName "Alex" -LastName "Papadopoulos"
+#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][string]$SqlServer,
+    [Parameter(Mandatory)][string]$SqlDatabase,
+    [Alias('Credential')][switch]$PromptCredential,
+    [pscredential]$CredentialObject,
+    [switch]$Integrated,
+
+    [Parameter(Mandatory)][int]$UserID,
+
+    [string]$FirstName,
+    [string]$LastName,
+    [string]$JobDescription,
+    [string]$EmailAddress,
+
+    [string]$ObjectClass = 'dbo.[User]'
+)
+
+    $Log = New-Logger -FunctionName 'Modify-User'
+    & $Log 'INFO'  "START Modify-User (UserID=$UserID)"
+    & $Log 'TRACE' "Input params received (excluding secrets)."
+
+    try {
+        # ---------------- Auth selection ----------------
+        & $Log 'DEBUG' "Checking authentication mode..."
+        if (-not $Integrated -and -not $PromptCredential -and -not $PSBoundParameters.ContainsKey('CredentialObject')) {
+            & $Log 'ERROR' "No authentication specified. Use -Integrated, -Credential (popup), or -CredentialObject."
+            return
+        }
+        $allowPromptWhenMissing = $PromptCredential -or (-not $PSBoundParameters.ContainsKey('CredentialObject'))
+
+        & $Log 'DEBUG' "Building connection string (with retry if needed)..."
+        $connStr = Get-ConnectionStringWithRetry -SqlServer $SqlServer -SqlDatabase $SqlDatabase `
+                     -Credential $CredentialObject -Integrated:$Integrated `
+                     -Log $Log -FunctionName 'Modify-User' -AllowPromptWhenMissing:$allowPromptWhenMissing
+        if (-not $connStr) { & $Log 'INFO' "Authentication canceled; exiting."; return }
+        & $Log 'DEBUG' "Connection string ready."
+
+        # ---------------- Open connection ----------------
+        Add-Type -AssemblyName System.Data -ErrorAction SilentlyContinue
+        $cn = [System.Data.SqlClient.SqlConnection]::new($connStr)
+        & $Log 'DEBUG' "Opening SQL connection..."
+        $cn.Open()
+        & $Log 'DEBUG' "SQL connection opened."
+
+        try {
+            # ---------------- Ensure UserID exists (re-prompt if not) ----------------
+            while ($true) {
+                $existsCmd = $cn.CreateCommand()
+                $existsCmd.CommandText = "SELECT CASE WHEN EXISTS (SELECT 1 FROM $ObjectClass WHERE UserID=@ID) THEN 1 ELSE 0 END"
+                $null = $existsCmd.Parameters.Add("@ID",[System.Data.SqlDbType]::Int)
+                $existsCmd.Parameters["@ID"].Value = $UserID
+                $exists = ([int]$existsCmd.ExecuteScalar() -eq 1)
+                if ($exists) { break }
+
+                Write-Warning "UserID $UserID does not exist in [$ObjectClass]. Please enter an existing UserID."
+                $input = Read-Host "Enter existing UserID"
+                $tmp = 0
+                if (-not [int]::TryParse($input, [ref]$tmp)) {
+                    Write-Warning "UserID must be numeric."
+                    continue
+                }
+                $UserID = $tmp
+            }
+
+            # ---------------- Load current row ----------------
+            & $Log 'DEBUG' "Loading current user row..."
+            $sel = $cn.CreateCommand()
+            $sel.CommandText = "SELECT UserID, FirstName, LastName, EmailAddress, JobDescription FROM $ObjectClass WHERE UserID=@ID;"
+            $null = $sel.Parameters.Add("@ID",[System.Data.SqlDbType]::Int)
+            $sel.Parameters["@ID"].Value = $UserID
+
+            $current = $null
+            $r = $sel.ExecuteReader()
+            try {
+                if ($r.Read()) {
+                    $current = [pscustomobject]@{
+                        UserID         = $r["UserID"]
+                        FirstName      = [string]$r["FirstName"]
+                        LastName       = [string]$r["LastName"]
+                        EmailAddress   = [string]$r["EmailAddress"]
+                        JobDescription = [string]$r["JobDescription"]
+                    }
+                    & $Log 'TRACE' ("Loaded row: UID={0}, Name={1} {2}, Email={3}, Job={4}" -f `
+                        $current.UserID,$current.FirstName,$current.LastName,$current.EmailAddress,$current.JobDescription)
+                } else {
+                    # Shouldn't happen due to loop above, but guard anyway
+                    & $Log 'ERROR' "UserID $UserID not found in [$ObjectClass]."
+                    return
+                }
+            } finally { $r.Close() }
+            & $Log 'DEBUG' "Current row loaded."
+
+            # ---------------- Validate Email interactively if provided ----------------
+            if ($PSBoundParameters.ContainsKey('EmailAddress')) {
+                while ($true) {
+                    if ([string]::IsNullOrWhiteSpace($EmailAddress)) {
+                        # User can press Enter later to skip updating email
+                        break
+                    }
+                    if ($EmailAddress -match '^[^@]+@[^@]+$') { break }
+                    Write-Warning "Email '$EmailAddress' is not valid. Please enter a valid email, or press Enter to skip updating email."
+                    $input = Read-Host "Enter valid email (or blank to skip)"
+                    if ([string]::IsNullOrWhiteSpace($input)) { $EmailAddress = $null; break }
+                    $EmailAddress = $input
+                }
+            }
+
+            # ---------------- Decide what to update ----------------
+            & $Log 'DEBUG' "Evaluating which fields to update (skip empty/same values)..."
+            function Should-Update([string]$NewValue, [string]$CurrentValue) {
+                return (-not [string]::IsNullOrWhiteSpace($NewValue)) -and ($NewValue -ne $CurrentValue)
+            }
+
+            $setClauses = New-Object System.Collections.Generic.List[string]
+            $bind       = New-Object System.Collections.ArrayList
+
+            if ($PSBoundParameters.ContainsKey('FirstName') -and (Should-Update $FirstName $current.FirstName)) {
+                $setClauses.Add("FirstName=@FN") | Out-Null
+                [void]$bind.Add([pscustomobject]@{ Name='@FN';  Value=$FirstName;    Type=[System.Data.SqlDbType]::NVarChar; Length=50 })
+                & $Log 'TRACE' "Queue FirstName -> '$FirstName'"
+            } else { & $Log 'TRACE' "Skip FirstName (empty or unchanged)" }
+
+            if ($PSBoundParameters.ContainsKey('LastName') -and (Should-Update $LastName $current.LastName)) {
+                $setClauses.Add("LastName=@LN") | Out-Null
+                [void]$bind.Add([pscustomobject]@{ Name='@LN';  Value=$LastName;     Type=[System.Data.SqlDbType]::NVarChar; Length=50 })
+                & $Log 'TRACE' "Queue LastName -> '$LastName'"
+            } else { & $Log 'TRACE' "Skip LastName (empty or unchanged)" }
+
+            if ($PSBoundParameters.ContainsKey('EmailAddress') -and (Should-Update $EmailAddress $current.EmailAddress)) {
+                $setClauses.Add("EmailAddress=@EM") | Out-Null
+                [void]$bind.Add([pscustomobject]@{ Name='@EM';  Value=$EmailAddress; Type=[System.Data.SqlDbType]::NVarChar; Length=100 })
+                & $Log 'TRACE' "Queue EmailAddress -> '$EmailAddress'"
+            } else { & $Log 'TRACE' "Skip EmailAddress (empty or unchanged)" }
+
+            if ($PSBoundParameters.ContainsKey('JobDescription') -and (Should-Update $JobDescription $current.JobDescription)) {
+                $setClauses.Add("JobDescription=@JD") | Out-Null
+                [void]$bind.Add([pscustomobject]@{ Name='@JD';  Value=$JobDescription;Type=[System.Data.SqlDbType]::NVarChar; Length=100 })
+                & $Log 'TRACE' "Queue JobDescription -> '$JobDescription'"
+            } else { & $Log 'TRACE' "Skip JobDescription (empty or unchanged)" }
+
+            if ($setClauses.Count -eq 0) {
+                & $Log 'INFO' "Nothing to update (all provided values empty/unchanged)."
+                return $current
+            }
+
+            # ---------------- Execute UPDATE ----------------
+            $setSql = $setClauses -join ", "
+            & $Log 'DEBUG' "Preparing UPDATE..."
+            & $Log 'TRACE' "UPDATE $ObjectClass SET $setSql WHERE UserID=@ID"
+
+            $upd = $cn.CreateCommand()
+            $upd.CommandText = "UPDATE $ObjectClass SET $setSql WHERE UserID=@ID;"
+            $null = $upd.Parameters.Add("@ID",[System.Data.SqlDbType]::Int)
+            $upd.Parameters["@ID"].Value = $UserID
+
+            foreach ($b in $bind) {
+                if ($b.Length -gt 0) {
+                    $param = $upd.Parameters.Add($b.Name, $b.Type, $b.Length)
+                } else {
+                    $param = $upd.Parameters.Add($b.Name, $b.Type)
+                }
+                $param.Value = $b.Value
+            }
+
+            & $Log 'DEBUG' "Executing UPDATE..."
+            $rows = $upd.ExecuteNonQuery()
+            & $Log 'INFO'  "Rows affected: $rows"
+
+            # ---------------- Return updated row ----------------
+            & $Log 'DEBUG' "Selecting updated row..."
+            $sel2 = $cn.CreateCommand()
+            $sel2.CommandText = "SELECT UserID, FirstName, LastName, EmailAddress, JobDescription FROM $ObjectClass WHERE UserID=@ID;"
+            $null = $sel2.Parameters.Add("@ID",[System.Data.SqlDbType]::Int)
+            $sel2.Parameters["@ID"].Value = $UserID
+
+            $result = New-Object System.Collections.Generic.List[object]
+            $r2 = $sel2.ExecuteReader()
+            try {
+                while ($r2.Read()) {
+                    $result.Add([pscustomobject]@{
+                        UserID         = $r2["UserID"]
+                        FirstName      = $r2["FirstName"]
+                        LastName       = $r2["LastName"]
+                        EmailAddress   = $r2["EmailAddress"]
+                        JobDescription = $r2["JobDescription"]
+                    })
+                }
+            } finally { $r2.Close() }
+
+        } finally {
+            & $Log 'DEBUG' "Closing SQL connection..."
+            if ($cn.State -eq 'Open') { $cn.Close() }
+            $cn.Dispose()
+            & $Log 'DEBUG' "SQL connection closed."
+        }
+
+    } catch {
+        & $Log 'ERROR' ("Modify-User failed: {0}" -f $_.Exception.Message)
+        throw
+    }
+
+    & $Log 'INFO' "END Modify-User"
+    return $result
+}

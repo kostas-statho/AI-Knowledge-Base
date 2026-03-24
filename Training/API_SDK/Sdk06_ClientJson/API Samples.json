@@ -1,0 +1,262 @@
+{
+	"info": {
+		"_postman_id": "6771e55a-68e7-45aa-b6c3-b209a9224f6c",
+		"name": "Identity Manager API Samples",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Basics",
+      "item": [
+        {
+          "name": "ApiSamples: hello world",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/apisamples/helloworld",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "apisamples",
+                "helloworld"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"Module\": \"RoleBasedPerson\", \"User\": \"USERNAME\", \"Password\": \"PASSWORD\" }"
+            },
+            "url": {
+              "raw": "{{url}}/imx/login/apisamples",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "imx",
+                "login",
+                "apisamples"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reading from the Person table",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/apisamples/person/allcolumns",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "apisamples",
+                "person",
+                "allcolumns"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reading from the Person table with a filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/apisamples/person/allcolumns?filter=[{ColumnName: 'LastName', CompareOp: 'Equal', Value1: 'Smith'}]",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "apisamples",
+                "person",
+                "allcolumns"
+              ],
+              "query": [
+                {
+                  "key": "filter",
+                  "value": "[{ColumnName: 'LastName', CompareOp: 'Equal', Value1: 'Smith'}]"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Validation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/apisamples/testvalidation?p=dd",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "apisamples",
+                "testvalidation"
+              ],
+              "query": [
+                {
+                  "key": "p",
+                  "value": "dd"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+		},
+		{
+			"name": "Writing data",
+			"item": [
+				{
+					"name": "Read delayed logic entity",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/apisamples/person/masterdata",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"apisamples",
+								"person",
+								"masterdata"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Write delayed logic entity",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"_comment\": \"The <UID_PERSON> below must be replaced with the UID of the logged-in user.\",\n\t\"Objects\": [\n\t\t{\n\t\t\t\"Keys\":  [\"<UID_PERSON>\"],\n\t\t\t\"Data\": [\n\t\t\t\t{\n\t\t\t\t\t\"Name\": \"CustomProperty01\",\n\t\t\t\t\t\"Value\": \"New test value\",\n\t\t\t\t\t\"OldValue\": \"\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]\n}"
+						},
+						"url": {
+							"raw": "{{url}}/apisamples/person/masterdata",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"apisamples",
+								"person",
+								"masterdata"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new entity",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Objects\": [\n\t\t{\n\t\t\t\"Data\": [\n\t\t\t\t{\n\t\t\t\t\t\"Name\": \"LastName\",\n\t\t\t\t\t\"Value\": \"Smith\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"Name\": \"FirstName\",\n\t\t\t\t\t\"Value\": \"Mark\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]\n}"
+						},
+						"url": {
+							"raw": "{{url}}/apisamples/person/createnew",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"apisamples",
+								"person",
+								"createnew"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "4dd90890-55f5-45ae-8774-621e56856206",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "8993159e-6e0e-48d0-9741-63a848d41551",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "c33b2d51-e261-4497-891d-4451662b1bba",
+			"key": "url",
+			"value": "http://localhost:8182",
+			"type": "string"
+		}
+	]
+}

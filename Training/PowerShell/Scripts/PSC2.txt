@@ -1,0 +1,511 @@
+<# ========================================================================
+  PSC2.ps1
+  Functions: Create-User, Create-Role, Create-UserInRole
+
+  PURPOSE
+    Write operations for IAM-style schema:
+      • Insert into dbo.[User]
+      • Insert into dbo.Role
+      • Insert into dbo.UserInRole (user-role membership)
+
+  AUTHENTICATION (choose one explicitly)
+      -Integrated                  → Windows Integrated Security
+      -Credential                  → SWITCH that opens a GUI credential prompt
+      -CredentialObject <PSCred>   → Use a prebuilt credential
+
+  ID LOGIC
+    Create-User / Create-Role:
+      - If -SetUserID / -SetRoleID → prompt for a unique numeric ID (if taken, now also
+        shows the first available ID suggestion).
+      - Otherwise → auto-pick the smallest free integer (1,2,3,…) in that table.
+
+    Create-UserInRole:
+      - UserID and RoleID are mandatory parameters.
+      - Function checks that IDs exist; if not → warns and asks again.
+
+  LOGGING
+    Logs → C:\Users\OneIM\Desktop\PowerShell_Scripts\logs\<Function>_yyyyMMdd_HHmmss.log
+======================================================================== #>
+
+Set-StrictMode -Version Latest
+function New-SqlConnectionString {
+<#
+.SYNOPSIS
+  Build a SqlClient connection string for either Integrated or SQL authentication.
+.DESCRIPTION
+  Returns a properly configured connection string:
+    - Integrated: uses Windows auth
+    - SQL Auth : uses PSCredential (User/Password)
+.PARAMETER Server
+  SQL Server host\instance.
+.PARAMETER Database
+  Database name.
+.PARAMETER Credential
+  PSCredential containing SQL username/password (only for SQL auth).
+.PARAMETER Integrated
+  Switch for Windows Integrated Security.
+.OUTPUTS
+  [string] - A valid SqlClient connection string.
+#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string]$Server,
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string]$Database,
+    [pscredential]$Credential,
+    [switch]$Integrated
+)
+    if ($Integrated) {
+        return "Server=$Server;Database=$Database;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+    }
+    elseif ($Credential) {
+        $u = $Credential.UserName
+        $p = $Credential.GetNetworkCredential().Password
+        return "Server=$Server;Database=$Database;User ID=$u;Password=$p;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+    }
+    else {
+        throw "Provide -Credential (SQL Auth) or -Integrated (Windows Auth)."
+    }
+}
+
+function Test-SqlConnection {
+<#
+.SYNOPSIS
+  Lightweight connection check that distinguishes wrong credentials.
+.DESCRIPTION
+  Attempts to open/close a SqlConnection. Returns $true on success.
+  Returns $false on "Login failed…" (bad username/password).
+  Rethrows other exceptions (DNS/network/availability).
+#>
+[CmdletBinding()]
+param([Parameter(Mandatory)][string]$ConnectionString)
+    try {
+        $cn = [System.Data.SqlClient.SqlConnection]::new($ConnectionString)
+        $cn.Open()
+        $cn.Close()
+        $cn.Dispose()
+        return $true
+    } catch {
+        if ($_.Exception.Message -like "*Login failed*") { return $false }
+        throw
+    }
+}
+
+function New-Logger {
+<#
+.SYNOPSIS
+  Create a per-run logger for the given function.
+.DESCRIPTION
+  - Writes to a timestamped file and mirrors to console.
+  - TRACE only shows with -Verbose.
+  - ERROR uses Write-Warning to avoid awkward scriptblock rendering in the console.
+.OUTPUTS
+  [scriptblock] - Closure accepting (Level, Message).
+#>
+[CmdletBinding()]
+param([Parameter(Mandatory)][string]$FunctionName)
+    $ts   = Get-Date -Format "yyyyMMdd_HHmmss"
+    $dir  = "C:\Users\OneIM\Desktop\PowerShell_Scripts\logs"
+    $path = Join-Path $dir ("{0}_{1}.log" -f $FunctionName,$ts)
+    New-Item -ItemType Directory -Force -Path $dir -ErrorAction SilentlyContinue | Out-Null
+
+    return {
+        param([ValidateSet("INFO","DEBUG","TRACE","ERROR")][string]$Level,[string]$Message)
+        $line = "{0} [{1}] {2}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"),$Level,$Message
+        try { $line | Out-File -FilePath $path -Append -Encoding utf8 } catch { Write-Verbose "[LOGGER] $($_.Exception.Message)" }
+        switch ($Level) {
+            "INFO"  { Write-Host    $line }
+            "DEBUG" { Write-Host    $line }
+            "TRACE" { Write-Verbose $line }  # shown with -Verbose
+            "ERROR" { Write-Warning $Message }
+        }
+    }.GetNewClosure()
+}
+
+function Get-ConnectionStringWithRetry {
+<#
+.SYNOPSIS
+  Centralized auth logic with retry & cancel handling for SQL Auth; pass-through for Integrated.
+.DESCRIPTION
+  - Integrated: immediately returns a connection string.
+  - SQL Auth:
+      * If allowed to prompt and no PSCredential yet → show GUI prompt.
+      * If user CANCELS prompt → log & return $null.
+      * If credentials are WRONG → warn and re-prompt until success or cancel.
+.PARAMETER AllowPromptWhenMissing
+  $true  → show credential prompt if we lack a credential
+  $false → if no credential is present, exit gracefully (no extra prompts)
+#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][string]$SqlServer,
+    [Parameter(Mandatory)][string]$SqlDatabase,
+    [pscredential]$Credential,
+    [switch]$Integrated,
+    [Parameter(Mandatory)][scriptblock]$Log,
+    [Parameter(Mandatory)][string]$FunctionName,
+    [bool]$AllowPromptWhenMissing = $true
+)
+    if ($Integrated) {
+        return (New-SqlConnectionString -Server $SqlServer -Database $SqlDatabase -Integrated)
+    }
+
+    $credLocal = $Credential
+    $attempted = $false
+
+    while ($true) {
+        if (-not $credLocal) {
+            if (-not $AllowPromptWhenMissing) {
+                & $Log 'INFO' "$($FunctionName): Authentication canceled by user."
+                return $null
+            }
+            $credLocal = Get-Credential -Message "Enter SQL Server credentials for $SqlServer"
+            if (-not $credLocal) {
+                & $Log 'INFO' "$($FunctionName): Authentication canceled by user."
+                return $null
+            }
+        }
+
+        $connStr = New-SqlConnectionString -Server $SqlServer -Database $SqlDatabase -Credential $credLocal
+        $ok = $false
+        try { $ok = Test-SqlConnection -ConnectionString $connStr } catch { throw }
+        $attempted = $true
+
+        if ($ok) { return $connStr }
+
+        Write-Warning "Wrong credentials. Please try again."
+        $credLocal = $null     # force re-prompt
+        $AllowPromptWhenMissing = $true
+    }
+}
+
+function Read-IntInteractive {
+<#
+.SYNOPSIS
+  Prompt until a valid integer is entered.
+.PARAMETER Name
+  Friendly label to show in the prompt.
+#>
+[CmdletBinding()]
+param([Parameter(Mandatory)][string]$Name)
+    while ($true) {
+        $inputText = Read-Host "Enter $Name (numeric)"
+        $parsed = 0
+        if ([int]::TryParse($inputText, [ref]$parsed)) { return $parsed }
+        Write-Warning "Please enter a valid number for $Name."
+    }
+}
+
+function Format-CriteriaMessage {
+<#
+.SYNOPSIS
+  Build a compact criteria description including only applied filters.
+.DESCRIPTION
+  Returns "{}" if no filters are applied; otherwise "{ key=value, ... }".
+#>
+[CmdletBinding()]
+param(
+    [Nullable[int]]$UserID,
+    [Nullable[int]]$RoleID
+)
+    $parts = @()
+    if ($null -ne $UserID) { $parts += "UserID=$UserID" }
+    if ($null -ne $RoleID) { $parts += "RoleID=$RoleID" }
+    if ($parts.Count -eq 0) { return "{}" }
+    return "{ " + ($parts -join ", ") + " }"
+}
+
+function Test-IdExists {
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][System.Data.SqlClient.SqlConnection]$Connection,
+    [Parameter(Mandatory)][string]$Table,
+    [Parameter(Mandatory)][string]$Column,
+    [Parameter(Mandatory)][int]$Id
+)
+    $cmd = $Connection.CreateCommand()
+    $cmd.CommandText = "SELECT CASE WHEN EXISTS (SELECT 1 FROM $Table WHERE $Column = @ID) THEN 1 ELSE 0 END"
+    $null = $cmd.Parameters.Add("@ID",[System.Data.SqlDbType]::Int)
+    $cmd.Parameters["@ID"].Value = $Id
+    return ([int]$cmd.ExecuteScalar() -eq 1)
+}
+
+function Get-NextAvailableId {
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][System.Data.SqlClient.SqlConnection]$Connection,
+    [Parameter(Mandatory)][string]$Table,
+    [Parameter(Mandatory)][string]$Column
+)
+    $cmd = $Connection.CreateCommand()
+    $cmd.CommandText = "SELECT DISTINCT CAST($Column AS INT) AS id FROM $Table WITH (NOLOCK) ORDER BY CAST($Column AS INT);"
+    $ids = New-Object System.Collections.Generic.List[int]
+    $r = $cmd.ExecuteReader()
+    try {
+        while ($r.Read()) { [void]$ids.Add([int]$r["id"]) }
+    } finally { $r.Close() }
+
+    if ($ids.Count -eq 0) { return 1 }
+    $expected = 1
+    foreach ($id in $ids) {
+        if ($id -gt $expected) { break }
+        if ($id -eq $expected) { $expected++ }
+    }
+    return $expected
+}
+
+function Read-UniqueIdInteractive {
+<#
+.SYNOPSIS
+  Prompt until a valid numeric ID is entered that does not already exist.
+.DESCRIPTION
+  When the entered ID is already in use, the prompt will also show the
+  **first available** (smallest free) ID as a suggestion.
+.PARAMETER Connection
+  An OPEN [System.Data.SqlClient.SqlConnection].
+.PARAMETER Table
+  Target table name (e.g., 'dbo.[User]' or 'dbo.Role').
+.PARAMETER Column
+  Key column name (e.g., 'UserID' or 'RoleID').
+.PARAMETER Name
+  Friendly name to display (e.g., 'UserID' or 'RoleID').
+.OUTPUTS
+  [int]
+#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][System.Data.SqlClient.SqlConnection]$Connection,
+    [Parameter(Mandatory)][string]$Table,
+    [Parameter(Mandatory)][string]$Column,
+    [Parameter(Mandatory)][string]$Name
+)
+    while ($true) {
+        $text = Read-Host "Enter $Name (numeric & not-in-use)"
+        $parsed = 0
+        if (-not [int]::TryParse($text, [ref]$parsed)) {
+            Write-Warning "$Name must be numeric."
+            continue
+        }
+        if (Test-IdExists -Connection $Connection -Table $Table -Column $Column -Id $parsed) {
+            $suggest = Get-NextAvailableId -Connection $Connection -Table $Table -Column $Column
+            Write-Warning "$Name $parsed already exists. First available is $suggest. Please enter a different value."
+            continue
+        }
+        return $parsed
+    }
+}
+
+# ---------------------------------------------------------
+# Create-User
+# ---------------------------------------------------------
+function global:Create-User {
+<#
+.SYNOPSIS
+  Insert a new user into dbo.[User].
+.DESCRIPTION
+  UserID assignment:
+    • If -SetUserID is provided → prompt for numeric UserID; if taken, warns and shows the
+      first available ID; re-prompts until a free numeric ID is provided.
+    • If -SetUserID is NOT provided → auto-pick first free integer (1,2,3,…).
+.PARAMETER SetUserID
+  Ask interactively for a unique UserID (numeric & not-in-use).
+.PARAMETER FirstName, LastName, EmailAddress, JobDescription
+  Required user properties.
+#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][string]$SqlServer,
+    [Parameter(Mandatory)][string]$SqlDatabase,
+    [Alias('Credential')][switch]$PromptCredential,
+    [pscredential]$CredentialObject,
+    [switch]$Integrated,
+
+    [switch]$SetUserID,
+
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string]$FirstName,
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string]$LastName,
+    [Parameter(Mandatory)][ValidatePattern('.+@.+')][string]$EmailAddress,
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string]$JobDescription,
+    [string]$ObjectClass='dbo.[User]'
+)
+    $Log = New-Logger -FunctionName 'Create-User'
+    & $Log 'INFO' "START Create-User"
+    try {
+        if (-not $Integrated -and -not $PromptCredential -and -not $PSBoundParameters.ContainsKey('CredentialObject')) {
+            & $Log 'ERROR' "No authentication specified."
+            return
+        }
+        $allowPromptWhenMissing = $PromptCredential -or (-not $PSBoundParameters.ContainsKey('CredentialObject'))
+        $connStr = Get-ConnectionStringWithRetry -SqlServer $SqlServer -SqlDatabase $SqlDatabase `
+                     -Credential $CredentialObject -Integrated:$Integrated -Log $Log -FunctionName 'Create-User' `
+                     -AllowPromptWhenMissing:$allowPromptWhenMissing
+        if (-not $connStr) { return }
+
+        Add-Type -AssemblyName System.Data -ErrorAction SilentlyContinue
+        $cn = [System.Data.SqlClient.SqlConnection]::new($connStr)
+        try {
+            $cn.Open()
+            [int]$UserID = if ($SetUserID) {
+                Read-UniqueIdInteractive -Connection $cn -Table $ObjectClass -Column 'UserID' -Name 'UserID'
+            } else {
+                Get-NextAvailableId -Connection $cn -Table $ObjectClass -Column 'UserID'
+            }
+
+            $cmd = $cn.CreateCommand()
+            $cmd.CommandText = "INSERT INTO $ObjectClass (UserID, FirstName, LastName, EmailAddress, JobDescription) VALUES (@ID,@FN,@LN,@EM,@JD);"
+            $null=$cmd.Parameters.Add("@ID",[System.Data.SqlDbType]::Int);       $cmd.Parameters["@ID"].Value=$UserID
+            $null=$cmd.Parameters.Add("@FN",[System.Data.SqlDbType]::NVarChar,50);$cmd.Parameters["@FN"].Value=$FirstName
+            $null=$cmd.Parameters.Add("@LN",[System.Data.SqlDbType]::NVarChar,50);$cmd.Parameters["@LN"].Value=$LastName
+            $null=$cmd.Parameters.Add("@EM",[System.Data.SqlDbType]::NVarChar,100);$cmd.Parameters["@EM"].Value=$EmailAddress
+            $null=$cmd.Parameters.Add("@JD",[System.Data.SqlDbType]::NVarChar,100);$cmd.Parameters["@JD"].Value=$JobDescription
+
+            $rows=$cmd.ExecuteNonQuery()
+            & $Log 'INFO' "User inserted (UserID=$UserID, Rows=$rows)"
+        } finally { if ($cn.State -eq 'Open') { $cn.Close() }; $cn.Dispose() }
+    } catch { & $Log 'ERROR' ("Create-User failed: {0}" -f $_.Exception.Message); throw }
+    & $Log 'INFO' "END Create-User"
+}
+
+# ---------------------------------------------------------
+# Create-Role
+# ---------------------------------------------------------
+function global:Create-Role {
+<#
+.SYNOPSIS
+  Insert a new role into dbo.Role.
+.DESCRIPTION
+  RoleID assignment:
+    • If -SetRoleID is provided → prompt for numeric RoleID; if taken, warns and shows the
+      first available ID; re-prompts until a free numeric ID is provided.
+    • If -SetRoleID is NOT provided → auto-pick first free integer (1,2,3,…).
+.PARAMETER SetRoleID
+  Ask interactively for a unique RoleID (numeric & not-in-use).
+.PARAMETER RoleName
+  The role's display name (required).
+#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][string]$SqlServer,
+    [Parameter(Mandatory)][string]$SqlDatabase,
+    [Alias('Credential')][switch]$PromptCredential,
+    [pscredential]$CredentialObject,
+    [switch]$Integrated,
+
+    [switch]$SetRoleID,
+
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string]$RoleName,
+    [string]$ObjectClass='dbo.Role'
+)
+    $Log = New-Logger -FunctionName 'Create-Role'
+    & $Log 'INFO' "START Create-Role"
+    try {
+        if (-not $Integrated -and -not $PromptCredential -and -not $PSBoundParameters.ContainsKey('CredentialObject')) {
+            & $Log 'ERROR' "No authentication specified."
+            return
+        }
+        $allowPromptWhenMissing = $PromptCredential -or (-not $PSBoundParameters.ContainsKey('CredentialObject'))
+        $connStr = Get-ConnectionStringWithRetry -SqlServer $SqlServer -SqlDatabase $SqlDatabase `
+                     -Credential $CredentialObject -Integrated:$Integrated -Log $Log -FunctionName 'Create-Role' `
+                     -AllowPromptWhenMissing:$allowPromptWhenMissing
+        if (-not $connStr) { return }
+
+        Add-Type -AssemblyName System.Data -ErrorAction SilentlyContinue
+        $cn = [System.Data.SqlClient.SqlConnection]::new($connStr)
+        try {
+            $cn.Open()
+            [int]$RoleID = if ($SetRoleID) {
+                Read-UniqueIdInteractive -Connection $cn -Table $ObjectClass -Column 'RoleID' -Name 'RoleID'
+            } else {
+                Get-NextAvailableId -Connection $cn -Table $ObjectClass -Column 'RoleID'
+            }
+
+            $cmd = $cn.CreateCommand()
+            $cmd.CommandText = "INSERT INTO $ObjectClass (RoleID, RoleName) VALUES (@ID,@RN);"
+            $null=$cmd.Parameters.Add("@ID",[System.Data.SqlDbType]::Int);       $cmd.Parameters["@ID"].Value=$RoleID
+            $null=$cmd.Parameters.Add("@RN",[System.Data.SqlDbType]::NVarChar,100);$cmd.Parameters["@RN"].Value=$RoleName
+
+            $rows=$cmd.ExecuteNonQuery()
+            & $Log 'INFO' "Role inserted (RoleID=$RoleID, Rows=$rows)"
+        } finally { if ($cn.State -eq 'Open') { $cn.Close() }; $cn.Dispose() }
+    } catch { & $Log 'ERROR' ("Create-Role failed: {0}" -f $_.Exception.Message); throw }
+    & $Log 'INFO' "END Create-Role"
+}
+
+# ---------------------------------------------------------
+# Create-UserInRole
+# ---------------------------------------------------------
+function global:Create-UserInRole {
+<#
+.SYNOPSIS
+  Insert a user-role membership into dbo.UserInRole.
+.DESCRIPTION
+  UserID and RoleID are mandatory and must already exist.
+  If either does not exist, this function warns and re-prompts until you enter an existing ID.
+#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][string]$SqlServer,
+    [Parameter(Mandatory)][string]$SqlDatabase,
+    [Alias('Credential')][switch]$PromptCredential,
+    [pscredential]$CredentialObject,
+    [switch]$Integrated,
+
+    [Parameter(Mandatory)][int]$UserID,
+    [Parameter(Mandatory)][int]$RoleID,
+
+    [string]$MembershipObject='dbo.UserInRole',
+    [string]$UsersObject='dbo.[User]',
+    [string]$RolesObject='dbo.Role'
+)
+    $Log = New-Logger -FunctionName 'Create-UserInRole'
+    & $Log 'INFO' "START Create-UserInRole (UserID=$UserID, RoleID=$RoleID)"
+    try {
+        if (-not $Integrated -and -not $PromptCredential -and -not $PSBoundParameters.ContainsKey('CredentialObject')) {
+            & $Log 'ERROR' "No authentication specified."
+            return
+        }
+        $allowPromptWhenMissing = $PromptCredential -or (-not $PSBoundParameters.ContainsKey('CredentialObject'))
+        $connStr = Get-ConnectionStringWithRetry -SqlServer $SqlServer -SqlDatabase $SqlDatabase `
+                     -Credential $CredentialObject -Integrated:$Integrated -Log $Log -FunctionName 'Create-UserInRole' `
+                     -AllowPromptWhenMissing:$allowPromptWhenMissing
+        if (-not $connStr) { return }
+
+        Add-Type -AssemblyName System.Data -ErrorAction SilentlyContinue
+        $cn=[System.Data.SqlClient.SqlConnection]::new($connStr)
+        try {
+            $cn.Open()
+
+            # Validate UserID exists (re-prompt if not)
+            while (-not (Test-IdExists -Connection $cn -Table $UsersObject -Column 'UserID' -Id $UserID)) {
+                Write-Warning "UserID $UserID does not exist. Please enter an existing UserID."
+                $input=Read-Host "Enter valid UserID"
+                if ([int]::TryParse($input,[ref]$UserID)) { } else { Write-Warning "Must be numeric." }
+            }
+
+            # Validate RoleID exists (re-prompt if not)
+            while (-not (Test-IdExists -Connection $cn -Table $RolesObject -Column 'RoleID' -Id $RoleID)) {
+                Write-Warning "RoleID $RoleID does not exist. Please enter an existing RoleID."
+                $input=Read-Host "Enter valid RoleID"
+                if ([int]::TryParse($input,[ref]$RoleID)) { } else { Write-Warning "Must be numeric." }
+            }
+
+            # Check membership exists
+            $chk=$cn.CreateCommand()
+            $chk.CommandText="SELECT COUNT(1) FROM $MembershipObject WHERE UserID=@U AND RoleID=@R"
+            $null=$chk.Parameters.Add("@U",[System.Data.SqlDbType]::Int);$chk.Parameters["@U"].Value=$UserID
+            $null=$chk.Parameters.Add("@R",[System.Data.SqlDbType]::Int);$chk.Parameters["@R"].Value=$RoleID
+            if ([int]$chk.ExecuteScalar() -gt 0) {
+                & $Log 'INFO' "Membership already exists (UserID=$UserID, RoleID=$RoleID)."
+                return
+            }
+
+            # Insert membership
+            $cmd=$cn.CreateCommand()
+            $cmd.CommandText="INSERT INTO $MembershipObject (UserID, RoleID) VALUES (@U,@R);"
+            $null=$cmd.Parameters.Add("@U",[System.Data.SqlDbType]::Int);$cmd.Parameters["@U"].Value=$UserID
+            $null=$cmd.Parameters.Add("@R",[System.Data.SqlDbType]::Int);$cmd.Parameters["@R"].Value=$RoleID
+            $rows=$cmd.ExecuteNonQuery()
+            & $Log 'INFO' "Membership inserted (UserID=$UserID, RoleID=$RoleID, Rows=$rows)"
+        } finally { if ($cn.State -eq 'Open') { $cn.Close() }; $cn.Dispose() }
+    } catch { & $Log 'ERROR' ("Create-UserInRole failed: {0}" -f $_.Exception.Message); throw }
+    & $Log 'INFO' "END Create-UserInRole"
+}

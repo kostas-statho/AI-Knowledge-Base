@@ -1,0 +1,36 @@
+If DbVal.IsEmpty($CustomProperty03[o]:String$, ValType.String) Then
+	Dim f As ISqlFormatter = Session.SqlFormatter 'Initialize "Session.SqlFormatter" as f variable for easy access 
+	Dim lastName As String = $CustomProperty03:String$ 'Initialize lastname with "value"
+	Dim lastChar As Char = lastName(lastName.Length - 1) 'Get last char of "value"
+	Dim IsLastCharacterNumeric As Boolean = Char.IsDigit(lastChar) 'Check if last char of "value" is digit
+	Dim lastNameLikeQuery As String = lastName & "%" 'Create a string of "value%" for LIKE query 
+	Dim lastNameToBeInserted As String = lastName 'Initialize "value to be checked" for insertion as "value"
+	Dim counter As Integer = 1 ' Initialize a counter to use on FOR-loop
+	
+	'If last char is digit, then erase it
+	If IsLastCharacterNumeric Then
+		lastName = lastName.Substring(0, lastName.Length - 1)
+		lastNameLikeQuery = lastName & "%"
+		lastNameToBeInserted = lastName
+	End If
+	
+	'Limit Person table to get only rows with CustomProperty01 starting with "value"
+	Dim matchingLikeIDs = Query.From("Person").Where(f.Comparison("CustomProperty03", lastNameLikeQuery , ValType.String, CompareOperator.like)).OrderBy("CustomProperty03").Select("CustomProperty03")
+	Dim colmatchingLikeIDs As IEntityCollection = Session.Source.GetCollection(matchingLikeIDs)
+	
+	'Loop through the limited collection of Person
+	For Each colElement As IEntity In colmatchingLikeIDs
+		'check if any person exists with CustomProperty01 = "value"
+		Dim entryToBeInserted = Query.From("Person").Where(f.Comparison("CustomProperty03", lastNameToBeInserted , ValType.String, CompareOperator.Equal)).Select("CustomProperty03")
+		Dim colEntryToBeInserted As Integer = Session.Source.GetCount(entryToBeInserted)
+		'if not exists then exit for and set CustomProperty01 = "value"
+		If colEntryToBeInserted = 0 Then
+			Exit For
+		End If
+		'update "value to be checked" and "counter" for next step
+		lastNameToBeInserted = lastName + counter.ToString
+		counter+=1
+	Next
+	'if no person exists with CustomProperty01 = "value", set value 
+	value = lastNameToBeInserted
+End If	

@@ -1,0 +1,534 @@
+<# ========================================================================
+  PSC4.ps1
+  Functions: Delete-User, Delete-UserInRole
+
+  PURPOSE
+    • Delete-User        → remove one user by UserID (lists memberships; asks Y/N, or skip prompt with -Force)
+    • Delete-UserInRole  → remove one membership by (UserID, RoleID) — no -Force
+
+  KEY FIX
+    UserID/RoleID are accepted as strings and validated *inside* the function
+    so non-numeric inputs no longer crash at parameter binding. We prompt until
+    the value is numeric and exists.
+
+  AUTH
+    -Integrated   (Windows auth)
+    -Credential   (popup)
+    -CredentialObject <PSCredential>
+
+  LOGGING
+    C:\Users\OneIM\Desktop\PowerShell_Scripts\logs\<Function>_yyyyMMdd_HHmmss.log
+======================================================================== #>
+
+Set-StrictMode -Version Latest
+function New-SqlConnectionString {
+<#
+.SYNOPSIS
+  Build a SqlClient connection string for either Integrated or SQL authentication.
+.DESCRIPTION
+  Returns a properly configured connection string:
+    - Integrated: uses Windows auth
+    - SQL Auth : uses PSCredential (User/Password)
+.PARAMETER Server
+  SQL Server host\instance.
+.PARAMETER Database
+  Database name.
+.PARAMETER Credential
+  PSCredential containing SQL username/password (only for SQL auth).
+.PARAMETER Integrated
+  Switch for Windows Integrated Security.
+.OUTPUTS
+  [string] - A valid SqlClient connection string.
+#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string]$Server,
+    [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string]$Database,
+    [pscredential]$Credential,
+    [switch]$Integrated
+)
+    if ($Integrated) {
+        return "Server=$Server;Database=$Database;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+    }
+    elseif ($Credential) {
+        $u = $Credential.UserName
+        $p = $Credential.GetNetworkCredential().Password
+        return "Server=$Server;Database=$Database;User ID=$u;Password=$p;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+    }
+    else {
+        throw "Provide -Credential (SQL Auth) or -Integrated (Windows Auth)."
+    }
+}
+
+function Test-SqlConnection {
+<#
+.SYNOPSIS
+  Lightweight connection check that distinguishes wrong credentials.
+.DESCRIPTION
+  Attempts to open/close a SqlConnection. Returns $true on success.
+  Returns $false on "Login failed…" (bad username/password).
+  Rethrows other exceptions (DNS/network/availability).
+#>
+[CmdletBinding()]
+param([Parameter(Mandatory)][string]$ConnectionString)
+    try {
+        $cn = [System.Data.SqlClient.SqlConnection]::new($ConnectionString)
+        $cn.Open()
+        $cn.Close()
+        $cn.Dispose()
+        return $true
+    } catch {
+        if ($_.Exception.Message -like "*Login failed*") { return $false }
+        throw
+    }
+}
+
+function New-Logger {
+<#
+.SYNOPSIS
+  Create a per-run logger for the given function.
+.DESCRIPTION
+  - Writes to a timestamped file and mirrors to console.
+  - TRACE only shows with -Verbose.
+  - ERROR uses Write-Warning to avoid awkward scriptblock rendering in the console.
+.OUTPUTS
+  [scriptblock] - Closure accepting (Level, Message).
+#>
+[CmdletBinding()]
+param([Parameter(Mandatory)][string]$FunctionName)
+    $ts   = Get-Date -Format "yyyyMMdd_HHmmss"
+    $dir  = "C:\Users\OneIM\Desktop\PowerShell_Scripts\logs"
+    $path = Join-Path $dir ("{0}_{1}.log" -f $FunctionName,$ts)
+    New-Item -ItemType Directory -Force -Path $dir -ErrorAction SilentlyContinue | Out-Null
+
+    return {
+        param([ValidateSet("INFO","DEBUG","TRACE","ERROR")][string]$Level,[string]$Message)
+        $line = "{0} [{1}] {2}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"),$Level,$Message
+        try { $line | Out-File -FilePath $path -Append -Encoding utf8 } catch { Write-Verbose "[LOGGER] $($_.Exception.Message)" }
+        switch ($Level) {
+            "INFO"  { Write-Host    $line }
+            "DEBUG" { Write-Host    $line }
+            "TRACE" { Write-Verbose $line }  # shown with -Verbose
+            "ERROR" { Write-Warning $Message }
+        }
+    }.GetNewClosure()
+}
+
+function Get-ConnectionStringWithRetry {
+<#
+.SYNOPSIS
+  Centralized auth logic with retry & cancel handling for SQL Auth; pass-through for Integrated.
+.DESCRIPTION
+  - Integrated: immediately returns a connection string.
+  - SQL Auth:
+      * If allowed to prompt and no PSCredential yet → show GUI prompt.
+      * If user CANCELS prompt → log & return $null.
+      * If credentials are WRONG → warn and re-prompt until success or cancel.
+.PARAMETER AllowPromptWhenMissing
+  $true  → show credential prompt if we lack a credential
+  $false → if no credential is present, exit gracefully (no extra prompts)
+#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][string]$SqlServer,
+    [Parameter(Mandatory)][string]$SqlDatabase,
+    [pscredential]$Credential,
+    [switch]$Integrated,
+    [Parameter(Mandatory)][scriptblock]$Log,
+    [Parameter(Mandatory)][string]$FunctionName,
+    [bool]$AllowPromptWhenMissing = $true
+)
+    if ($Integrated) {
+        return (New-SqlConnectionString -Server $SqlServer -Database $SqlDatabase -Integrated)
+    }
+
+    $credLocal = $Credential
+    $attempted = $false
+
+    while ($true) {
+        if (-not $credLocal) {
+            if (-not $AllowPromptWhenMissing) {
+                & $Log 'INFO' "$($FunctionName): Authentication canceled by user."
+                return $null
+            }
+            $credLocal = Get-Credential -Message "Enter SQL Server credentials for $SqlServer"
+            if (-not $credLocal) {
+                & $Log 'INFO' "$($FunctionName): Authentication canceled by user."
+                return $null
+            }
+        }
+
+        $connStr = New-SqlConnectionString -Server $SqlServer -Database $SqlDatabase -Credential $credLocal
+        $ok = $false
+        try { $ok = Test-SqlConnection -ConnectionString $connStr } catch { throw }
+        $attempted = $true
+
+        if ($ok) { return $connStr }
+
+        Write-Warning "Wrong credentials. Please try again."
+        $credLocal = $null     # force re-prompt
+        $AllowPromptWhenMissing = $true
+    }
+}
+
+function Read-IntInteractive {
+<#
+.SYNOPSIS
+  Prompt until a valid integer is entered.
+.PARAMETER Name
+  Friendly label to show in the prompt.
+#>
+[CmdletBinding()]
+param([Parameter(Mandatory)][string]$Name)
+    while ($true) {
+        $inputText = Read-Host "Enter $Name (numeric)"
+        $parsed = 0
+        if ([int]::TryParse($inputText, [ref]$parsed)) { return $parsed }
+        Write-Warning "Please enter a valid number for $Name."
+    }
+}
+
+function Format-CriteriaMessage {
+<#
+.SYNOPSIS
+  Build a compact criteria description including only applied filters.
+.DESCRIPTION
+  Returns "{}" if no filters are applied; otherwise "{ key=value, ... }".
+#>
+[CmdletBinding()]
+param(
+    [Nullable[int]]$UserID,
+    [Nullable[int]]$RoleID
+)
+    $parts = @()
+    if ($null -ne $UserID) { $parts += "UserID=$UserID" }
+    if ($null -ne $RoleID) { $parts += "RoleID=$RoleID" }
+    if ($parts.Count -eq 0) { return "{}" }
+    return "{ " + ($parts -join ", ") + " }"
+}
+
+# Helper: check existence of an int ID in a table/column
+function Test-IdExists {
+[CmdletBinding()]
+param(
+  [Parameter(Mandatory)][System.Data.SqlClient.SqlConnection]$Connection,
+  [Parameter(Mandatory)][string]$Table,
+  [Parameter(Mandatory)][string]$Column,
+  [Parameter(Mandatory)][int]$Id
+)
+  $cmd = $Connection.CreateCommand()
+  $cmd.CommandText = "SELECT CASE WHEN EXISTS (SELECT 1 FROM $Table WHERE $Column=@ID) THEN 1 ELSE 0 END;"
+  $null = $cmd.Parameters.Add("@ID",[System.Data.SqlDbType]::Int)
+  $cmd.Parameters["@ID"].Value = $Id
+  return ([int]$cmd.ExecuteScalar() -eq 1)
+}
+
+# Small inline validator: keep asking until a positive integer is entered
+function Read-PositiveInt {
+param([string]$Prompt)
+  while ($true) {
+    $s = Read-Host $Prompt
+    [int]$n = 0
+    if ([int]::TryParse($s, [ref]$n) -and $n -gt 0) { return $n }
+    Write-Warning "Input must be a positive integer."
+  }
+}
+
+# =======================================================
+# Delete-User  (supports -Force)
+# =======================================================
+function global:Delete-User {
+<#
+.SYNOPSIS
+  Delete a user from dbo.[User] by UserID.
+
+.DESCRIPTION
+  • Accepts UserID as string, validates numeric, then validates existence (re-prompts).
+  • Lists memberships (RoleID/RoleName) before deleting.
+  • If memberships exist:
+      - default: asks **[Y/N]** to delete memberships + user (ONLY Y or N allowed)
+      - -Force: skips prompt and deletes memberships + user
+  • Returns a summary object.
+
+.EXAMPLE
+  Delete-User -SqlServer "StathopoulosK" -SqlDatabase "CCC_PSC" -Integrated -UserID 10
+
+.EXAMPLE
+  Delete-User -SqlServer "StathopoulosK" -SqlDatabase "CCC_PSC" -Integrated -UserID 10 -Force
+#>
+[CmdletBinding()]
+param(
+  [Parameter(Mandatory)][string]$SqlServer,
+  [Parameter(Mandatory)][string]$SqlDatabase,
+  [Alias('Credential')][switch]$PromptCredential,
+  [pscredential]$CredentialObject,
+  [switch]$Integrated,
+
+  # string on purpose -> we handle numeric validation inside
+  [Parameter(Mandatory)][string]$UserID,
+
+  [string]$UsersObject      = 'dbo.[User]',
+  [string]$MembershipObject = 'dbo.UserInRole',
+  [string]$RolesObject      = 'dbo.Role',
+
+  [switch]$Force
+)
+  $Log = New-Logger -FunctionName 'Delete-User'
+  & $Log 'INFO' "START Delete-User (UserID=$UserID)"
+  try {
+    # ---- auth ----
+    if (-not $Integrated -and -not $PromptCredential -and -not $PSBoundParameters.ContainsKey('CredentialObject')) {
+      & $Log 'ERROR' "No authentication specified. Use -Integrated, -Credential (popup), or -CredentialObject."
+      return
+    }
+    $allowPrompt = $PromptCredential -or (-not $PSBoundParameters.ContainsKey('CredentialObject'))
+
+    $connStr = Get-ConnectionStringWithRetry -SqlServer $SqlServer -SqlDatabase $SqlDatabase `
+                 -Credential $CredentialObject -Integrated:$Integrated -Log $Log -FunctionName 'Delete-User' `
+                 -AllowPromptWhenMissing:$allowPrompt
+    if (-not $connStr) { & $Log 'INFO' "Authentication canceled; exiting."; return }
+
+    Add-Type -AssemblyName System.Data -ErrorAction SilentlyContinue
+    $cn = [System.Data.SqlClient.SqlConnection]::new($connStr)
+    $cn.Open()
+    try {
+      # ---- validate numeric & existence for UserID ----
+      [int]$uid = 0
+      while ($true) {
+        if (-not [int]::TryParse($UserID, [ref]$uid) -or $uid -le 0) {
+          Write-Warning "UserID must be a positive integer."
+          $uid = Read-PositiveInt -Prompt "Existing UserID"
+          $UserID = $uid.ToString()
+          continue
+        }
+        if (-not (Test-IdExists -Connection $cn -Table $UsersObject -Column 'UserID' -Id $uid)) {
+          Write-Warning "UserID $uid does not exist in [$UsersObject]."
+          $uid = Read-PositiveInt -Prompt "Existing UserID"
+          $UserID = $uid.ToString()
+          continue
+        }
+        break
+      }
+
+      # ---- list memberships ----
+      $list = $cn.CreateCommand()
+      $list.CommandText = @"
+SELECT ur.RoleID, ISNULL(r.RoleName,'(unknown)') AS RoleName
+FROM $MembershipObject ur
+LEFT JOIN $RolesObject r ON r.RoleID = ur.RoleID
+WHERE ur.UserID=@U
+ORDER BY ur.RoleID;
+"@
+      $null = $list.Parameters.Add("@U",[System.Data.SqlDbType]::Int); $list.Parameters["@U"].Value = $uid
+
+      $memberships = New-Object System.Collections.Generic.List[object]
+      $r = $list.ExecuteReader()
+      try {
+        while ($r.Read()) {
+          $memberships.Add([pscustomobject]@{
+            RoleID   = [int]$r["RoleID"]
+            RoleName = [string]$r["RoleName"]
+          }) | Out-Null
+        }
+      } finally { $r.Close() }
+
+      $hasMemberships = ($memberships.Count -gt 0)
+      if ($hasMemberships -and -not $Force) {
+        & $Log 'INFO' ("Found {0} membership(s) for UserID {1}:" -f $memberships.Count, $uid)
+        foreach ($m in $memberships) { Write-Host ("  - RoleID={0}  RoleName={1}" -f $m.RoleID,$m.RoleName) }
+
+        # STRICT Y/N ONLY
+        while ($true) {
+          $ans = (Read-Host "Delete ALL memberships above AND the user? [Y/N]").Trim().ToUpper()
+          if     ($ans -eq 'Y') { break }
+          elseif ($ans -eq 'N') {
+            & $Log 'INFO' "User chose NOT to delete. Aborting."
+            return [pscustomobject]@{
+              Action              = 'Delete-User'
+              UserID              = $uid
+              Status              = 'AbortedByUser'
+              UsersDeleted        = 0
+              MembershipsDetected = $memberships.Count
+              MembershipsDeleted  = 0
+              Forced              = $false
+            }
+          }
+          Write-Warning "Only Y or N are allowed."
+        }
+      } elseif ($hasMemberships -and $Force) {
+        & $Log 'INFO' "Force mode: memberships will be deleted automatically."
+      } else {
+        & $Log 'INFO' "No memberships found; deleting user directly."
+      }
+
+      # ---- delete memberships (if any) ----
+      $deletedMemberships = 0
+      if ($hasMemberships) {
+        $delM = $cn.CreateCommand()
+        $delM.CommandText = "DELETE FROM $MembershipObject WHERE UserID=@U;"
+        $null = $delM.Parameters.Add("@U",[System.Data.SqlDbType]::Int); $delM.Parameters["@U"].Value = $uid
+        $deletedMemberships = $delM.ExecuteNonQuery()
+        & $Log 'INFO' "Memberships deleted: $deletedMemberships"
+      }
+
+      # ---- delete user ----
+      $delU = $cn.CreateCommand()
+      $delU.CommandText = "DELETE FROM $UsersObject WHERE UserID=@U;"
+      $null = $delU.Parameters.Add("@U",[System.Data.SqlDbType]::Int); $delU.Parameters["@U"].Value = $uid
+      $deletedUsers = $delU.ExecuteNonQuery()
+      & $Log 'INFO' "Users deleted: $deletedUsers"
+
+      [pscustomobject]@{
+        Action              = 'Delete-User'
+        UserID              = $uid
+        Status              = if ($deletedUsers -gt 0) { 'Deleted' } else { 'NotFoundOrBlocked' }
+        UsersDeleted        = $deletedUsers
+        MembershipsDetected = $memberships.Count
+        MembershipsDeleted  = $deletedMemberships
+        Forced              = [bool]$Force
+      }
+    }
+    finally {
+      if ($cn.State -eq 'Open') { $cn.Close() }
+      $cn.Dispose()
+    }
+  }
+  catch {
+    & $Log 'ERROR' ("Delete-User failed: {0}" -f $_.Exception.Message)
+    throw
+  }
+  finally {
+    & $Log 'INFO' "END Delete-User"
+  }
+}
+
+# =======================================================
+# Delete-UserInRole  (no -Force)
+# =======================================================
+function global:Delete-UserInRole {
+<#
+.SYNOPSIS
+  Delete one membership from dbo.UserInRole by (UserID, RoleID).
+
+.DESCRIPTION
+  • Accepts UserID/RoleID as strings; validates numeric; validates existence.
+  • If the pair (UserID,RoleID) does not exist, returns Status='NotFound'.
+  • Otherwise deletes that one membership and returns counts.
+
+.EXAMPLE
+  Delete-UserInRole -SqlServer "StathopoulosK" -SqlDatabase "CCC_PSC" -Integrated -UserID 12 -RoleID 3
+#>
+[CmdletBinding()]
+param(
+  [Parameter(Mandatory)][string]$SqlServer,
+  [Parameter(Mandatory)][string]$SqlDatabase,
+  [Alias('Credential')][switch]$PromptCredential,
+  [pscredential]$CredentialObject,
+  [switch]$Integrated,
+
+  # strings -> validate inside to avoid binding errors
+  [Parameter(Mandatory)][string]$UserID,
+  [Parameter(Mandatory)][string]$RoleID,
+
+  [string]$MembershipObject = 'dbo.UserInRole',
+  [string]$UsersObject      = 'dbo.[User]',
+  [string]$RolesObject      = 'dbo.Role'
+)
+  $Log = New-Logger -FunctionName 'Delete-UserInRole'
+  & $Log 'INFO' "START Delete-UserInRole (UserID=$UserID, RoleID=$RoleID)"
+  try {
+    if (-not $Integrated -and -not $PromptCredential -and -not $PSBoundParameters.ContainsKey('CredentialObject')) {
+      & $Log 'ERROR' "No authentication specified. Use -Integrated, -Credential (popup), or -CredentialObject."
+      return
+    }
+    $allowPrompt = $PromptCredential -or (-not $PSBoundParameters.ContainsKey('CredentialObject'))
+
+    $connStr = Get-ConnectionStringWithRetry -SqlServer $SqlServer -SqlDatabase $SqlDatabase `
+                 -Credential $CredentialObject -Integrated:$Integrated -Log $Log -FunctionName 'Delete-UserInRole' `
+                 -AllowPromptWhenMissing:$allowPrompt
+    if (-not $connStr) { & $Log 'INFO' "Authentication canceled; exiting."; return }
+
+    Add-Type -AssemblyName System.Data -ErrorAction SilentlyContinue
+    $cn = [System.Data.SqlClient.SqlConnection]::new($connStr)
+    $cn.Open()
+    try {
+      # ---- numeric + existence loops ----
+      [int]$uid = 0
+      while ($true) {
+        if (-not [int]::TryParse($UserID, [ref]$uid) -or $uid -le 0) {
+          Write-Warning "UserID must be a positive integer."
+          $uid = Read-PositiveInt -Prompt "Existing UserID"
+          $UserID = $uid.ToString()
+          continue
+        }
+        if (-not (Test-IdExists -Connection $cn -Table $UsersObject -Column 'UserID' -Id $uid)) {
+          Write-Warning "UserID $uid does not exist in [$UsersObject]."
+          $uid = Read-PositiveInt -Prompt "Existing UserID"
+          $UserID = $uid.ToString()
+          continue
+        }
+        break
+      }
+
+      [int]$rid = 0
+      while ($true) {
+        if (-not [int]::TryParse($RoleID, [ref]$rid) -or $rid -le 0) {
+          Write-Warning "RoleID must be a positive integer."
+          $rid = Read-PositiveInt -Prompt "Existing RoleID"
+          $RoleID = $rid.ToString()
+          continue
+        }
+        if (-not (Test-IdExists -Connection $cn -Table $RolesObject -Column 'RoleID' -Id $rid)) {
+          Write-Warning "RoleID $rid does not exist in [$RolesObject]."
+          $rid = Read-PositiveInt -Prompt "Existing RoleID"
+          $RoleID = $rid.ToString()
+          continue
+        }
+        break
+      }
+
+      # Check membership presence
+      $chk = $cn.CreateCommand()
+      $chk.CommandText = "SELECT COUNT(1) FROM $MembershipObject WHERE UserID=@U AND RoleID=@R;"
+      $null = $chk.Parameters.Add("@U",[System.Data.SqlDbType]::Int); $chk.Parameters["@U"].Value = $uid
+      $null = $chk.Parameters.Add("@R",[System.Data.SqlDbType]::Int); $chk.Parameters["@R"].Value = $rid
+      if ([int]$chk.ExecuteScalar() -eq 0) {
+        & $Log 'INFO' "Membership not found (UserID=$uid, RoleID=$rid). Nothing to delete."
+        return [pscustomobject]@{
+          Action      = 'Delete-UserInRole'
+          UserID      = $uid
+          RoleID      = $rid
+          Status      = 'NotFound'
+          RowsDeleted = 0
+        }
+      }
+
+      # Delete membership
+      $del = $cn.CreateCommand()
+      $del.CommandText = "DELETE FROM $MembershipObject WHERE UserID=@U AND RoleID=@R;"
+      $null = $del.Parameters.Add("@U",[System.Data.SqlDbType]::Int); $del.Parameters["@U"].Value = $uid
+      $null = $del.Parameters.Add("@R",[System.Data.SqlDbType]::Int); $del.Parameters["@R"].Value = $rid
+      $rows = $del.ExecuteNonQuery()
+      & $Log 'INFO' "Rows deleted: $rows"
+
+      [pscustomobject]@{
+        Action      = 'Delete-UserInRole'
+        UserID      = $uid
+        RoleID      = $rid
+        Status      = 'Deleted'
+        RowsDeleted = $rows
+      }
+    }
+    finally {
+      if ($cn.State -eq 'Open') { $cn.Close() }
+      $cn.Dispose()
+    }
+  }
+  catch {
+    & $Log 'ERROR' ("Delete-UserInRole failed: {0}" -f $_.Exception.Message)
+    throw
+  }
+  finally {
+    & $Log 'INFO' "END Delete-UserInRole"
+  }
+}

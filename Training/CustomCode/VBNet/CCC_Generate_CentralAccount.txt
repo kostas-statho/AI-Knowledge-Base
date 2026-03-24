@@ -1,0 +1,25 @@
+Public Function CCC_Generate_CentralAccount() As String
+    Dim maxAttempts As Integer = 10
+    Dim attempt As Integer = 0
+    Dim random As New Random()
+	Dim existingAccount As String
+	Dim valueToReturn As String 
+	
+    Do
+        attempt += 1
+        ' Generate a random 5-digit number
+        Dim randomNumber As Integer = random.Next(10000, 99999)
+        Dim centralAccount As String = "T" & randomNumber.ToString()
+
+        ' Check if the generated centralAccount already exists
+		Dim whereClause As String = String.Format("CentralAccount = '{0}'", centralAccount)
+		
+        ' If it does not exist, return True
+        If Not Session.Source.TryGetSingleValue("Person", "CentralAccount", whereClause, existingAccount) Then
+             valueToReturn = centralAccount
+        End If
+
+    Loop While attempt < maxAttempts
+	
+	Return valueToReturn
+End Function
