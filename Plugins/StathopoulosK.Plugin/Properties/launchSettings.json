@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "StathopoulosK.CompositionApi.Server.Plugin": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\One Identity\\One Identity Manager\\ImxClient.exe",
+      "commandLineArgs": "run-apiserver -B /plugin StathopoulosK.CompositionApi.Server.Plugin.dll /conndialog fallback"
+    }
+  }
+}
