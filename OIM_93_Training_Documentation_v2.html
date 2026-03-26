@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Identity Manager 9.3 — Training Documentation v2</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/powershell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/vbnet.min.js"></script>
+<style>
+/* ── CSS Variables ── */
+:root {
+  --oi-navy: #1a2035; --oi-blue: #2d5fa0; --oi-blue-light: #4a7fc1;
+  --oi-red: #cf3231; --oi-accent: #e8f0fb;
+  --sidebar-w: 280px; --text: #1e2531; --bg: #f7f9fc;
+  --card-bg: #ffffff; --border: #d8e3ef;
+  --note-bg: #e8f4ff; --warn-bg: #fff8e1; --warn-border: #f59e0b;
+  --tip-bg: #f0fdf4; --tip-border: #22c55e;
+  --new-bg: #fdf4ff; --new-border: #a855f7;
+  --code-inline-bg: #e8eef7; --code-inline-color: #c0392b;
+}
+[data-theme="dark"] {
+  --text: #c8d6ec; --bg: #0f1520; --card-bg: #1a2035;
+  --border: #2a3a5a; --oi-accent: #1e2d4a;
+  --note-bg: #1a2d45; --warn-bg: #2a2010; --warn-border: #d97706;
+  --tip-bg: #0f2a15; --new-bg: #1f1030;
+  --code-inline-bg: #2a3550; --code-inline-color: #f87171;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+       background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7;
+       transition: background .2s, color .2s; }
+
+/* ── Layout ── */
+.layout { display: flex; min-height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+  background: var(--oi-navy); color: #c8d6ec;
+  position: fixed; top: 0; left: 0; height: 100vh;
+  overflow-y: auto; z-index: 100;
+  scrollbar-width: thin; scrollbar-color: #3a4a6a transparent;
+  display: flex; flex-direction: column;
+}
+.sidebar-header {
+  background: linear-gradient(135deg, #0f1520, #1e3060);
+  padding: 16px 16px 12px;
+  border-bottom: 2px solid var(--oi-red);
+  flex-shrink: 0;
+}
+.sidebar-header .logo { color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; }
+.sidebar-header .version { color: var(--oi-red); font-size: 11px; font-weight: 600; margin-top: 2px; }
+.sidebar-header .subtitle { color: #8ba4cc; font-size: 10px; margin-top: 1px; }
+.sidebar-header-controls { display: flex; gap: 6px; margin-top: 10px; }
+#search-input {
+  flex: 1; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+  color: #c8d6ec; border-radius: 4px; padding: 4px 8px; font-size: 12px; outline: none;
+}
+#search-input::placeholder { color: #5a7aaa; }
+#search-input:focus { border-color: var(--oi-blue-light); }
+#theme-toggle {
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+  color: #c8d6ec; border-radius: 4px; padding: 4px 7px; cursor: pointer; font-size: 13px;
+  flex-shrink: 0;
+}
+#theme-toggle:hover { background: rgba(255,255,255,.15); }
+
+.nav-scroll { flex: 1; overflow-y: auto; padding-bottom: 20px; }
+.nav-group { margin-top: 2px; }
+.nav-group-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+  color: #5a7aaa; padding: 10px 16px 4px; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  user-select: none;
+}
+.nav-group-title:hover { color: #8ba4cc; }
+.nav-group-title .chevron { font-size: 9px; transition: transform .2s; }
+.nav-group-title.collapsed .chevron { transform: rotate(-90deg); }
+.nav-group-items { overflow: hidden; transition: max-height .25s ease; }
+.nav-group-items.collapsed { max-height: 0 !important; }
+.nav-item {
+  display: block; padding: 5px 16px 5px 20px;
+  color: #9ab0d0; text-decoration: none; font-size: 12.5px;
+  border-left: 2px solid transparent; transition: all .15s;
+}
+.nav-item:hover { color: #fff; background: rgba(255,255,255,.05); border-left-color: var(--oi-blue-light); }
+.nav-item.active { color: #fff; background: rgba(45,95,160,.25); border-left-color: var(--oi-red); font-weight: 600; }
+.nav-sub { padding-left: 30px; font-size: 12px; color: #7a98be; }
+.nav-item.hidden { display: none; }
+
+/* ── Mobile ── */
+#hamburger {
+  display: none; position: fixed; top: 12px; left: 12px; z-index: 200;
+  background: var(--oi-navy); border: none; color: #fff;
+  width: 36px; height: 36px; border-radius: 6px; cursor: pointer; font-size: 18px;
+}
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 99;
+}
+
+/* ── Main content ── */
+.main { margin-left: var(--sidebar-w); flex: 1; max-width: 980px; padding: 0 48px 80px; }
+
+/* ── Page header ── */
+.page-header {
+  background: linear-gradient(135deg, var(--oi-navy) 0%, #1e3060 60%, #0f2850 100%);
+  color: #fff; padding: 48px 48px 40px; margin-left: -48px; margin-right: -48px;
+  margin-bottom: 40px; position: relative; overflow: hidden;
+}
+.page-header::after {
+  content: ''; position: absolute; top: 0; right: -100px; width: 400px; height: 100%;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,.03));
+  transform: skewX(-12deg);
+}
+.page-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+.page-header .meta { color: #8ba4cc; font-size: 13px; }
+.version-badge {
+  display: inline-block; background: var(--oi-red); color: #fff;
+  font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 3px; margin-left: 8px; vertical-align: middle;
+}
+.v2-badge {
+  display: inline-block; background: #22c55e; color: #fff;
+  font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px; margin-left: 6px; vertical-align: middle;
+}
+
+/* ── Sections ── */
+.section { margin-bottom: 52px; padding-top: 16px; scroll-margin-top: 20px; }
+.section.hidden { display: none; }
+h2 {
+  font-size: 21px; color: var(--oi-navy); font-weight: 700;
+  border-bottom: 3px solid var(--oi-red); padding-bottom: 9px; margin-bottom: 22px;
+  display: flex; align-items: center; gap: 10px; position: relative;
+}
+[data-theme="dark"] h2 { color: #c8d6ec; }
+h2 .icon { font-size: 19px; }
+h2 .anchor-link {
+  margin-left: auto; font-size: 13px; color: #5a7aaa; text-decoration: none;
+  opacity: 0; transition: opacity .2s;
+}
+h2:hover .anchor-link { opacity: 1; }
+h3 { font-size: 16px; color: var(--oi-blue); font-weight: 700; margin: 26px 0 11px; }
+[data-theme="dark"] h3 { color: var(--oi-blue-light); }
+h4 { font-size: 13px; color: #3a5a80; font-weight: 700; margin: 18px 0 7px; text-transform: uppercase; letter-spacing: .5px; }
+[data-theme="dark"] h4 { color: #7a9ac0; }
+p { margin-bottom: 13px; }
+
+/* ── Code blocks ── */
+.code-wrapper { position: relative; margin: 14px 0 18px; }
+.code-wrapper .copy-btn {
+  position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2); color: #aaa; border-radius: 4px;
+  padding: 3px 8px; font-size: 11px; cursor: pointer; z-index: 10; transition: all .15s;
+}
+.code-wrapper .copy-btn:hover { background: rgba(255,255,255,.2); color: #fff; }
+.code-wrapper .copy-btn.copied { background: #22c55e; border-color: #22c55e; color: #fff; }
+pre { border-radius: 6px; overflow-x: auto; font-size: 13px; line-height: 1.5; margin: 0; }
+pre code.hljs { border-radius: 6px; padding: 16px 18px; }
+code:not(.hljs) {
+  background: var(--code-inline-bg); color: var(--code-inline-color);
+  font-family: 'Cascadia Code','Fira Code',monospace;
+  font-size: 12.5px; padding: 1px 5px; border-radius: 3px;
+}
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 22px; font-size: 13.5px; }
+th { background: var(--oi-navy); color: #c8d6ec; padding: 8px 13px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: .4px; }
+td { padding: 7px 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:nth-child(even) td { background: rgba(0,0,0,.02); }
+[data-theme="dark"] tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+
+/* ── Callout boxes ── */
+.note { background: var(--note-bg); border-left: 4px solid var(--oi-blue); padding: 13px 15px; border-radius: 0 6px 6px 0; margin: 14px 0; font-size: 13.5px; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn-border); padding: 13px 15px; border-radius: 0 6px 6px 0; margin: 14px 0; font-size: 13.5px; }
+.tip  { background: var(--tip-bg);  border-left: 4px solid var(--tip-border);  padding: 13px 15px; border-radius: 0 6px 6px 0; margin: 14px 0; font-size: 13.5px; }
+.new  { background: var(--new-bg);  border-left: 4px solid var(--new-border);  padding: 13px 15px; border-radius: 0 6px 6px 0; margin: 14px 0; font-size: 13.5px; }
+.note strong, .warn strong, .tip strong, .new strong { display: block; margin-bottom: 3px; }
+
+/* ── Endpoint cards ── */
+.endpoint-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin: 14px 0 22px; }
+.endpoint-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; border-top: 3px solid var(--oi-blue); }
+.endpoint-card.start { border-top-color: #22c55e; } .endpoint-card.validate { border-top-color: #f59e0b; }
+.endpoint-card.action { border-top-color: var(--oi-blue); } .endpoint-card.end { border-top-color: #8b5cf6; }
+.endpoint-card .url { font-family: monospace; font-size: 11px; color: var(--oi-red); background: rgba(207,50,49,.08); padding: 2px 6px; border-radius: 3px; margin-bottom: 7px; display: inline-block; }
+.endpoint-card h4 { margin: 0 0 7px; color: var(--oi-navy); font-size: 13px; }
+[data-theme="dark"] .endpoint-card h4 { color: #c8d6ec; }
+.endpoint-card p { font-size: 12px; margin: 0; }
+
+/* ── Module / feature cards ── */
+.module-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; margin: 14px 0 22px; }
+.module-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 13px; text-align: center; border-top: 3px solid var(--oi-blue); }
+.module-card .num { font-size: 10px; color: var(--oi-blue); font-weight: 700; text-transform: uppercase; }
+.module-card .name { font-size: 13px; font-weight: 600; color: var(--oi-navy); margin-top: 2px; }
+[data-theme="dark"] .module-card .name { color: #c8d6ec; }
+.module-card .desc { font-size: 11px; color: #778; margin-top: 3px; }
+
+/* ── Cheat sheet grid ── */
+.cheat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 14px 0; }
+.cheat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+.cheat-card h4 { margin-top: 0; color: var(--oi-blue); font-size: 12px; }
+
+/* ── State flow ── */
+.state-flow { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 12px 0; font-size: 12.5px; }
+.state-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 4px; padding: 4px 10px; font-family: monospace; font-size: 12px; white-space: nowrap; }
+.state-box.terminal { background: rgba(34,197,94,.1); border-color: #22c55e; }
+.state-box.error { background: rgba(239,68,68,.1); border-color: #ef4444; }
+.state-arrow { color: #5a7aaa; font-size: 14px; }
+
+/* ── Diff colors ── */
+.diff-added { color: #16a34a; font-weight: 600; } .diff-removed { color: #dc2626; font-weight: 600; }
+.diff-changed { color: #d97706; font-weight: 600; } .diff-same { color: #6b7280; }
+
+/* ── Dividers ── */
+hr.divider { border: none; border-top: 1px solid var(--border); margin: 30px 0; }
+
+/* ── Scroll-to-top ── */
+#scrolltop {
+  position: fixed; bottom: 26px; right: 26px; background: var(--oi-navy); color: #fff;
+  border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  font-size: 15px; display: none; box-shadow: 0 4px 12px rgba(0,0,0,.3); z-index: 200;
+}
+#scrolltop:hover { background: var(--oi-blue); }
+
+/* ── Print ── */
+@media print {
+  .sidebar, #scrolltop, #hamburger, .copy-btn { display: none !important; }
+  .main { margin-left: 0; padding: 20px; max-width: 100%; }
+  .nav-group-items.collapsed { max-height: none !important; }
+  .section { page-break-inside: avoid; }
+}
+
+/* ── Mobile ── */
+@media (max-width: 900px) {
+  #hamburger { display: block; }
+  .sidebar { transform: translateX(-100%); transition: transform .25s; }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.open { display: block; }
+  .main { margin-left: 0; padding: 0 18px 60px; }
+  .module-grid { grid-template-columns: 1fr 1fr; }
+  .endpoint-grid { grid-template-columns: 1fr; }
+  .cheat-grid { grid-template-columns: 1fr; }
+  .page-header { padding: 40px 18px 32px; margin-left: -18px; margin-right: -18px; }
+}
+</style>
+</head>
+<body>
+
+<button id="hamburger" onclick="toggleSidebar()" title="Menu">☰</button>
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- ══════════════════════════════ SIDEBAR ══ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">One Identity Manager</div>
+    <div class="version">Version 9.3 <span style="color:#22c55e;font-size:10px">▪ v2</span></div>
+    <div class="subtitle">Training Documentation — Developer &amp; Admin Reference</div>
+    <div class="sidebar-header-controls">
+      <input id="search-input" type="text" placeholder="Search sections…" oninput="filterNav(this.value)">
+      <button id="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+    </div>
+  </div>
+  <div class="nav-scroll" id="nav-scroll">
+
+    <div class="nav-group">
+      <div class="nav-group-title" onclick="toggleGroup(this)">Getting Started <span class="chevron">▾</span></div>
+      <div class="nav-group-items">
+        <a class="nav-item" href="#overview">Overview</a>
+        <a class="nav-item" href="#architecture">Architecture</a>
+        <a class="nav-item" href="#whats-new">What's New in 9.3</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title" onclick="toggleGroup(this)">Data Model <span class="chevron">▾</span></div>
+      <div class="nav-group-items">
+        <a class="nav-item" href="#key-tables">Key Tables Reference</a>
+        <a class="nav-item" href="#system-columns">XObjectKey &amp; System Columns</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title" onclick="toggleGroup(this)">Core Concepts <span class="chevron">▾</span></div>
+      <div class="nav-group-items">
+        <a class="nav-item" href="#templates">Templates (TPL)</a>
+        <a class="nav-item" href="#processes">Processes (PRO)</a>
+        <a class="nav-item" href="#targetsystems">Target Systems &amp; Provisioning</a>
+        <a class="nav-item" href="#connectors">Connectors / Sync Editor</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title" onclick="toggleGroup(this)">Governance <span class="chevron">▾</span></div>
+      <div class="nav-group-items">
+        <a class="nav-item" href="#itshop">IT Shop</a>
+        <a class="nav-item nav-sub" href="#itshop-hierarchy">Service Catalog Hierarchy</a>
+        <a class="nav-item nav-sub" href="#itshop-lifecycle">PersonWantsOrg Lifecycle</a>
+        <a class="nav-item nav-sub" href="#itshop-plugins">IT Shop Plugins</a>
+        <a class="nav-item" href="#rolemodel">Role Model</a>
+        <a class="nav-item" href="#workflows">Approval Workflows</a>
+        <a class="nav-item" href="#permissions">Permissions (PMS)</a>
+        <a class="nav-item" href="#attestations">Attestations (ATT)</a>
+        <a class="nav-item" href="#sod">Compliance &amp; SoD</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title" onclick="toggleGroup(this)">Transport &amp; Reports <span class="chevron">▾</span></div>
+      <div class="nav-group-items">
+        <a class="nav-item" href="#transport">Transport (TRS)</a>
+        <a class="nav-item" href="#reports">Reports (RPS)</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title" onclick="toggleGroup(this)">API Development <span class="chevron">▾</span></div>
+      <div class="nav-group-items">
+        <a class="nav-item" href="#api-arch">Plugin Architecture</a>
+        <a class="nav-item" href="#api-bootstrapper">IBootstrapper vs IPlugInMethodSetProvider</a>
+        <a class="nav-item" href="#api-lifecycle">Server Lifecycle</a>
+        <a class="nav-item" href="#entity-methods">Entity Methods</a>
+        <a class="nav-item nav-sub" href="#crud">CRUD</a>
+        <a class="nav-item nav-sub" href="#filters">Filters &amp; Grouping</a>
+        <a class="nav-item nav-sub" href="#properties">Property Types</a>
+        <a class="nav-item nav-sub" href="#extended-data">Extended Data</a>
+        <a class="nav-item nav-sub" href="#pagination">Pagination, Ordering &amp; Search</a>
+        <a class="nav-item" href="#custom-methods">Custom Methods &amp; HTTP Codes</a>
+        <a class="nav-item" href="#writing-data">Writing Data</a>
+        <a class="nav-item" href="#error-handling">Error Handling</a>
+        <a class="nav-item" href="#api-security">API Security</a>
+        <a class="nav-item" href="#composition-plugins">Composition Plugins</a>
+        <a class="nav-item" href="#custom-api-projects">Custom API Projects</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title" onclick="toggleGroup(this)">Custom Implementations <span class="chevron">▾</span></div>
+      <div class="nav-group-items">
+        <a class="nav-item" href="#bulk-actions">Bulk Actions</a>
+        <a class="nav-item" href="#dataexplorer">DataExplorer+</a>
+        <a class="nav-item" href="#vbnet-scripts">VB.NET Scripts &amp; ISqlFormatter</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title" onclick="toggleGroup(this)">Tooling <span class="chevron">▾</span></div>
+      <div class="nav-group-items">
+        <a class="nav-item" href="#powershell">PowerShell</a>
+        <a class="nav-item" href="#deployment-manager">Deployment Manager</a>
+        <a class="nav-item" href="#troubleshooting">Troubleshooting Guide</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title" onclick="toggleGroup(this)">Reference <span class="chevron">▾</span></div>
+      <div class="nav-group-items">
+        <a class="nav-item" href="#comparison">Gap Analysis</a>
+        <a class="nav-item" href="#sdk-index">SDK Sample Index</a>
+        <a class="nav-item" href="#quickref">Quick Reference</a>
+      </div>
+    </div>
+
+  </div><!-- /nav-scroll -->
+</nav>
+
+<!-- ══════════════════════════════ MAIN ══ -->
+<div class="main" id="main-content">
+  <div class="page-header">
+    <h1>One Identity Manager <span class="version-badge">9.3</span><span class="v2-badge">v2</span></h1>
+    <div class="meta">Complete Training Documentation &nbsp;·&nbsp; Developer &amp; Administrator Reference &nbsp;·&nbsp; Updated March 2026</div>
+  </div>
+
+  <!-- ═══════════════ OVERVIEW ═══════════════ -->
+  <div class="section" id="overview">
+    <h2><span class="icon">🏛️</span> Overview <a class="anchor-link" href="#overview">#</a></h2>
+    <p>One Identity Manager (OIM) is an enterprise Identity Governance &amp; Administration (IGA) platform managing the full lifecycle of identities, entitlements, and compliance across on-premises and cloud environments.</p>
+    <div class="module-grid">
+      <div class="module-card"><div class="num">Module 005</div><div class="name">Basics (BAS)</div><div class="desc">Foundation objects, data model, object manager</div></div>
+      <div class="module-card"><div class="num">Module 006</div><div class="name">Templates (TPL)</div><div class="desc">Provisioning templates &amp; AD account generation</div></div>
+      <div class="module-card"><div class="num">Module 007</div><div class="name">Processes (PRO)</div><div class="desc">Custom process chains &amp; event handling</div></div>
+      <div class="module-card"><div class="num">Module 008</div><div class="name">Target Systems</div><div class="desc">Account types, provisioning targets</div></div>
+      <div class="module-card"><div class="num">Module 009</div><div class="name">Scenarios (SCN)</div><div class="desc">Real-world IGA business scenarios</div></div>
+      <div class="module-card"><div class="num">Module 010</div><div class="name">Connectors</div><div class="desc">Sync Editor, AD Connector, outstanding objects</div></div>
+      <div class="module-card"><div class="num">Module 011</div><div class="name">Workflows (WFL)</div><div class="desc">Approval workflows &amp; escalation chains</div></div>
+      <div class="module-card"><div class="num">Module 012</div><div class="name">Permissions (PMS)</div><div class="desc">Role &amp; permission groups, access control</div></div>
+      <div class="module-card"><div class="num">Module 013</div><div class="name">Attestations (ATT)</div><div class="desc">Recertification &amp; attestation workflows</div></div>
+      <div class="module-card"><div class="num">Module 014</div><div class="name">Transport (TRS)</div><div class="desc">Transport packages &amp; change deployment</div></div>
+      <div class="module-card"><div class="num">Module 015</div><div class="name">Reports (RPS)</div><div class="desc">Identity &amp; role assignment reports</div></div>
+      <div class="module-card"><div class="num">Module 016</div><div class="name">PowerShell (PSC)</div><div class="desc">PS connector &amp; SQL scripting</div></div>
+      <div class="module-card"><div class="num">Module 017</div><div class="name">APIs</div><div class="desc">CompositionAPI server plugin development</div></div>
+      <div class="module-card"><div class="num">Module 019</div><div class="name">Data Importer</div><div class="desc">CSV/XML bulk data import tooling</div></div>
+      <div class="module-card"><div class="num">Module 024</div><div class="name">Advanced Dev</div><div class="desc">Bulk Actions (024_002), DataExplorer+ (024_003), Deployment Manager (024_001)</div></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ARCHITECTURE ═══════════════ -->
+  <div class="section" id="architecture">
+    <h2><span class="icon">🏗️</span> Architecture <a class="anchor-link" href="#architecture">#</a></h2>
+    <p>OIM 9.3 is composed of several tiers communicating via a central SQL database and service bus.</p>
+    <table>
+      <tr><th>Component</th><th>Role</th></tr>
+      <tr><td><code>JobServer</code></td><td>Executes process chains, handles provisioning events, runs scheduled jobs. One or more instances with distinct queues and server functions.</td></tr>
+      <tr><td><code>API Server</code></td><td>ASP.NET Core host serving the CompositionAPI. Plugin DLLs matching <code>*.CompositionApi.Server.Plugin.dll</code> are auto-discovered at startup.</td></tr>
+      <tr><td><code>Web Portal</code></td><td>Angular SPA consuming the API Server. Renders UI for IT Shop requests, attestations, data explorer, and reports.</td></tr>
+      <tr><td><code>Sync Engine</code></td><td>Synchronises external target system data (AD, LDAP, SAP, Azure AD) into OIM's internal model via Sync Editor projects.</td></tr>
+      <tr><td><code>Designer</code></td><td>Windows client for configuring schemas, templates, processes, scripts, workflows, and permission groups.</td></tr>
+      <tr><td><code>SQL Database</code></td><td>Central data store. All objects, logs, queue entries, and configuration reside here. MS SQL Server.</td></tr>
+      <tr><td><code>DBQueue Processor</code></td><td>SQL Server Agent job (or .NET service in 9.3) that picks queued processes from <code>JobQueue</code> and dispatches them to Job Server instances.</td></tr>
+    </table>
+    <h3>Provisioning Data Flow</h3>
+    <pre><code class="language-plaintext">  OIM Designer / Web Portal
+         │  PutValueAsync / CommitAsync
+         ▼
+   SQL Database (central)
+         │  DBQueue Processor picks up work
+         ▼
+   JobServer (one or more, by queue)
+         │  Server Functions: ADSConnector, etc.
+         ▼
+   Connector (AD Connector, LDAP, …)
+         │  LDAP / Graph API / etc.
+         ▼
+   Target System (Active Directory, Azure AD, SAP, …)</code></pre>
+    <div class="note"><strong>Namespace convention:</strong> All custom plugin code uses namespace <code>QBM.CompositionApi</code> and references DLLs from <code>C:\Program Files\One Identity\One Identity Manager\</code>. Projects target <code>.NET 8.0</code>.</div>
+  </div>
+
+  <!-- ═══════════════ WHAT'S NEW IN 9.3 ═══════════════ -->
+  <div class="section" id="whats-new">
+    <h2><span class="icon">🆕</span> What's New in 9.3 <a class="anchor-link" href="#whats-new">#</a></h2>
+    <div class="new"><strong>New in 9.3 — highlights for developers and administrators</strong></div>
+    <h3>Database Agent Service Revamp</h3>
+    <p>The DBQueue Processor is now a fully .NET-based component. The old SQL stored procedure <code>QBM_PWorkDBQueueMain</code> is no longer required or called. This improves throughput and eliminates SQL Agent dependency for process dispatch.</p>
+    <h3>CEF Audit Logging</h3>
+    <p>OIM now automatically generates <strong>Common Event Format (CEF)</strong> log messages for defined object changes and sends them to a syslog server.</p>
+    <table>
+      <tr><th>Object</th><th>Description</th></tr>
+      <tr><td><code>QBMCEFDefinitions</code></td><td>Defines change types, message templates, and up to 5 replacement parameters in ObjectWalker notation</td></tr>
+      <tr><td>Config key</td><td><code>QBM | CEF | SyslogServer</code>, <code>QBM | CEF | SyslogPort</code></td></tr>
+    </table>
+    <h3>Microsoft 365 Email via Entra ID</h3>
+    <p>Email notifications now support Microsoft 365 OAuth delivery. Configure via <code>Common | MailNotification | O365ClientId</code> after registering an app in Microsoft Entra ID. No SMTP relay required.</p>
+    <h3>Process Archive View in Job Queue Info</h3>
+    <p>The Job Queue Info tool now shows a <strong>Process Archive</strong> tab alongside the live queue, displaying completed (including archived) processes when a History Database is configured. Filterable by status, date range, and component.</p>
+    <h3>Attestation Enhancements</h3>
+    <ul style="margin-bottom:14px;padding-left:20px;">
+      <li>Terms of use can now be attached as a PDF file per attestation policy</li>
+      <li>Multi-language support for terms of use text</li>
+      <li>Random sample generation for sample-based attestation policies</li>
+    </ul>
+    <h3>UI &amp; Permissions Editor</h3>
+    <ul style="margin-bottom:14px;padding-left:20px;">
+      <li>Multiple result lists per menu item with easy switching</li>
+      <li>Customisable column display and reordering in result lists</li>
+      <li>New Designer task: <em>Add via authorization object</em></li>
+      <li>Two different variations of the same authorization object allowed in one definition</li>
+    </ul>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════ DATA MODEL ═══════════════ -->
+  <div class="section" id="key-tables">
+    <h2><span class="icon">🗄️</span> Key Tables Reference <a class="anchor-link" href="#key-tables">#</a></h2>
+    <p>Understanding the core tables prevents guesswork when writing queries and C# API code.</p>
+    <table>
+      <tr><th>Table</th><th>Purpose</th><th>Key Columns</th></tr>
+      <tr><td><code>Person</code></td><td>Core identity — employees, contractors, service accounts</td><td><code>UID_Person</code>, <code>FirstName</code>, <code>LastName</code>, <code>CentralAccount</code>, <code>IsInActive</code>, <code>UID_Department</code></td></tr>
+      <tr><td><code>ADSAccount</code></td><td>Active Directory user account linked to a Person</td><td><code>UID_ADSAccount</code>, <code>UID_Person</code>, <code>SAMAccountName</code>, <code>IsLocked</code>, <code>UID_ADSContainer</code></td></tr>
+      <tr><td><code>Department</code></td><td>Organisational unit (OIM-internal, not AD OU)</td><td><code>UID_Department</code>, <code>DepartmentName</code>, <code>UID_Department_Parent</code>, <code>UID_PersonHead</code></td></tr>
+      <tr><td><code>Org</code></td><td>Business role / organisational node (parent of sub-roles)</td><td><code>UID_Org</code>, <code>Ident_Org</code>, <code>UID_Org_Parent</code></td></tr>
+      <tr><td><code>PersonInOrg</code></td><td>M:N: person is a member of a business role (Org)</td><td><code>UID_Person</code>, <code>UID_Org</code>, <code>XOrigin</code>, <code>XDateInserted</code></td></tr>
+      <tr><td><code>PersonInAERole</code></td><td>Person assigned to an Application Entitlement Role</td><td><code>UID_Person</code>, <code>UID_AERole</code>, <code>XOrigin</code></td></tr>
+      <tr><td><code>AccProduct</code></td><td>IT Shop service item (requestable product)</td><td><code>UID_AccProduct</code>, <code>Ident_AccProduct</code>, <code>UID_AccProductGroup</code></td></tr>
+      <tr><td><code>ShoppingCartOrder</code></td><td>A user's shopping cart (pre-submission batch)</td><td><code>UID_ShoppingCartOrder</code>, <code>UID_Person</code>, <code>CheckStatus</code></td></tr>
+      <tr><td><code>PersonWantsOrg</code></td><td>Individual IT Shop request — one row per requested item per person</td><td><code>UID_PersonWantsOrg</code>, <code>UID_Person</code>, <code>UID_Org</code>, <code>OrderState</code>, <code>ObjectKeyAssignment</code></td></tr>
+      <tr><td><code>AttestationCase</code></td><td>Single attestation decision item (one row per access right under review)</td><td><code>UID_AttestationCase</code>, <code>XObjectKey</code>, <code>UID_AttestationPolicy</code>, <code>IsClosed</code></td></tr>
+      <tr><td><code>AttestationPolicy</code></td><td>Defines what is attested, which workflow, and schedule</td><td><code>UID_AttestationPolicy</code>, <code>Ident_AttestationPolicy</code>, <code>UID_PWODecisionMethod</code></td></tr>
+      <tr><td><code>JobQueue</code></td><td>Pending process chains waiting for a Job Server to pick them up</td><td><code>UID_Job</code>, <code>TaskName</code>, <code>Queue</code>, <code>ErrorMessages</code>, <code>Ready2EXE</code></td></tr>
+      <tr><td><code>ComplianceRule</code></td><td>SoD / compliance policy definition</td><td><code>UID_ComplianceRule</code>, <code>Ident_ComplianceRule</code>, <code>RuleType</code>, <code>IsCalculationStopped</code></td></tr>
+      <tr><td><code>ComplianceViolation</code></td><td>Active SoD violations (person + rule + conflicting entitlements)</td><td><code>UID_ComplianceViolation</code>, <code>UID_Person</code>, <code>UID_ComplianceRule</code>, <code>IsException</code></td></tr>
+      <tr><td><code>QBMCEFDefinitions</code></td><td>CEF audit log message templates (9.3 new)</td><td><code>UID_QBMCEFDefinition</code>, <code>TableName</code>, <code>ChangeType</code>, <code>MessageTemplate</code></td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="system-columns">
+    <h2><span class="icon">🔑</span> XObjectKey &amp; System Columns <a class="anchor-link" href="#system-columns">#</a></h2>
+
+    <h3>XObjectKey Anatomy</h3>
+    <p>Every OIM entity has a unique <code>XObjectKey</code> which is used for cross-table references, process parameters, and API operations.</p>
+    <pre><code class="language-xml">&lt;Key&gt;&lt;T&gt;TableName&lt;/T&gt;&lt;P&gt;UID-value-here&lt;/P&gt;&lt;/Key&gt;
+
+&lt;!-- Example: a PersonInOrg row --&gt;
+&lt;Key&gt;&lt;T&gt;PersonInOrg&lt;/T&gt;&lt;P&gt;abc123-def456-...&lt;/P&gt;&lt;/Key&gt;</code></pre>
+    <p>In C# API code, test the table with <code>objectKey.StartsWith("&lt;Key&gt;&lt;T&gt;PersonInOrg&lt;/T&gt;", StringComparison.OrdinalIgnoreCase)</code>.</p>
+
+    <h3>XOrigin Bitmask</h3>
+    <p><code>XOrigin</code> on assignment tables (<code>PersonInOrg</code>, <code>PersonInAERole</code>, <code>ADSAccountInADSGroup</code>, etc.) tracks how an assignment was made. It is a bitfield — multiple bits can be set simultaneously.</p>
+    <table>
+      <tr><th>Bit</th><th>Hex</th><th>Meaning</th><th>How to remove</th></tr>
+      <tr><td>1</td><td>0x01</td><td>Direct assignment (manually assigned in Designer / API)</td><td><code>MarkForDeletion()</code> + commit</td></tr>
+      <tr><td>2</td><td>0x02</td><td>Inherited from parent role in hierarchy</td><td>Remove membership from parent</td></tr>
+      <tr><td>4</td><td>0x04</td><td>Dynamically assigned (rule-based)</td><td>Change rule or identity attributes</td></tr>
+      <tr><td>8</td><td>0x08</td><td>Requested via IT Shop (PersonWantsOrg)</td><td>Call <code>Unsubscribe</code> on <code>PersonWantsOrg</code></td></tr>
+      <tr><td>16</td><td>0x10</td><td>Assigned by compliance rule exception</td><td>Withdraw exception</td></tr>
+    </table>
+    <div class="warn"><strong>Never delete an XOrigin=8 assignment directly.</strong> Always unsubscribe through <code>PersonWantsOrg</code>. Direct deletion leaves the IT Shop request in an inconsistent state.</div>
+
+    <h3>System Columns (all tables)</h3>
+    <table>
+      <tr><th>Column</th><th>Type</th><th>Meaning</th></tr>
+      <tr><td><code>XObjectKey</code></td><td>string</td><td>Globally unique cross-table key — XML format above</td></tr>
+      <tr><td><code>XDateInserted</code></td><td>datetime</td><td>Row creation timestamp (set by OIM, not writable)</td></tr>
+      <tr><td><code>XDateUpdated</code></td><td>datetime</td><td>Last modification timestamp</td></tr>
+      <tr><td><code>XMarkedForDeletion</code></td><td>int</td><td>0 = active, 1 = soft-deleted (awaiting cleanup process)</td></tr>
+      <tr><td><code>XUserInserted</code></td><td>string</td><td>OIM user account that created the row</td></tr>
+      <tr><td><code>XUserUpdated</code></td><td>string</td><td>OIM user account that last modified the row</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════ TEMPLATES ═══════════════ -->
+  <div class="section" id="templates">
+    <h2><span class="icon">📋</span> Templates (TPL) <a class="anchor-link" href="#templates">#</a></h2>
+    <p>Templates automatically provision target-system accounts (e.g., Active Directory) based on identity data. They define <em>what</em> to create and <em>when</em>.</p>
+    <h3>Key Concepts</h3>
+    <table>
+      <tr><th>Concept</th><th>Description</th></tr>
+      <tr><td>Account Definition</td><td>Links an OIM identity to a target-system account type. Controls who gets an account and under which conditions.</td></tr>
+      <tr><td>Template</td><td>Defines <em>default values</em> for account properties (<code>SamAccountName</code>, <code>OU</code>, etc.) when creating or updating accounts.</td></tr>
+      <tr><td>Automatic Creation Mode</td><td>Controls if accounts are created automatically on assignment, manually, or for certain identity types only.</td></tr>
+      <tr><td>Mapping Rule</td><td>A VB.NET inline expression transforming an identity property into a target-system property at creation time.</td></tr>
+      <tr><td>TemplateOverwrite</td><td>Controls whether the template re-applies on subsequent updates (overwrite) or only runs at initial creation.</td></tr>
+    </table>
+    <h3>VB.NET Expression Examples</h3>
+    <pre><code class="language-vbnet">' Build SamAccountName: FirstInitial + LastName, lowercase
+Left($FirstName:String$, 1).ToLower() &amp; $LastName:String$.ToLower()
+
+' Display name: "LastName, FirstName"
+$LastName:String$ &amp; ", " &amp; $FirstName:String$
+
+' OU path based on department
+"OU=" &amp; $UID_Department_Display:String$ &amp; ",OU=Users,DC=company,DC=com"
+
+' Conditional OU: external vs internal
+IIf($IsExternal:Bool$, "OU=External,DC=company,DC=com", "OU=Internal,DC=company,DC=com")
+
+' Account move on department change — read new OU from department hierarchy
+"OU=" &amp; $Department_DepartmentName:String$ &amp; ",OU=Users,DC=company,DC=com"</code></pre>
+    <div class="tip"><strong>Template inheritance:</strong> Child account definitions inherit template rules from their parent. To override a specific rule in the child, add an explicit rule with the same property name — the child rule takes precedence.</div>
+  </div>
+
+  <!-- ═══════════════ PROCESSES ═══════════════ -->
+  <div class="section" id="processes">
+    <h2><span class="icon">⚙️</span> Processes (PRO) <a class="anchor-link" href="#processes">#</a></h2>
+    <p>Processes are event-driven automation chains. When an object changes, the OIM event system enqueues a process chain in <code>JobQueue</code> for a Job Server to pick up.</p>
+    <table>
+      <tr><th>Element</th><th>Description</th></tr>
+      <tr><td>Process</td><td>Named chain of process steps triggered by an object event</td></tr>
+      <tr><td>Process Step</td><td>Individual action: run a script, call external program, send email, execute SQL</td></tr>
+      <tr><td>Event</td><td>Trigger: <code>Insert</code>, <code>Update</code>, <code>Delete</code>, or custom named events</td></tr>
+      <tr><td>Process Parameter</td><td>Data passed from the triggering object to steps (e.g., <code>$ObjectKeyBase</code>, <code>$UID_Person$</code>)</td></tr>
+      <tr><td>JobQueue</td><td>Pending processes; <code>Ready2EXE</code> = 'TRUE' means available for pickup</td></tr>
+      <tr><td>Scheduled Trigger</td><td>Process chains can also be triggered on a cron-style schedule via the Scheduler object in Designer</td></tr>
+    </table>
+    <h3>Common VB.NET Script Step Patterns</h3>
+    <pre><code class="language-vbnet">' Fire a custom event from another process step
+Dim obj As IEntity = Session.Source.GetSingle("Person", "UID_Person = '" &amp; uid &amp; "'")
+obj.FireEvent("CCC_MyCustomEvent")
+Session.Source.Save(obj)
+
+' Read process parameters inside a script step
+Dim objectKey As String = Value("$ObjectKeyBase$")
+Dim uidPerson As String = Value("$UID_Person$")
+
+' Conditional logic — abort process step
+If condition Then
+    RaiseError("Condition not met — aborting step")
+End If</code></pre>
+    <div class="note"><strong>Enqueue from C# API code:</strong> Use <code>u.GenerateAsync("ProcessName", new Dictionary&lt;string,string&gt; {{ "UID_Person", uid }}, ct)</code> inside a <code>UnitOfWork</code> to programmatically enqueue a process chain.</div>
+    <h3>DBQueue Processing (9.3)</h3>
+    <p>In 9.3 the DBQueue Processor is a .NET service component — no SQL Agent job required. Monitor queue health in Job Queue Info. If provisioning is stalled, check: (1) DBQueue service running, (2) <code>JobQueue.Ready2EXE = 'TRUE'</code> rows exist, (3) Job Server service is alive, (4) server functions are correctly assigned.</p>
+  </div>
+
+  <!-- ═══════════════ TARGET SYSTEMS ═══════════════ -->
+  <div class="section" id="targetsystems">
+    <h2><span class="icon">🎯</span> Target Systems &amp; Provisioning <a class="anchor-link" href="#targetsystems">#</a></h2>
+    <table>
+      <tr><th>Concept</th><th>Description</th></tr>
+      <tr><td>UNS Root</td><td>Root container for a target system namespace (one per connected system)</td></tr>
+      <tr><td>UNS Account</td><td>Target-system user account linked to an OIM identity (<code>Person</code>)</td></tr>
+      <tr><td>Outstanding Objects</td><td>Objects discovered in the target system but not yet reconciled into OIM's model</td></tr>
+      <tr><td>Full Managed Mode</td><td>OIM fully controls the account — AD group membership is written by provisioning</td></tr>
+      <tr><td>Job Gate</td><td>A Job provider on one server + Job destination on another server; they communicate within the Jobgate configuration</td></tr>
+    </table>
+    <h3>Provisioning Chain — Step by Step</h3>
+    <table>
+      <tr><th>Step</th><th>What Happens</th></tr>
+      <tr><td>1. Change committed</td><td>A column value changes on a provisioning-tracked table (e.g., <code>ADSAccount.IsLocked</code>). OIM writes a row to <code>JobQueue</code>.</td></tr>
+      <tr><td>2. DBQueue Processor</td><td>.NET component scans <code>JobQueue</code> for <code>Ready2EXE='TRUE'</code> entries and dispatches them to the appropriate Job Server queue.</td></tr>
+      <tr><td>3. Job Server picks up</td><td>The Job Server service polls its queue. It matches the process step's <em>server function</em> (e.g., <code>ADSConnector</code>) to decide which server handles it.</td></tr>
+      <tr><td>4. Connector executes</td><td>The connector (AD Connector, LDAP connector, etc.) translates the OIM change into a target system operation (LDAP modify, Graph API call, etc.).</td></tr>
+      <tr><td>5. Confirmation</td><td>On success the process step is marked complete; on failure it enters an error state and may retry.</td></tr>
+    </table>
+    <div class="warn"><strong>Troubleshooting stalled provisioning:</strong> (1) Is the DBQueue service running? (2) Does the <code>JobQueue</code> row have <code>Ready2EXE='TRUE'</code>? (3) Is the Job Server service alive and polling? (4) Does the Job Server have the correct server function assigned? (5) Is the target system reachable? (6) Are the Person and account both active (not <code>IsInActive=1</code>)?</div>
+  </div>
+
+  <!-- ═══════════════ CONNECTORS ═══════════════ -->
+  <div class="section" id="connectors">
+    <h2><span class="icon">🔌</span> Connectors &amp; Sync Editor <a class="anchor-link" href="#connectors">#</a></h2>
+    <h3>Synchronisation Flow</h3>
+    <table>
+      <tr><th>Phase</th><th>Description</th></tr>
+      <tr><td>Read</td><td>Connector reads all objects from the target system into a staging buffer</td></tr>
+      <tr><td>Compare</td><td>Sync Engine compares staged data against OIM's current state</td></tr>
+      <tr><td>Classify</td><td>Determines which objects are new, changed, deleted, or outstanding</td></tr>
+      <tr><td>Provision</td><td>Writes OIM changes back to the target system via connector</td></tr>
+    </table>
+    <h3>Key Configuration Objects</h3>
+    <table>
+      <tr><th>Object</th><th>Purpose</th></tr>
+      <tr><td>Synchronisation Project</td><td>Container for all settings related to one connected system</td></tr>
+      <tr><td>Schema</td><td>Metadata describing object classes and attributes available in the target</td></tr>
+      <tr><td>Mapping</td><td>Maps target-system attributes to OIM columns with optional transformation rules</td></tr>
+      <tr><td>Scope</td><td>Limits which objects are included in a sync run (e.g., specific OUs)</td></tr>
+      <tr><td>Variable Set</td><td>Environment-specific parameter overrides — swap connection strings or OU paths without touching the project itself. Use a Variable Set per environment (Dev/Test/Prod).</td></tr>
+    </table>
+    <h3>Outstanding Object Resolution</h3>
+    <p>Objects found in the target system but not yet assigned to an OIM identity appear as <em>outstanding</em>. Three resolution options:</p>
+    <table>
+      <tr><th>Option</th><th>Effect</th></tr>
+      <tr><td>Link</td><td>Associate the outstanding object with an existing OIM identity — it becomes fully managed</td></tr>
+      <tr><td>Delete</td><td>Delete the object from the target system via provisioning</td></tr>
+      <tr><td>Ignore</td><td>Mark as deliberately unmanaged — OIM stops reporting it as outstanding</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════ IT SHOP ═══════════════ -->
+  <div class="section" id="itshop">
+    <h2><span class="icon">🛒</span> IT Shop <a class="anchor-link" href="#itshop">#</a></h2>
+    <p>The IT Shop is OIM's self-service request portal. Users browse a service catalog and request access; requests flow through approval workflows before being provisioned.</p>
+
+    <div id="itshop-hierarchy">
+    <h3>Service Catalog Hierarchy</h3>
+    <pre><code class="language-plaintext">Shopping Center  (ITShopOrg, level=Center)
+  └─ Shop        (ITShopOrg, level=Shop)
+       └─ Shelf  (ITShopOrg, level=Shelf)  ← access-controlled per audience
+            └─ Service Item (AccProduct)   ← the requestable product</code></pre>
+    <table>
+      <tr><th>Object</th><th>Table</th><th>Notes</th></tr>
+      <tr><td>Shopping Center</td><td><code>ITShopOrg</code></td><td>Top-level container; one per organisation or business unit</td></tr>
+      <tr><td>Shop</td><td><code>ITShopOrg</code></td><td>Groups related shelves; controls which audience sees them</td></tr>
+      <tr><td>Shelf</td><td><code>ITShopOrg</code></td><td>Immediate parent of service items; audience assigned here</td></tr>
+      <tr><td>Service Item</td><td><code>AccProduct</code></td><td>The requestable entitlement (business role, application, account, etc.)</td></tr>
+    </table>
+    </div>
+
+    <div id="itshop-lifecycle">
+    <h3>PersonWantsOrg — Request Lifecycle</h3>
+    <p>Each IT Shop request is a row in <code>PersonWantsOrg</code>. The <code>OrderState</code> column tracks its lifecycle:</p>
+    <div class="state-flow">
+      <span class="state-box">NotYetOrdered</span><span class="state-arrow">→</span>
+      <span class="state-box">Request</span><span class="state-arrow">→</span>
+      <span class="state-box">Pending</span><span class="state-arrow">→</span>
+      <span class="state-box terminal">Assigned</span>
+    </div>
+    <div class="state-flow">
+      <span class="state-box terminal">Assigned</span><span class="state-arrow">→</span>
+      <span class="state-box error">Unsubscribed</span><span class="state-arrow">or</span>
+      <span class="state-box error">OrderCancelled</span><span class="state-arrow">or</span>
+      <span class="state-box error">OrderFailed</span>
+    </div>
+    <table>
+      <tr><th>OrderState</th><th>Meaning</th></tr>
+      <tr><td><code>NotYetOrdered</code></td><td>Item added to cart but not yet submitted</td></tr>
+      <tr><td><code>Request</code></td><td>Cart submitted; pre-approval checks running</td></tr>
+      <tr><td><code>Pending</code></td><td>Awaiting approval decision(s)</td></tr>
+      <tr><td><code>Assigned</code></td><td>Fully approved and provisioned — access is live</td></tr>
+      <tr><td><code>Unsubscribed</code></td><td>User or admin called Unsubscribe; provisioning removal queued</td></tr>
+      <tr><td><code>OrderCancelled</code></td><td>Request was denied or cancelled during approval</td></tr>
+      <tr><td><code>OrderFailed</code></td><td>Technical provisioning failure after approval</td></tr>
+    </table>
+    <h4>ShoppingCartOrder.CheckStatus</h4>
+    <table>
+      <tr><th>Value</th><th>Meaning</th></tr>
+      <tr><td>0</td><td>Unchecked — cart checks have not run yet</td></tr>
+      <tr><td>1</td><td>OK — all checks passed, cart can be submitted</td></tr>
+      <tr><td>2</td><td>Pending — <code>ICartCheckProvider</code> returned a pending status</td></tr>
+    </table>
+    <h4>Unsubscribe Pattern (C#)</h4>
+    <pre><code class="language-csharp">// Find the active PersonWantsOrg row for this assignment
+var q = Query.From("PersonWantsOrg")
+    .Where($"ObjectKeyAssignment = '{objectKey}' AND OrderState = 'Assigned'")
+    .OrderBy("XDateInserted desc").SelectAll();
+var r = await qr.Session.Source().TryGetAsync(q, EntityLoadType.DelayedLogic, ct)
+    .ConfigureAwait(false);
+if (r.Success)
+{
+    await r.Result.CallMethodAsync("Unsubscribe", ct).ConfigureAwait(false);
+    await r.Result.SaveAsync(qr.Session, ct).ConfigureAwait(false);
+}</code></pre>
+    </div>
+
+    <div id="itshop-plugins">
+    <h3>IT Shop Extension Plugins</h3>
+    <table>
+      <tr><th>Interface</th><th>Registered via</th><th>Purpose</th></tr>
+      <tr><td><code>IShopComponent</code></td><td><code>IBootstrapper</code></td><td>Defines custom parameter fields on a specific service item (shown as extra form fields in the shopping cart)</td></tr>
+      <tr><td><code>IComponentAssignment</code></td><td><code>IShopComponent</code></td><td>Associates an <code>IShopComponent</code> implementation with a specific <code>AccProduct</code> UID</td></tr>
+      <tr><td><code>IServiceItemDependencyProvider</code></td><td><code>IBootstrapper</code></td><td>Dynamically calculates dependent service items at request time based on recipient and requested item</td></tr>
+      <tr><td><code>ICartCheckProvider</code></td><td><code>IBootstrapper</code></td><td>Adds custom validation logic to the cart review phase (see Composition Plugins section)</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ROLE MODEL ═══════════════ -->
+  <div class="section" id="rolemodel">
+    <h2><span class="icon">🏢</span> Role Model <a class="anchor-link" href="#rolemodel">#</a></h2>
+    <h3>Three Role Types</h3>
+    <table>
+      <tr><th>Type</th><th>Table</th><th>Purpose</th></tr>
+      <tr><td><strong>Business Roles</strong></td><td><code>Org</code></td><td>Map company structures (projects, departments, groups). Members <em>inherit</em> all resources assigned to the role. Hierarchical — child roles inherit from parents.</td></tr>
+      <tr><td><strong>Application Roles</strong></td><td><code>AERole</code></td><td>Control who can <em>administer OIM itself</em> — who can create business roles, who are attestors, who are role approvers. Built-in groups like <code>vi_4_AUDITING_AUDITOR</code>.</td></tr>
+      <tr><td><strong>System Roles</strong></td><td><code>ESetItUsed</code></td><td>Packaged collections of company resources frequently assigned together. Assigned via IT Shop or directly. Not hierarchical.</td></tr>
+    </table>
+    <h3>Business Role Inheritance Engine</h3>
+    <p>When a person is a member of a Business Role (<code>PersonInOrg</code>), OIM's inheritance engine walks the role hierarchy and grants all resources assigned to every ancestor role. The view <code>PersonInBasetree</code> (and its variants) materialises this inheritance. The resulting assignments get <code>XOrigin = 2</code> (inherited).</p>
+    <div class="note"><strong>Key distinction:</strong> <code>PersonInOrg</code> is the direct/requested membership table. <code>PersonHasRole</code> views represent the <em>effective</em> (inherited + direct) memberships. When writing queries to check if a person has effective access to a role, always query the view, not the base table.</div>
+    <h3>Common Application Roles (built-in)</h3>
+    <table>
+      <tr><th>Group</th><th>Purpose</th></tr>
+      <tr><td><code>vi_4_AUDITING_AUDITOR</code></td><td>Read-only access to all audit data</td></tr>
+      <tr><td><code>vi_4_ITSHOPADMIN_ADMIN</code></td><td>Full IT Shop administration</td></tr>
+      <tr><td><code>vi_4_ATTESTATION_APPROVER</code></td><td>Eligible to make attestation decisions</td></tr>
+      <tr><td><code>vi_4_ROLE_APPROVER</code></td><td>Eligible to approve business role assignment requests</td></tr>
+      <tr><td><code>vi_4_MANAGER_APPROVER</code></td><td>Eligible to approve as line manager</td></tr>
+    </table>
+  </div>
+
+  <!-- ═══════════════ WORKFLOWS ═══════════════ -->
+  <div class="section" id="workflows">
+    <h2><span class="icon">🔀</span> Approval Workflows (WFL) <a class="anchor-link" href="#workflows">#</a></h2>
+    <table>
+      <tr><th>Concept</th><th>Description</th></tr>
+      <tr><td>Workflow</td><td>Named sequence of approval levels assigned to a service item or attestation policy</td></tr>
+      <tr><td>Approval Level</td><td>A step in the workflow; defines approvers and timeout behaviour</td></tr>
+      <tr><td>Approval Step</td><td>A single approver: a person, a role, a dynamic resolver, or an automated decision</td></tr>
+      <tr><td>Decision Type</td><td>Approve, Deny, Delegate, Escalate, Reroute</td></tr>
+      <tr><td>Escalation Rule</td><td>Auto-escalates to the next approver if no decision within N days</td></tr>
+    </table>
+    <table>
+      <tr><th>Workflow Category</th><th>Trigger</th></tr>
+      <tr><td>IT Shop Workflow</td><td>Service item requested via Shopping Cart (<code>PersonWantsOrg</code>)</td></tr>
+      <tr><td>Attestation Workflow</td><td>Attestation run created for an <code>AttestationPolicy</code></td></tr>
+      <tr><td>Entitlement Workflow</td><td>Role / business role assignment submitted for approval</td></tr>
+    </table>
+    <h3>Finding Pending Approvals in Code</h3>
+    <pre><code class="language-csharp">// Find all open IT Shop requests pending approval by a specific person
+var q = Query.From("PersonWantsOrg")
+    .Where($"OrderState = 'Pending' AND UID_PersonOrdered = '{uidApprover}'")
+    .Select("UID_PersonWantsOrg", "UID_Org", "XDateInserted");
+var pending = await qr.Session.Source()
+    .GetCollectionAsync(q, EntityLoadType.DelayedLogic, ct)
+    .ConfigureAwait(false);</code></pre>
+  </div>
+
+  <!-- ═══════════════ PERMISSIONS ═══════════════ -->
+  <div class="section" id="permissions">
+    <h2><span class="icon">🔑</span> Permissions (PMS) <a class="anchor-link" href="#permissions">#</a></h2>
+    <table>
+      <tr><th>Type</th><th>Description</th></tr>
+      <tr><td>Role-based permissions</td><td>Access granted through Business Roles, Application Roles, or IT Shop requests</td></tr>
+      <tr><td>Permission Groups</td><td>OIM-internal groups (e.g., <code>vi_4_AUDITING_AUDITOR</code>) controlling API and portal access</td></tr>
+      <tr><td>Table permissions</td><td>Column-level read/write control per permission group, enforced by the OIM object layer</td></tr>
+      <tr><td>Method permissions</td><td>API endpoints check permission groups before executing logic</td></tr>
+    </table>
+    <h3>Checking Permissions in API Code</h3>
+    <pre><code class="language-csharp">// Check if current user is in a permission group
+bool isAdmin = qr.Session.IsInRole("vi_4_ITSHOPADMIN_ADMIN");
+
+// Restrict an endpoint to a permission group
+builder.AddMethod(Method.Define("webportalplus/admin/action")
+    .WithPermission("vi_4_ITSHOPADMIN_ADMIN")  // 401 if not in group
+    .Handle&lt;PostedData, object&gt;("POST", async (body, qr, ct) =&gt; { ... }));</code></pre>
+    <div class="note"><strong>Permission layering:</strong> Object permission constraints applied via the OIM schema <em>cannot</em> be overridden by API code. <code>WithWritableColumns()</code> limits further but cannot grant more than the schema permits. The OIM session enforces schema-level column permissions before any API code runs.</div>
+  </div>
+
+  <!-- ═══════════════ ATTESTATIONS ═══════════════ -->
+  <div class="section" id="attestations">
+    <h2><span class="icon">✅</span> Attestations (ATT) <a class="anchor-link" href="#attestations">#</a></h2>
+    <p>Attestation (recertification) is the periodic review of existing access rights. Approvers confirm or revoke entitlements.</p>
+    <h3>Key Tables</h3>
+    <table>
+      <tr><th>Table / View</th><th>Purpose</th></tr>
+      <tr><td><code>AttestationCase</code></td><td>One row per access right under review; holds decision state</td></tr>
+      <tr><td><code>AttestationPolicy</code></td><td>Defines scope (what is attested), workflow, recertification interval</td></tr>
+      <tr><td><code>ATT_VAttestationDecisionPerson</code></td><td>View listing eligible approvers for each open case — always check this before making a decision</td></tr>
+    </table>
+    <h3>AttestationPolicy Configuration (9.3)</h3>
+    <table>
+      <tr><th>Field</th><th>Description</th></tr>
+      <tr><td><code>UID_PWODecisionMethod</code></td><td>Approval workflow to use</td></tr>
+      <tr><td><code>NextApproveDate</code></td><td>When the next attestation run is scheduled</td></tr>
+      <tr><td><code>IsApproveRequiredForAll</code></td><td>All approvers must decide, not just one</td></tr>
+      <tr><td><code>TermsOfUseFile</code></td><td><strong>New in 9.3:</strong> attach a PDF file as terms of use for approvers to acknowledge</td></tr>
+    </table>
+    <h3>Making a Decision via API</h3>
+    <pre><code class="language-csharp">// 1. Verify eligibility
+string wc = $"XObjectKey = '{xsubkey}' AND UID_AttestationCase IN (" +
+    $"SELECT UID_AttestationCase FROM ATT_VAttestationDecisionPerson " +
+    $"WHERE UID_PersonHead = '{uidPerson}')";
+bool isEligible = await qr.Session.Source()
+    .ExistsAsync("AttestationCase", wc, ct).ConfigureAwait(false);
+if (!isEligible) throw new InvalidOperationException("Not an eligible approver.");
+
+// 2. Load the case
+var q = Query.From("AttestationCase").SelectAll().Where($"XObjectKey = '{xsubkey}'");
+var r = await qr.Session.Source().TryGetAsync(q, EntityLoadType.DelayedLogic, ct)
+    .ConfigureAwait(false);
+
+// 3. MakeDecision: (approverUID, approve=true/false, reason, justificationUID, subLevel=-1)
+await r.Result.CallMethodAsync("MakeDecision", new object[]
+    { uidPerson, true, reason, null, -1 }, ct).ConfigureAwait(false);
+await r.Result.SaveAsync(qr.Session, ct).ConfigureAwait(false);</code></pre>
+  </div>
+
+  <!-- ═══════════════ COMPLIANCE & SOD ═══════════════ -->
+  <div class="section" id="sod">
+    <h2><span class="icon">⚖️</span> Compliance &amp; SoD <a class="anchor-link" href="#sod">#</a></h2>
+    <p>Segregation of Duties (SoD) ensures no individual holds conflicting privileges that enable fraud or oversight bypass. OIM enforces SoD both preventively (at request time) and detectably (through attestation).</p>
+    <h3>Compliance Rule Types</h3>
+    <table>
+      <tr><th>Rule Type</th><th>Description</th></tr>
+      <tr><td>Entitlement Conflict</td><td>Defines two sets of entitlements (roles/accounts) that must not be held simultaneously</td></tr>
+      <tr><td>Role-based Conflict</td><td>Applies conflict detection at the Business Role level — role assignments trigger the rule</td></tr>
+      <tr><td>Condition-based</td><td>Custom VB.NET condition evaluated against identity attributes</td></tr>
+    </table>
+    <h3>Control Types</h3>
+    <table>
+      <tr><th>Type</th><th>When It Runs</th><th>Mechanism</th></tr>
+      <tr><td>Preventive</td><td>At request submission in IT Shop</td><td><code>ICartCheckProvider</code> returns error if request would create a violation; user cannot submit</td></tr>
+      <tr><td>Detective</td><td>Continuously via calculation jobs; surfaced in attestation</td><td><code>ComplianceViolation</code> rows created; attestation policy can scope to open violations</td></tr>
+    </table>
+    <h3>Reading Violations in API Code</h3>
+    <pre><code class="language-csharp">// Find active SoD violations for a person
+var q = Query.From("ComplianceViolation")
+    .Select("UID_ComplianceRule", "IsException", "XDateInserted")
+    .Where($"UID_Person = '{uidPerson}' AND IsException = 0");
+var violations = await qr.Session.Source()
+    .GetCollectionAsync(q, EntityLoadType.DelayedLogic, ct)
+    .ConfigureAwait(false);
+
+foreach (var v in violations)
+{
+    string ruleUid = v.GetValue&lt;string&gt;("UID_ComplianceRule");
+    // ... report or act on it
+}</code></pre>
+    <div class="tip"><strong>Exception handling:</strong> When a violation has <code>IsException=1</code>, an authorised approver has explicitly approved the exception. Exception approvals are time-limited and appear in attestation for periodic review.</div>
+  </div>
+
+  <!-- ═══════════════ TRANSPORT ═══════════════ -->
+  <div class="section" id="transport">
+    <h2><span class="icon">📦</span> Transport (TRS) <a class="anchor-link" href="#transport">#</a></h2>
+    <table>
+      <tr><th>Component</th><th>Description</th></tr>
+      <tr><td>Transport Package</td><td>ZIP file containing serialised OIM objects as XML</td></tr>
+      <tr><td>Change Label</td><td>Groups related changes; a transport is built from one or more change labels</td></tr>
+      <tr><td>Import</td><td>Applies objects from a transport to the target environment via Designer import wizard</td></tr>
+    </table>
+    <div class="warn"><strong>Transport hygiene:</strong> Always use a dedicated change label per feature. Mixing unrelated changes makes rollback difficult and causes dependency issues on import.</div>
+  </div>
+
+  <!-- ═══════════════ REPORTS ═══════════════ -->
+  <div class="section" id="reports">
+    <h2><span class="icon">📊</span> Reports (RPS) <a class="anchor-link" href="#reports">#</a></h2>
+    <table>
+      <tr><th>Report Type</th><th>Use Case</th></tr>
+      <tr><td>Identity Report</td><td>Shows an identity's current access, roles, and account status</td></tr>
+      <tr><td>Role Assignment Report</td><td>Lists all persons assigned to a Business Role or Application Role</td></tr>
+      <tr><td>Compliance Report</td><td>Policy violations, SoD conflicts, outstanding attestations</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════ API PLUGIN ARCHITECTURE ═══════════════ -->
+  <div class="section" id="api-arch">
+    <h2><span class="icon">🔧</span> API Plugin Architecture <a class="anchor-link" href="#api-arch">#</a></h2>
+    <p>OIM 9.3 exposes data via a RESTful <strong>CompositionAPI</strong> built on ASP.NET Core. Custom functionality is added by deploying plugin DLLs that the API Server discovers at startup.</p>
+    <h3>Plugin Project Setup</h3>
+    <table>
+      <tr><th>Item</th><th>Detail</th></tr>
+      <tr><td>Target framework</td><td><code>net8.0</code></td></tr>
+      <tr><td>Required references</td><td><code>QBM.CompositionApi.dll</code>, <code>QER.CompositionApi.dll</code>, <code>VI.DB.dll</code>, <code>VI.Base.dll</code> — from the OIM install dir. Do <strong>NOT</strong> reference <code>QBM.CompositionApi.Server.dll</code> in your plugin project.</td></tr>
+      <tr><td>DLL naming</td><td>Must match <code>*.CompositionApi.Server.Plugin.dll</code> or <code>*.CompositionApi.dll</code> — the API Server only loads files matching these patterns.</td></tr>
+      <tr><td>Assembly attribute</td><td>Add <code>[assembly: QBM.CompositionApi.PlugIns.Module("YourModuleName")]</code> in <code>AssemblyInfo.cs</code></td></tr>
+      <tr><td>Deployment</td><td>Copy to the API Server's plugin directory (or use Software Loader with <code>bin\</code> prefix so files land in the correct sub-directory)</td></tr>
+    </table>
+    <h3>Minimal Plugin Registration</h3>
+    <pre><code class="language-csharp">using QBM.CompositionApi.ApiManager;
+using QBM.CompositionApi.Definition;
+
+namespace QBM.CompositionApi
+{
+    public class MyPlugin : IPlugInMethodSetProvider
+    {
+        public IMethodSetProvider Create(IExtensibilityService extensibility)
+        {
+            var set = new MethodSet();
+            set.AppId = "portal";   // target API project ("portal" = Web Portal)
+            extensibility
+                .FindAttributeBasedApiProviders&lt;IApiProvider&gt;()
+                .ForEach(p =&gt; set.Register(p));
+            return set;
+        }
+    }
+}</code></pre>
+    <h3>Endpoint Class Pattern</h3>
+    <pre><code class="language-csharp">// Each endpoint is a separate public class
+[ApiProvider]
+public class MyEndpoint : IApiProviderFor&lt;PortalApiProject&gt;, IApiProvider
+{
+    public void Build(IApiBuilder builder)
+    {
+        builder.AddMethod(Method.Define("webportalplus/myfeature/get")
+            .HandleGet(async (qr, ct) =&gt;
+            {
+                string uid = qr.Session.User().Uid;
+                var q = Query.From("Person")
+                    .Select("FirstName", "LastName")
+                    .Where($"UID_Person = '{uid}'");
+                var r = await qr.Session.Source()
+                    .TryGetAsync(q, EntityLoadType.DelayedLogic, ct)
+                    .ConfigureAwait(false);
+                return r.Result;
+            }));
+    }
+}</code></pre>
+  </div>
+
+  <!-- ═══════════════ IBOOTSTRAPPER vs IPLUGINMETHODSETPROVIDER ═══════════════ -->
+  <div class="section" id="api-bootstrapper">
+    <h2><span class="icon">🧲</span> IBootstrapper vs IPlugInMethodSetProvider <a class="anchor-link" href="#api-bootstrapper">#</a></h2>
+    <table>
+      <tr><th>Interface</th><th>Method</th><th>When it runs</th><th>Use for</th></tr>
+      <tr><td><code>IBootstrapper</code></td><td><code>RegisterServices(IPluginService)</code></td><td>API Server initialisation — DI container setup phase</td><td>Registering custom services, <code>ICartCheckProvider</code>, <code>IRecommendationProvider</code>, <code>IPasswordItemProvider</code>, <code>IShopComponent</code></td></tr>
+      <tr><td><code>IPlugInMethodSetProvider</code></td><td><code>Create(IExtensibilityService)</code></td><td>Routing initialisation phase — after DI is ready</td><td>Defining API endpoints via <code>MethodSet</code> and <code>Build()</code> calls</td></tr>
+    </table>
+    <pre><code class="language-csharp">// IBootstrapper — registers services before routing is built
+public class MyBootstrapper : IBootstrapper
+{
+    public void RegisterServices(IPluginService service)
+    {
+        // Register IT Shop cart check
+        service.GetPluginManager()
+               .Register&lt;ICartCheckProvider&gt;(new MyCartCheckProvider());
+        // Register attestation recommendation
+        service.GetPluginManager()
+               .Register&lt;ATT.CompositionApi.Recommendation.IRecommendationProvider&gt;(
+                   new MyAttestationRecommendationProvider());
+    }
+}
+
+// IPlugInMethodSetProvider — defines API routes
+public class MyPlugin : IPlugInMethodSetProvider
+{
+    public IMethodSetProvider Create(IExtensibilityService ext)
+    {
+        var set = new MethodSet { AppId = "portal" };
+        ext.FindAttributeBasedApiProviders&lt;IApiProvider&gt;()
+           .ForEach(p =&gt; set.Register(p));
+        return set;
+    }
+}</code></pre>
+    <div class="note"><strong>One DLL can implement both.</strong> A single plugin project typically has one class for <code>IBootstrapper</code> (services) and one for <code>IPlugInMethodSetProvider</code> (endpoints).</div>
+  </div>
+
+  <!-- ═══════════════ API SERVER LIFECYCLE ═══════════════ -->
+  <div class="section" id="api-lifecycle">
+    <h2><span class="icon">🔄</span> API Server Lifecycle <a class="anchor-link" href="#api-lifecycle">#</a></h2>
+    <table>
+      <tr><th>Phase</th><th>Description</th></tr>
+      <tr><td>ASP.NET Core Init</td><td>Basic services configured. <code>IBuilderPlugIn</code> plugins run here.</td></tr>
+      <tr><td>API Initialisation</td><td><code>IBootstrapper</code> implementations run — services registered.</td></tr>
+      <tr><td>Routing Init</td><td><code>IPlugInMethodSetProvider.Create()</code> called; all <code>Build()</code> methods run. Routes are registered.</td></tr>
+      <tr><td>API Validation</td><td>Consistency checks. Duplicate URL routes generate <code>ApiServer0037</code>. Errors here cause 404s on the affected API project but don't stop the server.</td></tr>
+      <tr><td>Start</td><td>Server responds to requests.</td></tr>
+    </table>
+    <h3>Request Processing Flow</h3>
+    <table>
+      <tr><th>Step</th><th>Action</th></tr>
+      <tr><td>1</td><td>ASP.NET Core matches URL to route</td></tr>
+      <tr><td>2</td><td>API Server associates request with a session group (<code>imx_sessiongroup</code> cookie)</td></tr>
+      <tr><td>3</td><td>XSRF token validated (see API Security)</td></tr>
+      <tr><td>4</td><td>Language preferences applied to async context</td></tr>
+      <tr><td>5</td><td>Validators from <code>.WithValidation()</code> run</td></tr>
+      <tr><td>6</td><td>Handler code executes</td></tr>
+    </table>
+  </div>
+
+  <!-- ═══════════════ ENTITY METHODS ═══════════════ -->
+  <div class="section" id="entity-methods">
+    <h2><span class="icon">📚</span> Entity Methods <a class="anchor-link" href="#entity-methods">#</a></h2>
+    <p>Entity methods integrate with the OIM object layer and auto-generate REST endpoints for CRUD operations.</p>
+
+    <div id="crud">
+    <h3>CRUD Operations</h3>
+    <pre><code class="language-csharp">// Read-only
+Method.Define("persons")
+    .FromTable("Person")
+    .EnableRead()
+    .WithResultColumns("FirstName", "LastName", "CentralAccount")
+
+// Full CRUD
+Method.Define("persons/edit")
+    .FromTable("Person")
+    .EnableRead()
+    .EnableCreate()
+    .EnableUpdate()
+    .WithWritableColumns("FirstName", "LastName", "UID_Department")
+    .EnableDelete()
+    .WithWhereClause("IsInActive = 0")  // base filter on all ops
+
+// Conditional writability
+.WithWritableColumns("Phone", e =&gt; e.GetValue&lt;bool&gt;("IsExternal"))
+
+// Interactive entity (respects UI field dependencies and schema permissions)
+.As(EntityType.Interactive)</code></pre>
+    </div>
+
+    <div id="filters">
+    <h3>Filters &amp; Grouping</h3>
+    <pre><code class="language-csharp">// Static filter (fixed options emitted to OpenAPI spec)
+.With(m =&gt; {
+    m.EnableDataModelApi = true;
+    m.OptionalClauseProviders.Add(new StateFilter());
+})
+
+private class StateFilter : IPredefinedFilter
+{
+    public string UrlParameterName =&gt; "state";
+    public IDictionary&lt;string, IPredefinedFilterOption&gt; Options =&gt;
+        new Dictionary&lt;string, IPredefinedFilterOption&gt; {
+            { "active",   new PredefinedFilterOption { ClauseProvider = new ClauseProvider("IsInActive=0") } },
+            { "inactive", new PredefinedFilterOption { ClauseProvider = new ClauseProvider("IsInActive=1") } }
+        };
+}
+
+// Grouping by a column
+Method.Define("persons").FromTable("Person").EnableRead()
+    .EnableGrouping("UID_Department")
+    .With(m =&gt; { m.EnableDataModelApi = true; m.EnableGroupingApi = true; });</code></pre>
+    </div>
+
+    <div id="properties">
+    <h3>Property Types</h3>
+    <pre><code class="language-csharp">// FK: adds a parent column value to each entity
+.WithCalculatedProperties(new FkProperty("DepartmentManager", "Department", "UID_PersonHead", "UID_Department"))
+
+// Child relation: list of child entities
+.WithCalculatedProperties(new CrProperty("Reports", "Person", "UID_PersonHead"))
+
+// Many-to-many via junction table
+.WithCalculatedProperties(new MrProperty("Groups", "ADSAccountInADSGroup", "UID_ADSAccount"))
+
+// Code-derived value
+.WithCalculatedProperties(new CalculatedProperty&lt;string&gt;(
+    "FullName", ctx =&gt; $"{ctx.Entity.GetValue("FirstName")} {ctx.Entity.GetValue("LastName")}"))
+
+// Integer-to-display-string enum
+.WithCalculatedProperties(new EnumProperty("StatusDisplay", "IsInActive",
+    new[] { new EnumValue(0, "Active"), new EnumValue(1, "Inactive") }))</code></pre>
+    </div>
+
+    <div id="extended-data">
+    <h3>Extended Data</h3>
+    <pre><code class="language-csharp">builder.AddMethod(Method.Define("persons/withextra")
+    .FromTable("Person").EnableRead()
+    .WithExtendedData(new MyExtendedDataProvider()));
+
+private class MyExtendedDataProvider : IReadOnlyExtendedDataProvider&lt;MyExtraData&gt;
+{
+    public async Task&lt;MyExtraData&gt; GetExtendedDataAsync(
+        IReadOnlyList&lt;IEntity&gt; entities, IRequest request, CancellationToken ct = default)
+        =&gt; new MyExtraData { Count = entities.Count, Timestamp = DateTime.UtcNow };
+}
+public class MyExtraData { public int Count { get; set; } public DateTime Timestamp { get; set; } }</code></pre>
+    </div>
+
+    <div id="pagination">
+    <h3>Pagination, Ordering &amp; Search</h3>
+    <h4>Pagination</h4>
+    <p>Entity methods expose built-in paging. The Angular client sends <code>PageSize</code> and <code>StartIndex</code> as query parameters.</p>
+    <pre><code class="language-http">GET /api/portal/persons?PageSize=50&amp;StartIndex=0
+GET /api/portal/persons?PageSize=50&amp;StartIndex=50  ← second page</code></pre>
+    <pre><code class="language-csharp">// Limit maximum result size server-side (prevent unintentional full-table reads)
+Method.Define("persons").FromTable("Person").EnableRead()
+    .WithMaxItems(1000)   // hard cap — client cannot request more than 1000 rows</code></pre>
+    <h4>Ordering</h4>
+    <pre><code class="language-http">GET /api/portal/persons?Orderby=LastName+asc,FirstName+asc
+GET /api/portal/persons?Orderby=XDateInserted+desc</code></pre>
+    <h4>Full-Text Search Index Configuration</h4>
+    <p>OIM maintains an internal search index. Configure via Designer under <code>QBM | Search</code> config params:</p>
+    <table>
+      <tr><th>Config Key</th><th>Default</th><th>Description</th></tr>
+      <tr><td><code>BatchSize</code></td><td>50,000</td><td>Max objects indexed per run</td></tr>
+      <tr><td><code>DefaultResultLimit</code></td><td>5,000</td><td>Max objects returned by search (cap at 8,000 to avoid SQL limits)</td></tr>
+      <tr><td><code>PriorityTables</code></td><td><code>Person,AccProduct</code></td><td>Tables indexed first in each batch run</td></tr>
+      <tr><td><code>ExcludeTables</code></td><td>(none)</td><td>Comma-separated list of tables excluded from indexing</td></tr>
+      <tr><td><code>IndexUseLegacyAnalyzer</code></td><td>false</td><td>Alternative tokeniser — better for long tokens like <code>Department_01</code></td></tr>
+    </table>
+    <p>Tables are auto-indexed if they have <code>XDateInserted</code>, <code>XDateUpdated</code>, and <code>XObjectKey</code> columns.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ CUSTOM METHODS ═══════════════ -->
+  <div class="section" id="custom-methods">
+    <h2><span class="icon">⚡</span> Custom HTTP Methods &amp; Status Codes <a class="anchor-link" href="#custom-methods">#</a></h2>
+    <h3>Custom POST/GET Handler</h3>
+    <pre><code class="language-csharp">builder.AddMethod(Method.Define("webportalplus/myaction")
+    .Handle&lt;MyRequest, MyResponse&gt;("POST", async (body, qr, ct) =&gt;
+    {
+        string uid = qr.Session.User().Uid;
+        var q = Query.From("Person").Select("FirstName").Where($"UID_Person = '{uid}'");
+        var r = await qr.Session.Source()
+            .TryGetAsync(q, EntityLoadType.DelayedLogic, ct).ConfigureAwait(false);
+        string name = r.Result.GetValue&lt;string&gt;("FirstName");
+        return new MyResponse { Success = true, Name = name };
+    }));
+
+public class MyRequest  { public string Value { get; set; } }
+public class MyResponse { public bool Success { get; set; } public string Name { get; set; } }</code></pre>
+
+    <h3>Session Helpers Reference</h3>
+    <table>
+      <tr><th>Call</th><th>Purpose</th></tr>
+      <tr><td><code>qr.Session.User().Uid</code></td><td>UID of authenticated user</td></tr>
+      <tr><td><code>qr.Session.Source().TryGetAsync(q, …)</code></td><td>Read one entity → <code>TryResult&lt;IEntity&gt;</code></td></tr>
+      <tr><td><code>qr.Session.Source().GetCollectionAsync(q, …)</code></td><td>Read multiple entities</td></tr>
+      <tr><td><code>qr.Session.Source().ExistsAsync(table, wc, ct)</code></td><td>Fast existence check</td></tr>
+      <tr><td><code>qr.Session.Source().CreateNewAsync(table, params, ct)</code></td><td>New entity in memory</td></tr>
+      <tr><td><code>qr.Session.StartUnitOfWork()</code></td><td>Begin write transaction (use <code>using</code>)</td></tr>
+      <tr><td><code>u.PutAsync(entity, ct)</code></td><td>Stage entity for write</td></tr>
+      <tr><td><code>u.CommitAsync(ct)</code></td><td>Commit transaction to DB</td></tr>
+      <tr><td><code>entity.MarkForDeletion()</code></td><td>Mark for delete (then PutAsync + CommitAsync)</td></tr>
+      <tr><td><code>entity.CallMethodAsync("Name", args, ct)</code></td><td>Call OIM built-in method (MakeDecision, Unsubscribe, …)</td></tr>
+      <tr><td><code>entity.SaveAsync(qr.Session, ct)</code></td><td>Save directly (no explicit UoW)</td></tr>
+      <tr><td><code>u.GenerateAsync("ProcessName", params, ct)</code></td><td>Enqueue a process chain</td></tr>
+      <tr><td><code>qr.Session.Config().GetConfigParmAsync("Path\\…", ct)</code></td><td>Read a config parameter</td></tr>
+      <tr><td><code>qr.Session.Resolve&lt;IStatementRunner&gt;()</code></td><td>Execute raw SQL / stored procedures</td></tr>
+      <tr><td><code>qr.Session.IsInRole("group")</code></td><td>Check permission group membership</td></tr>
+    </table>
+
+    <h3>Returning Custom HTTP Status Codes</h3>
+    <pre><code class="language-csharp">using QBM.CompositionApi.ApiManager.Methods.Results;
+
+// Return 400 Bad Request with message
+throw new RequestException(HttpStatusCode.BadRequest, "Invalid input: field X is required.");
+
+// Return 404 Not Found
+throw new RequestException(HttpStatusCode.NotFound, "Resource not found.");
+
+// Return 403 Forbidden
+throw new RequestException(HttpStatusCode.Forbidden, "Insufficient permissions.");
+
+// For entity methods: customise the not-found message
+.With(m =&gt; m.NotFoundMessage = "The requested person does not exist.");</code></pre>
+
+    <div class="note"><strong>ConfigureAwait(false)</strong> — Append to every <code>await</code> inside API handlers to prevent deadlocks in ASP.NET Core sync context.</div>
+    <div class="tip"><strong>String interpolation vs Format:</strong> Use <code>$"text\nnewline"</code>, NOT <code>string.Format(@"text\nnewline")</code>. Verbatim + Format produces <code>\\n</code> (literal backslash-n) instead of a real newline.</div>
+  </div>
+
+  <!-- ═══════════════ WRITING DATA ═══════════════ -->
+  <div class="section" id="writing-data">
+    <h2><span class="icon">💾</span> Writing Data <a class="anchor-link" href="#writing-data">#</a></h2>
+    <h3>Create</h3>
+    <pre><code class="language-csharp">var newEntity = await qr.Session.Source().CreateNewAsync(
+    "Person",
+    new EntityParameters { CreationType = EntityCreationType.DelayedLogic }, ct)
+    .ConfigureAwait(false);
+await newEntity.PutValueAsync("FirstName", "Jane", ct).ConfigureAwait(false);
+await newEntity.PutValueAsync("LastName",  "Doe",  ct).ConfigureAwait(false);
+await newEntity.PutValueAsync("UID_Department", deptUid, ct).ConfigureAwait(false);
+using var u = qr.Session.StartUnitOfWork();
+await u.PutAsync(newEntity, ct).ConfigureAwait(false);
+await u.CommitAsync(ct).ConfigureAwait(false);</code></pre>
+
+    <h3>Update</h3>
+    <pre><code class="language-csharp">var q = Query.From("Person").SelectAll().Where($"UID_Person = '{uid}'");
+var r = await qr.Session.Source().TryGetAsync(q, EntityLoadType.DelayedLogic, ct)
+    .ConfigureAwait(false);
+if (r.Success)
+{
+    await r.Result.PutValueAsync("Remarks", "Updated via API", ct).ConfigureAwait(false);
+    using var u = qr.Session.StartUnitOfWork();
+    await u.PutAsync(r.Result, ct).ConfigureAwait(false);
+    await u.CommitAsync(ct).ConfigureAwait(false);
+}</code></pre>
+
+    <h3>Delete (Direct Assignment — XOrigin &amp; 1)</h3>
+    <pre><code class="language-csharp">var q = Query.From("PersonInOrg")
+    .Where($"XObjectKey = '{objectKey}' AND (XOrigin &amp; 1) = 1").SelectAll();
+var r = await qr.Session.Source().TryGetAsync(q, EntityLoadType.DelayedLogic, ct)
+    .ConfigureAwait(false);
+if (r.Success)
+{
+    using var u = qr.Session.StartUnitOfWork();
+    r.Result.MarkForDeletion();
+    await u.PutAsync(r.Result, ct).ConfigureAwait(false);
+    await u.CommitAsync(ct).ConfigureAwait(false);
+}</code></pre>
+
+    <h3>Raw SQL / Stored Procedure</h3>
+    <pre><code class="language-csharp">var runner = qr.Session.Resolve&lt;IStatementRunner&gt;();
+using var reader = await runner.SqlExecuteAsync(
+    "CCC_MY_StoredProcedure",
+    new[] { QueryParameter.Create("param1", value) }, ct);
+while (reader.Read())
+{
+    var col = reader.GetName(0);
+    var val = reader.IsDBNull(0) ? string.Empty : reader.GetValue(0).ToString();
+}</code></pre>
+  </div>
+
+  <!-- ═══════════════ ERROR HANDLING ═══════════════ -->
+  <div class="section" id="error-handling">
+    <h2><span class="icon">🛡️</span> Error Handling in Plugins <a class="anchor-link" href="#error-handling">#</a></h2>
+    <h3>Try/Catch Pattern</h3>
+    <pre><code class="language-csharp">using Microsoft.Extensions.Logging;
+
+[ApiProvider]
+public class MyEndpoint : IApiProviderFor&lt;PortalApiProject&gt;, IApiProvider
+{
+    private readonly ILogger&lt;MyEndpoint&gt; _logger;
+    public MyEndpoint(ILogger&lt;MyEndpoint&gt; logger) { _logger = logger; }
+
+    public void Build(IApiBuilder builder)
+    {
+        builder.AddMethod(Method.Define("webportalplus/myfeature/action")
+            .Handle&lt;PostedData, object&gt;("POST", async (body, qr, ct) =&gt;
+            {
+                try
+                {
+                    // ... your logic
+                    return new { success = true };
+                }
+                catch (ViException vex) when (QBM_IsViExceptionOfNumber(vex, 8004))
+                {
+                    // OIM-specific exception number check
+                    _logger.LogWarning(vex, "OIM business rule violation");
+                    throw new RequestException(HttpStatusCode.BadRequest, vex.Message);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unexpected error in myfeature/action");
+                    throw; // Let OIM return 500
+                }
+            }));
+    }
+
+    private static bool QBM_IsViExceptionOfNumber(ViException ex, int number)
+        =&gt; ex.ExceptionNumber == number;
+}</code></pre>
+    <h3>Logging</h3>
+    <pre><code class="language-csharp">// Inject ILogger via constructor — works in both IBootstrapper and IApiProvider classes
+public MyEndpoint(ILogger&lt;MyEndpoint&gt; logger) { _logger = logger; }
+
+_logger.LogInformation("Processing request for user {Uid}", uid);
+_logger.LogWarning("Validation failed: {Reason}", reason);
+_logger.LogError(ex, "Unhandled exception in {Endpoint}", "myfeature/action");</code></pre>
+    <div class="warn"><strong>Never use <code>HttpContext.Current</code></strong> inside API method handlers. Use <code>QBM.CompositionApi.OwinRequestScopeContext.Context.Current</code> if you need access to the OWIN context from non-handler code.</div>
+  </div>
+
+  <!-- ═══════════════ API SECURITY ═══════════════ -->
+  <div class="section" id="api-security">
+    <h2><span class="icon">🔒</span> API Security <a class="anchor-link" href="#api-security">#</a></h2>
+    <h3>XSRF Token</h3>
+    <p>The API Server generates a random <code>XSRF-TOKEN</code> cookie at login. Every subsequent mutating request (POST, PUT, DELETE) must include this token in the <code>X-XSRF-TOKEN</code> request header.</p>
+    <table>
+      <tr><th>Item</th><th>Detail</th></tr>
+      <tr><td>Cookie name</td><td><code>XSRF-TOKEN</code> (readable by JavaScript — not <code>HttpOnly</code>)</td></tr>
+      <tr><td>Header name</td><td><code>X-XSRF-TOKEN</code></td></tr>
+      <tr><td>Disable (dev only)</td><td>Config key <code>QBM | ApiServer | XsrfProtectionDisabled = 1</code> — <strong>never disable in production</strong></td></tr>
+    </table>
+    <h3>Session Management</h3>
+    <table>
+      <tr><th>Item</th><th>Detail</th></tr>
+      <tr><td>Session cookie</td><td>Encrypted; contains a security token to restore login if API Server restarts</td></tr>
+      <tr><td>Session group</td><td><code>imx_sessiongroup</code> cookie — ties multiple API project sessions to one browser session</td></tr>
+      <tr><td>Per-project sessions</td><td>Each API project (<code>portal</code>, <code>passwordreset</code>, etc.) has its own independent Identity Manager session within the group</td></tr>
+    </table>
+    <h3>Authentication Modules</h3>
+    <table>
+      <tr><th>Module</th><th>Description</th></tr>
+      <tr><td>Session-based (cookie)</td><td>Default for the Web Portal — POST credentials once, session cookie maintains auth</td></tr>
+      <tr><td>OAuth 2.0 / OpenID Connect</td><td>Delegate authentication to an external IdP (Entra ID, Okta, etc.). Configure in the API Server's <code>imxweb.json</code>.</td></tr>
+      <tr><td>Windows (NTLM/Kerberos)</td><td>Integrated Windows authentication for internal deployments</td></tr>
+    </table>
+    <div class="tip"><strong>Custom API integration:</strong> When calling OIM API endpoints from your own Angular component or external system, always read the <code>XSRF-TOKEN</code> cookie after login and attach it as the <code>X-XSRF-TOKEN</code> header on every non-GET request. Missing or mismatched tokens return HTTP 400.</div>
+  </div>
+
+  <!-- ═══════════════ COMPOSITION PLUGINS ═══════════════ -->
+  <div class="section" id="composition-plugins">
+    <h2><span class="icon">🧩</span> Composition API Plugins <a class="anchor-link" href="#composition-plugins">#</a></h2>
+    <p>Beyond API endpoints, the Composition API framework provides hooks into the IT Shop, attestation engine, and password reset portal.</p>
+    <h3>ICartCheckProvider — Shopping Cart Validation</h3>
+    <pre><code class="language-csharp">// Full interface signature
+public interface ICartCheckProvider
+{
+    Task&lt;IReadOnlyList&lt;ICartCheck&gt;&gt; GetCartChecksAsync(
+        ICartCheckContext cart, CancellationToken ct);
+
+    IReadOnlyDictionary&lt;Type, IReadOnlyList&lt;Type&gt;&gt; GetTypes();
+        // Return known serialisable types for your ICartCheck/ICartItemCheck implementations
+}
+
+// Example implementation
+public class SoDCartCheck : ICartCheckProvider
+{
+    public async Task&lt;IReadOnlyList&lt;ICartCheck&gt;&gt; GetCartChecksAsync(
+        ICartCheckContext cart, CancellationToken ct)
+    {
+        var checks = new List&lt;ICartCheck&gt;();
+        foreach (var item in cart.CartItems)
+        {
+            // Check if this request would create a ComplianceViolation
+            bool wouldViolate = await CheckSoDAsync(cart.Session, item, ct);
+            if (wouldViolate)
+                checks.Add(new CartItemError(item, "SoD conflict: request denied."));
+        }
+        return checks;
+    }
+    public IReadOnlyDictionary&lt;Type, IReadOnlyList&lt;Type&gt;&gt; GetTypes()
+        =&gt; new Dictionary&lt;Type, IReadOnlyList&lt;Type&gt;&gt; {
+               { typeof(ICartCheck), new[] { typeof(CartItemError) } }
+           };
+}</code></pre>
+    <h3>IRecommendationProvider — Approve/Deny Suggestions</h3>
+    <p>Two separate namespaces — one for IT Shop, one for Attestation:</p>
+    <pre><code class="language-csharp">// IT Shop recommendation (namespace: QER.CompositionApi.ITShop.Recommendation)
+public class MyITShopRecommendation : QER.CompositionApi.ITShop.Recommendation.IRecommendationProvider
+{
+    public async Task&lt;TryResult&lt;RecommendationItem&gt;&gt; BuildAsync(
+        IEntity request, ISession session, CancellationToken ct)
+    {
+        // return Weight=0 to recommend Approve; Weight&gt;=1 to recommend Deny
+        return TryResult.Success(new RecommendationItem {
+            Id = "MyProvider", Weight = 0.0,
+            Title = "Policy check passed", DetailText = "No issues found."
+        });
+    }
+}
+
+// Attestation recommendation (namespace: ATT.CompositionApi.Recommendation)
+public class MyAttestationRecommendation : ATT.CompositionApi.Recommendation.IRecommendationProvider { ... }</code></pre>
+    <table>
+      <tr><th>Sum of all Weights</th><th>Recommendation shown</th></tr>
+      <tr><td>= 0</td><td>Approve</td></tr>
+      <tr><td>≥ 1.0</td><td>Deny</td></tr>
+      <tr><td>Between 0 and 1</td><td>No recommendation</td></tr>
+    </table>
+    <h3>IPasswordItemProvider — Password Reset Extension</h3>
+    <p>Extend the Password Reset Portal to support custom account types by returning <code>IPasswordItem</code> objects representing accounts the user can reset. Register via <code>IBootstrapper</code>.</p>
+  </div>
+
+  <!-- ═══════════════ CUSTOM API PROJECTS ═══════════════ -->
+  <div class="section" id="custom-api-projects">
+    <h2><span class="icon">🌐</span> Custom API Projects <a class="anchor-link" href="#custom-api-projects">#</a></h2>
+    <p>Beyond the built-in <code>PortalApiProject</code>, you can create entirely separate API projects with their own URL prefix, auth, and session config.</p>
+    <pre><code class="language-csharp">// 1. Define your custom API project class
+public class MyCustomApiProject : IApiProject
+{
+    public string Id =&gt; "mycustomapi";           // URL prefix: /api/mycustomapi/...
+    public string DisplayName =&gt; "My Custom API";
+    public ApiAuthenticationType AuthType =&gt; ApiAuthenticationType.Session;
+}
+
+// 2. Register endpoints for the custom project
+[ApiProvider]
+public class MyCustomEndpoint : IApiProviderFor&lt;MyCustomApiProject&gt;, IApiProvider
+{
+    public void Build(IApiBuilder builder)
+    {
+        builder.AddMethod(Method.Define("data/items")
+            .HandleGet(async (qr, ct) =&gt; new { ok = true }));
+    }
+}
+
+// 3. Wire up in your plugin's IPlugInMethodSetProvider
+var set = new MethodSet();
+set.AppId = "mycustomapi";  // matches MyCustomApiProject.Id
+extensibility.FindAttributeBasedApiProviders&lt;IApiProvider&gt;()
+    .ForEach(p =&gt; set.Register(p));
+return set;</code></pre>
+    <div class="tip"><strong>Start from the sample:</strong> Copy the <code>CustomApiProject</code> sample in the API SDK (<code>IdentityManager.ApiSdk</code> GitHub repo) as a starting point. It includes the correct project definition, bootstrapper, and a working endpoint.</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════ BULK ACTIONS ═══════════════ -->
+  <div class="section" id="bulk-actions">
+    <h2><span class="icon">📥</span> Bulk Actions (024_002) <a class="anchor-link" href="#bulk-actions">#</a></h2>
+    <p>Bulk Actions let the Web Portal process CSV files row-by-row against custom API endpoints. The portal calls four endpoints in a fixed sequence.</p>
+    <div class="endpoint-grid">
+      <div class="endpoint-card start">
+        <h4>1 · startaction</h4>
+        <div class="url">/startaction</div>
+        <p>Pre-flight. Receives header names + total row count. Returns <code>{ message, permission, ActionAttributes }</code>. Creates shared state (e.g., a ShoppingCartOrder). <code>ActionAttributes</code> is forwarded to all subsequent calls.</p>
+      </div>
+      <div class="endpoint-card validate">
+        <h4>2 · validate</h4>
+        <div class="url">/startValidate → /validate</div>
+        <p>Called once per row. Returns <code>object[]</code> with <code>{ column }</code> for valid columns or <code>{ column, errorMsg }</code> for invalid ones. Does <strong>not</strong> write to DB. May add <code>ValidationAttributes</code> per row.</p>
+      </div>
+      <div class="endpoint-card action">
+        <h4>3 · action</h4>
+        <div class="url">/action</div>
+        <p>Called once per valid row. Performs the actual DB write. Receives all column values + <code>ActionAttributes</code> + per-row <code>ValidationAttributes</code>.</p>
+      </div>
+      <div class="endpoint-card end">
+        <h4>4 · endaction</h4>
+        <div class="url">/endaction</div>
+        <p>Post-flight. Receives import stats (<code>successCount</code>, <code>failCount</code>, <code>errorRows</code>). Returns a summary message string. Clean up shared state here.</p>
+      </div>
+    </div>
+
+    <h3>startaction — Create Shared State</h3>
+    <pre><code class="language-csharp">builder.AddMethod(Method.Define("webportalplus/addentitlement/startaction")
+    .Handle&lt;StartPayload, object&gt;("POST", async (posted, qr, ct) =&gt;
+    {
+        var uid = qr.Session.User().Uid;
+        var cart = await qr.Session.Source().CreateNewAsync(
+            "ShoppingCartOrder",
+            new EntityParameters { CreationType = EntityCreationType.DelayedLogic }, ct)
+            .ConfigureAwait(false);
+        await cart.PutValueAsync("UID_Person", uid, ct).ConfigureAwait(false);
+        await cart.PutValueAsync("CheckStatus", 2, ct).ConfigureAwait(false);
+        string cartUid = await cart.GetValueAsync&lt;string&gt;("UID_ShoppingCartOrder")
+            .ConfigureAwait(false);
+        using (var u = qr.Session.StartUnitOfWork())
+        {
+            await u.PutAsync(cart, ct).ConfigureAwait(false);
+            await u.CommitAsync(ct).ConfigureAwait(false);
+        }
+        return new Dictionary&lt;string, object&gt;
+        {
+            { "message",    $"Processing {posted.totalRows} rows." },
+            { "permission", true },
+            // ActionAttributes are forwarded to every /validate and /action call
+            { "ActionAttributes", new { shoppingCart = cartUid } }
+        };
+    }));
+public class StartPayload { public string[] headerNames { get; set; } public int totalRows { get; set; } }</code></pre>
+
+    <h3>validate — Per-Row Validation</h3>
+    <pre><code class="language-csharp">// Check existence, return column results
+var exists = await qr.Session.Source()
+    .ExistsAsync("Person", $"UID_Person = '{personUid}'", ct).ConfigureAwait(false);
+
+if (!exists)
+    return new[] { new { column = "PersonUID", errorMsg = $"Person '{personUid}' not found." } };
+
+// Valid — return confirmed columns (no errorMsg)
+return new[] { new { column = "PersonUID" }, new { column = "RoleName" } };</code></pre>
+
+    <h3>ActionAttributes vs ValidationAttributes</h3>
+    <table>
+      <tr><th>Property</th><th>Set in</th><th>Available in</th><th>Purpose</th></tr>
+      <tr><td><code>ActionAttributes</code></td><td>startaction response</td><td>validate, action, endaction</td><td>Shared state for the whole import run (e.g., cart UID)</td></tr>
+      <tr><td><code>ValidationAttributes</code></td><td>validate response (per row)</td><td>action for that specific row</td><td>Per-row computed values to avoid re-querying the DB in the action step</td></tr>
+    </table>
+
+    <h3>endaction — Stats Object</h3>
+    <pre><code class="language-csharp">public class EndPayload
+{
+    public int successCount { get; set; }   // rows where action succeeded
+    public int failCount    { get; set; }   // rows that failed validation or action
+    public int totalRows    { get; set; }
+    // ErrorRows list if the portal passes them
+}
+
+builder.AddMethod(Method.Define("webportalplus/addentitlement/endaction")
+    .Handle&lt;EndPayload, object&gt;("POST", async (posted, qr, ct) =&gt;
+    {
+        return $"Import complete: {posted.successCount} succeeded, {posted.failCount} failed.";
+    }));</code></pre>
+
+    <h3>CSV Template Endpoint</h3>
+    <pre><code class="language-csharp">builder.AddMethod(Method.Define("webportalplus/addentitlement/csvtemplate")
+    .HandleGet((qr, ct) =&gt; new[]
+    {
+        new { column = "PersonUID",  display = "Person UID",    required = true  },
+        new { column = "RoleName",   display = "Business Role", required = true  },
+        new { column = "ValidUntil", display = "Valid Until",   required = false }
+    }));</code></pre>
+
+    <h3>Academy Reference Sets (024_002)</h3>
+    <table>
+      <tr><th>Action Set</th><th>Operation</th><th>Key Table</th></tr>
+      <tr><td>InsertIdentities</td><td>Create new Person records from CSV</td><td><code>Person</code></td></tr>
+      <tr><td>UpdateIdentities</td><td>Update Person properties from CSV</td><td><code>Person</code></td></tr>
+      <tr><td>DeactivateIdentities</td><td>Set <code>IsInActive=1</code> via CSV</td><td><code>Person</code></td></tr>
+      <tr><td>newEntitlement</td><td>Add IT Shop entitlement via ShoppingCartOrder</td><td><code>PersonWantsOrg</code></td></tr>
+      <tr><td>removeEnt</td><td>Unsubscribe IT Shop entitlement</td><td><code>PersonWantsOrg</code></td></tr>
+    </table>
+  </div>
+
+  <!-- ═══════════════ DATAEXPLORER+ ═══════════════ -->
+  <div class="section" id="dataexplorer">
+    <h2><span class="icon">🔍</span> DataExplorer+ (024_003) <a class="anchor-link" href="#dataexplorer">#</a></h2>
+    <p>DataExplorer+ adds action buttons to OIM's Data Explorer UI, letting managers or admins trigger operations directly from an identity's data view.</p>
+    <h3>Two-Endpoint Pattern</h3>
+    <table>
+      <tr><th>Endpoint</th><th>Suffix</th><th>Purpose</th></tr>
+      <tr><td>Validate</td><td><code>/validate</code></td><td>Checks preconditions; returns a message and <code>canProceed</code> flag shown in a confirmation dialog</td></tr>
+      <tr><td>Action</td><td><code>/action</code></td><td>Called on confirmation; performs the actual DB operation</td></tr>
+    </table>
+    <h3>Remove Business Role Membership — Full Pattern</h3>
+    <pre><code class="language-csharp">// Handle both direct (XOrigin &amp; 1) and IT Shop (XOrigin &amp; 8)
+if (objectkey.StartsWith("&lt;Key&gt;&lt;T&gt;PersonInOrg&lt;/T&gt;", StringComparison.OrdinalIgnoreCase))
+{
+    // Direct assignment
+    var q1 = Query.From("PersonInOrg")
+        .Where($"XObjectKey = '{objectkey}' AND ((XOrigin &amp; 1) = 1)").SelectAll();
+    var r1 = await qr.Session.Source()
+        .TryGetAsync(q1, EntityLoadType.DelayedLogic, ct).ConfigureAwait(false);
+    if (r1.Success)
+    {
+        using var u = qr.Session.StartUnitOfWork();
+        r1.Result.MarkForDeletion();
+        await u.PutAsync(r1.Result, ct).ConfigureAwait(false);
+        await u.CommitAsync(ct).ConfigureAwait(false);
+    }
+
+    // IT Shop requested assignment — must Unsubscribe
+    var q2 = Query.From("PersonInOrg")
+        .Where($"XObjectKey = '{objectkey}' AND ((XOrigin &amp; 8) = 8)").SelectAll();
+    var r2 = await qr.Session.Source()
+        .TryGetAsync(q2, EntityLoadType.DelayedLogic, ct).ConfigureAwait(false);
+    if (r2.Success)
+    {
+        var q3 = Query.From("PersonWantsOrg")
+            .Where($"ObjectKeyAssignment = '{objectkey}' AND OrderState = 'Assigned'")
+            .OrderBy("XDateInserted desc").SelectAll();
+        var r3 = await qr.Session.Source()
+            .TryGetAsync(q3, EntityLoadType.DelayedLogic, ct).ConfigureAwait(false);
+        if (r3.Success)
+        {
+            await r3.Result.CallMethodAsync("Unsubscribe", ct).ConfigureAwait(false);
+            await r3.Result.SaveAsync(qr.Session, ct).ConfigureAwait(false);
+        }
+    }
+}</code></pre>
+
+    <h3>Academy DataExplorer Reference</h3>
+    <table>
+      <tr><th>Academy Endpoint</th><th>Live Equivalent</th><th>Purpose</th></tr>
+      <tr><td><code>CCCApproveAttestationAction</code></td><td><code>DE_Action.cs</code></td><td>Approve attestation case from Data Explorer</td></tr>
+      <tr><td><code>CCCRemoveMembershipAction</code></td><td><code>DE_RemoveMembership_Action.cs</code></td><td>Remove a single business role membership</td></tr>
+      <tr><td><code>CCCRemoveAllMoverBRMembershipsAction</code></td><td><code>DE_RemoveAllMembership_Action.cs</code></td><td>Bulk-remove all business roles for a mover</td></tr>
+      <tr><td><code>CCCUpdateMainDataAction</code></td><td><em>Not implemented in live</em></td><td>Update identity main data fields</td></tr>
+    </table>
+  </div>
+
+  <!-- ═══════════════ VBNET SCRIPTS ═══════════════ -->
+  <div class="section" id="vbnet-scripts">
+    <h2><span class="icon">📝</span> VB.NET Scripts &amp; ISqlFormatter <a class="anchor-link" href="#vbnet-scripts">#</a></h2>
+
+    <h3>OIM VB.NET Syntax Reference</h3>
+    <table>
+      <tr><th>Syntax</th><th>Meaning</th></tr>
+      <tr><td><code>$ColumnName:Type$</code></td><td>Current (new) value of <code>ColumnName</code>, cast to <code>Type</code></td></tr>
+      <tr><td><code>$ColumnName[o]:Type$</code></td><td>Old (pre-change) value of <code>ColumnName</code></td></tr>
+      <tr><td><code>$ColumnName[n]:Type$</code></td><td>New value — same as without <code>[n]</code></td></tr>
+      <tr><td><code>value</code></td><td>In property scripts: the output variable (assign to set the column)</td></tr>
+      <tr><td>Type tokens</td><td><code>String</code>, <code>Bool</code>, <code>Int</code>, <code>Date</code>, <code>Double</code></td></tr>
+    </table>
+
+    <h3>ISqlFormatter — Safe Query Building</h3>
+    <div class="warn"><strong>SQL Injection Risk:</strong> Raw <code>String.Format("Column = '{0}'", userInput)</code> in VB.NET Where clauses is vulnerable. Use <code>ISqlFormatter</code> for all dynamic conditions.</div>
+    <pre><code class="language-vbnet">' Get the formatter from the session
+Dim f As ISqlFormatter = Session.SqlFormatter
+
+' Single comparison (type-safe, parameterised internally)
+Dim cond As String = f.Comparison("CentralAccount", centralAccount, ValType.String, CompareOperator.Equal)
+
+' LIKE pattern
+Dim likeCond As String = f.Comparison("CustomProperty03", lastNameLike, ValType.String, CompareOperator.Like)
+
+' AND two conditions
+Dim combined As String = f.AndRelation(cond1, cond2)
+
+' OR two conditions
+Dim ored As String = f.OrRelation(cond1, cond2)
+
+' Use in a query
+Dim q As IQuery = Query.From("Person").Where(cond).Select("CentralAccount")</code></pre>
+
+    <h4>CompareOperator Enum</h4>
+    <table>
+      <tr><th>Value</th><th>SQL Equivalent</th></tr>
+      <tr><td><code>Equal</code></td><td><code>=</code></td></tr>
+      <tr><td><code>NotEqual</code></td><td><code>&lt;&gt;</code></td></tr>
+      <tr><td><code>LowerThan</code></td><td><code>&lt;</code></td></tr>
+      <tr><td><code>GreaterThan</code></td><td><code>&gt;</code></td></tr>
+      <tr><td><code>LowerThanOrEqual</code></td><td><code>&lt;=</code></td></tr>
+      <tr><td><code>GreaterThanOrEqual</code></td><td><code>&gt;=</code></td></tr>
+      <tr><td><code>Like</code></td><td><code>LIKE '%value%'</code></td></tr>
+      <tr><td><code>BitsNotSet</code></td><td>Bitwise: <code>(col &amp; val) = 0</code></td></tr>
+    </table>
+
+    <h3>Generate Unique Central Account (Fixed)</h3>
+    <div class="warn"><strong>v1 bug fixed:</strong> The original loop was missing <code>Exit Do</code>, causing all 10 iterations to always run even after finding a free account. Corrected below.</div>
+    <pre><code class="language-vbnet">Public Function CCC_Generate_CentralAccount() As String
+    Dim f As ISqlFormatter = Session.SqlFormatter
+    Dim maxAttempts As Integer = 10
+    Dim attempt As Integer = 0
+    Dim random As New Random()
+    Dim valueToReturn As String = String.Empty
+
+    Do
+        attempt += 1
+        Dim randomNumber As Integer = random.Next(10000, 99999)
+        Dim centralAccount As String = "T" &amp; randomNumber.ToString()
+
+        ' ISqlFormatter prevents SQL injection
+        Dim wc As String = f.Comparison("CentralAccount", centralAccount, ValType.String, CompareOperator.Equal)
+        Dim isTaken As Boolean = Session.Source.GetCount(
+            Query.From("Person").Where(wc).Select("CentralAccount")) &gt; 0
+
+        If Not isTaken Then
+            valueToReturn = centralAccount
+            Exit Do   ' ← FIX: stop as soon as a free account is found
+        End If
+    Loop While attempt &lt; maxAttempts
+
+    Return valueToReturn
+End Function</code></pre>
+
+    <h3>Unique Custom Property with Counter Suffix</h3>
+    <pre><code class="language-vbnet">' Guard: only runs when OLD value was empty (first-time assignment)
+If DbVal.IsEmpty($CustomProperty03[o]:String$, ValType.String) Then
+    Dim f As ISqlFormatter = Session.SqlFormatter
+    Dim baseName As String = $CustomProperty03:String$
+
+    ' Strip trailing digit if present (handles re-run scenarios)
+    If Char.IsDigit(baseName(baseName.Length - 1)) Then
+        baseName = baseName.Substring(0, baseName.Length - 1)
+    End If
+
+    Dim candidate As String = baseName
+    Dim counter As Integer = 1
+
+    ' Find first unused value
+    Do
+        Dim wc As String = f.Comparison("CustomProperty03", candidate, ValType.String, CompareOperator.Equal)
+        Dim count As Integer = Session.Source.GetCount(
+            Query.From("Person").Where(wc).Select("CustomProperty03"))
+        If count = 0 Then Exit Do
+        candidate = baseName &amp; counter.ToString()
+        counter += 1
+    Loop
+
+    value = candidate
+End If</code></pre>
+    <div class="note"><strong>OIM VB.NET note:</strong> <code>$Column[o]:Type$</code> reads the old value (before the current change). <code>value</code> (unqualified) is the output variable that sets the column result.</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════ POWERSHELL ═══════════════ -->
+  <div class="section" id="powershell">
+    <h2><span class="icon">💻</span> PowerShell Scripting (016) <a class="anchor-link" href="#powershell">#</a></h2>
+    <h3>Connection String Builder</h3>
+    <pre><code class="language-powershell">function New-SqlConnectionString {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$Server,
+        [Parameter(Mandatory)][string]$Database,
+        [pscredential]$Credential,
+        [switch]$Integrated
+    )
+    if ($Integrated) {
+        return "Server=$Server;Database=$Database;Integrated Security=True;" +
+               "Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+    }
+    $u = $Credential.UserName
+    $p = $Credential.GetNetworkCredential().Password
+    return "Server=$Server;Database=$Database;User ID=$u;Password=$p;" +
+           "Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+}</code></pre>
+
+    <h3>Parameterised Query Pattern</h3>
+    <pre><code class="language-powershell">function Get-OIMPersons {
+    param([string]$ConnectionString, [string]$UID_Person = $null)
+    $conn = New-Object System.Data.SqlClient.SqlConnection $ConnectionString
+    $cmd  = $conn.CreateCommand()
+    $cmd.CommandText = @"
+SELECT UID_Person, FirstName, LastName, CentralAccount
+FROM dbo.Person
+WHERE (@UID IS NULL OR UID_Person = @UID) AND IsInActive = 0
+"@
+    $cmd.Parameters.AddWithValue("@UID",
+        [object]([string]::IsNullOrEmpty($UID_Person) ? [DBNull]::Value : $UID_Person)) | Out-Null
+
+    try {
+        $conn.Open()
+        $reader  = $cmd.ExecuteReader()
+        $idxUID  = $reader.GetOrdinal("UID_Person")
+        $idxFN   = $reader.GetOrdinal("FirstName")
+        $idxLN   = $reader.GetOrdinal("LastName")
+        $results = [System.Collections.Generic.List[PSCustomObject]]::new()
+        while ($reader.Read()) {
+            $results.Add([PSCustomObject]@{
+                UID_Person    = $reader.GetValue($idxUID)
+                FirstName     = $reader.GetValue($idxFN)
+                LastName      = $reader.GetValue($idxLN)
+            })
+        }
+        return $results
+    }
+    finally {
+        if ($reader) { $reader.Close() }
+        if ($conn)   { $conn.Close()   }
+    }
+}</code></pre>
+
+    <h3>Best Practices</h3>
+    <table>
+      <tr><th>Practice</th><th>Reason</th></tr>
+      <tr><td>Always use <code>@parameter</code> in SQL</td><td>Prevents SQL injection</td></tr>
+      <tr><td>Cache ordinals with <code>GetOrdinal()</code></td><td>Reduces per-row field lookup overhead</td></tr>
+      <tr><td>Close connections in <code>finally</code></td><td>Ensures cleanup on exception</td></tr>
+      <tr><td><code>Set-StrictMode -Version Latest</code></td><td>Catches uninitialized variable errors early</td></tr>
+      <tr><td>Use <code>[switch]</code> for optional prompts</td><td>Avoids PowerShell binding conflicts with <code>[pscredential]</code></td></tr>
+    </table>
+  </div>
+
+  <!-- ═══════════════ DEPLOYMENT MANAGER ═══════════════ -->
+  <div class="section" id="deployment-manager">
+    <h2><span class="icon">🚀</span> Deployment Manager (024_001) <a class="anchor-link" href="#deployment-manager">#</a></h2>
+    <p>The <strong>Intragen Deployment Manager</strong> (DM 4.0.6-beta) provides scripted, auditable OIM transport management with multi-environment support.</p>
+    <table>
+      <tr><th>Feature</th><th>Description</th></tr>
+      <tr><td>XML Templates</td><td>Defines deployment packages in XML — objects, processes, scripts</td></tr>
+      <tr><td>Multi-change Changelists</td><td>Groups multiple change labels into one deployable unit</td></tr>
+      <tr><td>PowerShell Integration</td><td>Uses <code>Intragen.Deployment.OneIdentity.dll</code> via PowerShell for scripted deployments</td></tr>
+      <tr><td>Version Tracking</td><td>Tracks deployment history across Dev/Test/Prod</td></tr>
+    </table>
+    <h3>DM XML Structure</h3>
+    <pre><code class="language-xml">&lt;DeploymentPackage&gt;
+    &lt;Objects&gt;
+        &lt;Object Table="Department" Uid="{UID}" /&gt;
+    &lt;/Objects&gt;
+    &lt;Processes&gt;
+        &lt;Process Table="JobChain" Uid="{UID}" /&gt;
+    &lt;/Processes&gt;
+    &lt;Scripts&gt;
+        &lt;Script Table="DialogScript" Uid="{UID}" /&gt;
+    &lt;/Scripts&gt;
+&lt;/DeploymentPackage&gt;</code></pre>
+    <h3>PowerShell Export Tool</h3>
+    <pre><code class="language-powershell"># Basic usage
+.\MainPsModule.ps1 -ZipPath "C:\path\to\export.zip"
+
+# With encrypted DM password
+.\MainPsModule.ps1 -ZipPath "C:\path\to\export.zip" -DMPassword
+
+# Config from config.json keys:
+# OutPath, LogPath, NLoggerDLL, DMDll, DMPassword ([E] prefix = encrypted), CSVMode, PreviewXml</code></pre>
+  </div>
+
+  <!-- ═══════════════ TROUBLESHOOTING ═══════════════ -->
+  <div class="section" id="troubleshooting">
+    <h2><span class="icon">🔧</span> Troubleshooting Guide <a class="anchor-link" href="#troubleshooting">#</a></h2>
+    <table>
+      <tr><th>Symptom / Error</th><th>Cause</th><th>Fix</th></tr>
+      <tr>
+        <td><code>ApiServer0037</code> — duplicate route</td>
+        <td>Two endpoints registered with the same URL pattern</td>
+        <td>Check all <code>Method.Define("...")</code> calls for duplicate paths. Remember the URL is case-insensitive.</td>
+      </tr>
+      <tr>
+        <td>Plugin DLL not loaded — endpoints return 404</td>
+        <td>DLL name doesn't match <code>*.CompositionApi.Server.Plugin.dll</code> pattern, or it's in the wrong directory</td>
+        <td>Rename the output DLL. Check API Server log for <em>"Loading plugin"</em> entries. Verify deploy directory. Check <code>[assembly: Module]</code> attribute.</td>
+      </tr>
+      <tr>
+        <td>HTTP 400 on every POST — "XSRF token missing"</td>
+        <td>Angular client not sending <code>X-XSRF-TOKEN</code> header, or cookie/header mismatch after session restore</td>
+        <td>Read <code>XSRF-TOKEN</code> cookie after login and inject it as a header. Clear browser cookies and re-login if stale.</td>
+      </tr>
+      <tr>
+        <td>Provisioning stuck — account changes don't appear in AD</td>
+        <td>DBQueue not processing, Job Server offline, or missing server function</td>
+        <td>Check: (1) DBQueue service running; (2) <code>JobQueue.Ready2EXE='TRUE'</code> rows exist; (3) Job Server service alive; (4) correct server function assigned to Job Server; (5) AD connector credentials valid.</td>
+      </tr>
+      <tr>
+        <td>Bulk action session expired mid-import</td>
+        <td>Long-running import exceeds session timeout; each action call re-validates the session</td>
+        <td>Reduce CSV row count per batch, or increase session timeout in <code>imxweb.json</code> (<code>SessionTimeout</code>). Ensure the Angular client sends keepalive pings.</td>
+      </tr>
+      <tr>
+        <td>Transport import conflict — <em>"Object already exists"</em></td>
+        <td>Two transport packages contain conflicting versions of the same object (same UID, different change labels)</td>
+        <td>Consolidate into one change label, or import in the correct order. Use the Deployment Manager to manage dependency ordering.</td>
+      </tr>
+      <tr>
+        <td><code>TryGetAsync</code> returns <code>r.Success = false</code></td>
+        <td>No row matched the Where clause, or the user's session lacks read permission on that table</td>
+        <td>Verify the Where clause (log the query string). Check table-level read permission for the session user's permission groups.</td>
+      </tr>
+      <tr>
+        <td>VB.NET script fires on every save, not just creation</td>
+        <td>Missing old-value guard — script runs unconditionally</td>
+        <td>Wrap logic in <code>If DbVal.IsEmpty($Column[o]:String$, ValType.String) Then</code> to restrict to first-time assignment.</td>
+      </tr>
+      <tr>
+        <td>Missing XSRF token when calling from custom Angular component</td>
+        <td>IMX Angular library intercepts HTTP — custom <code>HttpClient</code> bypasses this</td>
+        <td>Use the OIM-provided Angular service (<code>imx-api</code>) for API calls, or manually attach the token interceptor to your <code>HttpClient</code> provider.</td>
+      </tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════ GAP ANALYSIS ═══════════════ -->
+  <div class="section" id="comparison">
+    <h2><span class="icon">📊</span> Gap Analysis — Live vs Academy <a class="anchor-link" href="#comparison">#</a></h2>
+    <p>Cross-reference between live production plugins (<code>Plugins/</code>) and Academy reference implementations (<code>Training/CustomCode/</code>).</p>
+
+    <h3>A — CCC_BulkActions vs Academy BulkActions_Ref</h3>
+    <table>
+      <tr><th>Live file</th><th>Academy file</th><th>Status</th></tr>
+      <tr><td><code>startAction.cs</code></td><td><code>insrtPerson_startAction.cs</code></td><td class="diff-same">Identical</td></tr>
+      <tr><td><code>startValidate.cs</code></td><td><code>insrtPerson_startValidate.cs</code></td><td class="diff-same">Identical</td></tr>
+      <tr><td><code>Validate.cs</code></td><td><code>insrtPerson_Validate.cs</code></td><td class="diff-same">Identical</td></tr>
+      <tr><td><code>endAction.cs</code></td><td><code>insrtPerson_endAction.cs</code></td><td class="diff-same">Identical</td></tr>
+      <tr><td><code>CSVtemplate.cs</code></td><td><code>insrtPerson_CSVtemplate.cs</code></td><td class="diff-same">Identical</td></tr>
+      <tr><td><code>Action.cs</code> (InsertIdentities — creates Person)</td><td><em>No counterpart</em></td><td class="diff-added">Live-only</td></tr>
+      <tr><td><code>addEnt_*.cs</code> (6 files)</td><td><code>addEnt_*.cs</code> (6 files)</td><td class="diff-same">Identical</td></tr>
+      <tr><td><code>removeEnt.cs</code></td><td><code>removeEnt.cs</code></td><td class="diff-same">Identical</td></tr>
+    </table>
+    <div class="tip">The Academy never implemented the per-row <code>/action</code> step for InsertIdentities. The live <code>Action.cs</code> is the actual person creation logic — use it as the reference for new bulk action types.</div>
+
+    <h3>B — DataExplorerEndpoints vs Academy DataExplorer_Ref</h3>
+    <table>
+      <tr><th>Live file</th><th>Academy reference</th><th>Status</th></tr>
+      <tr><td><code>DE_Action.cs</code></td><td><code>CCCApproveAttestationAction.cs</code></td><td class="diff-same">Similar</td></tr>
+      <tr><td><code>DE_Validate.cs</code></td><td><code>CCCApproveAttestationValidate.cs</code></td><td class="diff-same">Similar</td></tr>
+      <tr><td><code>DE_RemoveMembership_Action.cs</code></td><td><code>CCCRemoveMembershipAction.cs</code></td><td class="diff-changed">Diverged — live is subset</td></tr>
+      <tr><td><code>DE_RemoveMembership_Validate.cs</code></td><td><code>CCCRemoveMembershipValidate.cs</code></td><td class="diff-same">Similar</td></tr>
+      <tr><td><code>DE_RemoveAllMembership_Action.cs</code></td><td><code>CCCRemoveAllMoverBRMembershipsAction.cs</code></td><td class="diff-same">Similar</td></tr>
+      <tr><td><em>Not implemented</em></td><td><code>CCCUpdateMainDataAction.cs</code></td><td class="diff-removed">Academy-only</td></tr>
+    </table>
+    <h4>Key Difference: DE_RemoveMembership_Action.cs</h4>
+    <table>
+      <tr><th>Feature</th><th>Live</th><th>Academy</th></tr>
+      <tr><td><code>PersonInAERole</code> handling</td><td class="diff-removed">✗ Missing</td><td class="diff-added">✓ Implemented</td></tr>
+      <tr><td>Risk index (<code>xRisk</code>) tracking</td><td class="diff-removed">✗ Not read</td><td class="diff-added">✓ Read &amp; stored</td></tr>
+      <tr><td><code>CCC_AttestationHistoryDE</code> process</td><td class="diff-removed">✗ Not called</td><td class="diff-added">✓ <code>u.GenerateAsync()</code></td></tr>
+    </table>
+
+    <h3>C — StathopoulosK.Plugin vs Academy API_Exercises</h3>
+    <table>
+      <tr><th>Live file</th><th>Academy file</th><th>Status</th></tr>
+      <tr><td><code>CCC_StathopoulosK.cs</code></td><td><code>CCC_StathopoulosK.cs</code></td><td class="diff-same">Identical — plugin IS the exercise</td></tr>
+      <tr><td><code>ApiSamples.cs</code></td><td><code>ApiSamples.cs</code></td><td class="diff-same">Identical</td></tr>
+      <tr><td><code>API_Exercises.cs</code></td><td><code>API_Exercises.cs</code></td><td class="diff-same">Identical</td></tr>
+    </table>
+  </div>
+
+  <!-- ═══════════════ SDK SAMPLE INDEX ═══════════════ -->
+  <div class="section" id="sdk-index">
+    <h2><span class="icon">📖</span> SDK Sample Index <a class="anchor-link" href="#sdk-index">#</a></h2>
+    <p>All 57 official OIM 9.3 API SDK samples are in <code>Training/API_SDK/</code> and the <a href="https://github.com/OneIdentity/IdentityManager.ApiSdk" target="_blank">IdentityManager.ApiSdk</a> GitHub repo.</p>
+    <h3>Sdk01_Basics</h3>
+    <table>
+      <tr><th>File</th><th>Pattern</th></tr>
+      <tr><td>01-BasicQueryMethod.cs</td><td><code>.FromTable().EnableRead().WithAllColumns()</code></td></tr>
+      <tr><td>02-BasicSqlMethod.cs</td><td>SQL-based methods, <code>IStatementRunner</code></td></tr>
+      <tr><td>03-CustomMethod.cs</td><td>Custom HTTP handlers, <code>.Handle&lt;T&gt;()</code></td></tr>
+      <tr><td>04-AccessControl.cs</td><td>Permission constraints on methods</td></tr>
+      <tr><td>05-EnableExport.cs</td><td>CSV export capability</td></tr>
+      <tr><td>06-RequestValidation.cs</td><td>Custom input validators</td></tr>
+      <tr><td>07-DeletionMethod.cs</td><td><code>.EnableDelete()</code>, <code>MarkForDeletion()</code></td></tr>
+      <tr><td>08-Statistics.cs</td><td>Statistical aggregate endpoints</td></tr>
+      <tr><td>09-CustomEntities.cs</td><td>Non-table entity definitions</td></tr>
+      <tr><td>11-Logging.cs</td><td><code>ILogger&lt;T&gt;</code> structured logging in plugins</td></tr>
+      <tr><td>12-BinaryData.cs</td><td>File/blob handling</td></tr>
+      <tr><td>15-Grouping.cs</td><td>Data grouping and aggregation</td></tr>
+      <tr><td>17-MultipleRoutes.cs</td><td>Multiple HTTP verbs on one method</td></tr>
+      <tr><td>18-CustomApiProject.cs</td><td>Creating custom API projects</td></tr>
+      <tr><td>19-WebSockets.cs</td><td>Real-time WebSocket connections</td></tr>
+    </table>
+    <h3>Sdk02_Properties</h3>
+    <table>
+      <tr><th>File</th><th>Pattern</th></tr>
+      <tr><td>01-FkProperty.cs</td><td>Foreign-key parent column as property</td></tr>
+      <tr><td>02-CrProperty.cs</td><td>Child relation collection as property</td></tr>
+      <tr><td>03-MrProperty.cs</td><td>Many-to-many via join table</td></tr>
+      <tr><td>04-CalculatedProperty.cs</td><td>Code-derived property values</td></tr>
+      <tr><td>05-EnumProperty.cs</td><td>Integer-to-display-string mapping</td></tr>
+    </table>
+    <h3>Sdk03_Customization</h3>
+    <table>
+      <tr><th>File</th><th>Pattern</th></tr>
+      <tr><td>01-AddProperty.cs</td><td><code>ModifyCrudMethod</code> to add columns to existing methods</td></tr>
+      <tr><td>02-AddWhereClause.cs</td><td>Add filter conditions to existing methods</td></tr>
+      <tr><td>04-GlobalModifier.cs</td><td><code>IModifierService</code> for global property semantics</td></tr>
+      <tr><td>06-DateConstraint.cs</td><td>Date validation via <code>ValueConstraint</code></td></tr>
+      <tr><td>07-Configuration.cs</td><td>Reading OIM config parameters</td></tr>
+      <tr><td>08-ModifyAuthentication.cs</td><td>Custom authentication hooks</td></tr>
+    </table>
+    <h3>Sdk04_WritingData</h3>
+    <table>
+      <tr><th>File</th><th>Pattern</th></tr>
+      <tr><td>01-WriteDelayedLogicEntity.cs</td><td>Delayed-logic write with <code>UnitOfWork</code></td></tr>
+      <tr><td>02-WriteInteractiveEntity.cs</td><td>Interactive entity multi-step update</td></tr>
+      <tr><td>03-LimitWritableColumns.cs</td><td>Explicit writable column list</td></tr>
+      <tr><td>04-DynamicWritableColumns.cs</td><td>Conditional column writability</td></tr>
+      <tr><td>05-NewDelayedLogicEntity.cs</td><td>Entity creation from scratch</td></tr>
+      <tr><td>06-WriteArtificialProperty.cs</td><td>Synthetic writable property with event handling</td></tr>
+    </table>
+    <h3>Sdk05_Misc</h3>
+    <table>
+      <tr><th>File</th><th>Pattern</th></tr>
+      <tr><td>01-HttpStatusCodes.cs</td><td>Custom HTTP response codes</td></tr>
+      <tr><td>02-Exceptions.cs</td><td>Exception handling and error responses</td></tr>
+      <tr><td>03-ConfigureCors.cs</td><td>CORS configuration</td></tr>
+      <tr><td>07-Events.cs</td><td>Entity event subscriptions</td></tr>
+      <tr><td>12-ExtendedData.cs</td><td>Read-only extended data provider</td></tr>
+      <tr><td>13-ExtendedDataWrite.cs</td><td>Read-write extended data</td></tr>
+      <tr><td>17-ServerPlugin.cs</td><td>Server plugin architecture patterns</td></tr>
+    </table>
+  </div>
+
+  <!-- ═══════════════ QUICK REFERENCE ═══════════════ -->
+  <div class="section" id="quickref">
+    <h2><span class="icon">⚡</span> Quick Reference Cheat Sheet <a class="anchor-link" href="#quickref">#</a></h2>
+
+    <div class="cheat-grid">
+      <div class="cheat-card">
+        <h4>Session Helpers (C#)</h4>
+        <pre style="font-size:11px;margin:0"><code class="language-csharp">qr.Session.User().Uid
+qr.Session.Source().TryGetAsync(q,…)
+qr.Session.Source().GetCollectionAsync(q,…)
+qr.Session.Source().ExistsAsync(t,wc,ct)
+qr.Session.Source().CreateNewAsync(t,p,ct)
+qr.Session.StartUnitOfWork()
+u.PutAsync(e,ct)  /  u.CommitAsync(ct)
+e.MarkForDeletion()
+e.CallMethodAsync("Name",args,ct)
+e.SaveAsync(qr.Session,ct)
+u.GenerateAsync("ProcName",params,ct)
+qr.Session.Config().GetConfigParmAsync(…)
+qr.Session.Resolve&lt;IStatementRunner&gt;()
+qr.Session.IsInRole("group")</code></pre>
+      </div>
+
+      <div class="cheat-card">
+        <h4>XOrigin Bitmask</h4>
+        <table style="font-size:12px;margin:0">
+          <tr><th>Bit</th><th>Source</th><th>Remove via</th></tr>
+          <tr><td>1</td><td>Direct</td><td>MarkForDeletion</td></tr>
+          <tr><td>2</td><td>Inherited</td><td>Remove from parent</td></tr>
+          <tr><td>4</td><td>Dynamic rule</td><td>Change rule/attrs</td></tr>
+          <tr><td>8</td><td>IT Shop</td><td>Unsubscribe</td></tr>
+          <tr><td>16</td><td>Compliance</td><td>Withdraw exception</td></tr>
+        </table>
+      </div>
+
+      <div class="cheat-card">
+        <h4>PersonWantsOrg.OrderState</h4>
+        <table style="font-size:12px;margin:0">
+          <tr><td><code>NotYetOrdered</code></td><td>In cart, not submitted</td></tr>
+          <tr><td><code>Request</code></td><td>Submitted, checks running</td></tr>
+          <tr><td><code>Pending</code></td><td>Awaiting approval</td></tr>
+          <tr><td><code>Assigned</code></td><td>Approved + provisioned</td></tr>
+          <tr><td><code>Unsubscribed</code></td><td>Removal queued</td></tr>
+          <tr><td><code>OrderCancelled</code></td><td>Denied / cancelled</td></tr>
+          <tr><td><code>OrderFailed</code></td><td>Provisioning error</td></tr>
+        </table>
+      </div>
+
+      <div class="cheat-card">
+        <h4>ISqlFormatter (VB.NET)</h4>
+        <pre style="font-size:11px;margin:0"><code class="language-vbnet">Dim f = Session.SqlFormatter
+f.Comparison(col, val, ValType.String, CompareOperator.Equal)
+f.Comparison(col, val, ValType.Int, CompareOperator.GreaterThan)
+f.Comparison(col, val, ValType.String, CompareOperator.Like)
+f.AndRelation(cond1, cond2)
+f.OrRelation(cond1, cond2)
+' ValType: String / Int / Bool / Date
+' CompareOperator: Equal / NotEqual / Like /
+'   LowerThan / GreaterThan / BitsNotSet</code></pre>
+      </div>
+
+      <div class="cheat-card">
+        <h4>Bulk Action Skeleton (C#)</h4>
+        <pre style="font-size:11px;margin:0"><code class="language-csharp">// startaction → returns ActionAttributes
+// validate    → returns { column, ?errorMsg }[]
+// action      → reads ActionAttributes + row data → writes DB
+// endaction   → reads stats → returns summary string
+// csvtemplate → returns { column, display, required }[]</code></pre>
+      </div>
+
+      <div class="cheat-card">
+        <h4>Common Permission Groups</h4>
+        <table style="font-size:12px;margin:0">
+          <tr><td><code>vi_4_AUDITING_AUDITOR</code></td><td>Read-only audit</td></tr>
+          <tr><td><code>vi_4_ITSHOPADMIN_ADMIN</code></td><td>IT Shop admin</td></tr>
+          <tr><td><code>vi_4_ATTESTATION_APPROVER</code></td><td>Attestation decisions</td></tr>
+          <tr><td><code>vi_4_ROLE_APPROVER</code></td><td>Role request approval</td></tr>
+          <tr><td><code>vi_4_MANAGER_APPROVER</code></td><td>Manager approval</td></tr>
+        </table>
+      </div>
+
+      <div class="cheat-card">
+        <h4>Entity CRUD Skeleton (C#)</h4>
+        <pre style="font-size:11px;margin:0"><code class="language-csharp">// READ
+var q = Query.From("T").SelectAll().Where($"...");
+var r = await src.TryGetAsync(q, EntityLoadType.DelayedLogic, ct).CF();
+if (r.Success) { var val = r.Result.GetValue&lt;string&gt;("Col"); }
+
+// CREATE
+var e = await src.CreateNewAsync("T", new EntityParameters {
+    CreationType = EntityCreationType.DelayedLogic }, ct).CF();
+await e.PutValueAsync("Col", val, ct).CF();
+
+// WRITE (create or update)
+using var u = qr.Session.StartUnitOfWork();
+await u.PutAsync(e, ct).CF();
+await u.CommitAsync(ct).CF();
+
+// DELETE
+e.MarkForDeletion();
+// .CF() = .ConfigureAwait(false)</code></pre>
+      </div>
+
+      <div class="cheat-card">
+        <h4>VB.NET Column Syntax</h4>
+        <table style="font-size:12px;margin:0">
+          <tr><td><code>$Col:String$</code></td><td>Current string value</td></tr>
+          <tr><td><code>$Col:Bool$</code></td><td>Current boolean</td></tr>
+          <tr><td><code>$Col[o]:String$</code></td><td>Old (pre-change) value</td></tr>
+          <tr><td><code>$Col[n]:String$</code></td><td>New value (same as no flag)</td></tr>
+          <tr><td><code>value</code></td><td>Output variable (set to return)</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<button id="scrolltop" title="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ── Syntax highlighting ──
+document.addEventListener('DOMContentLoaded', () => {
+  hljs.highlightAll();
+  wrapCodeBlocks();
+  initScrollSpy();
+});
+
+// ── Copy buttons ──
+function wrapCodeBlocks() {
+  document.querySelectorAll('pre').forEach(pre => {
+    if (pre.parentElement.classList.contains('code-wrapper')) return;
+    const w = document.createElement('div');
+    w.className = 'code-wrapper';
+    pre.parentNode.insertBefore(w, pre);
+    w.appendChild(pre);
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.onclick = () => {
+      const code = pre.querySelector('code');
+      navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+        btn.textContent = 'Copied!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+      });
+    };
+    w.appendChild(btn);
+  });
+}
+
+// ── Dark mode ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-toggle').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('oi-theme', isDark ? 'light' : 'dark');
+}
+(function() {
+  const saved = localStorage.getItem('oi-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = '☀️';
+  }
+})();
+
+// ── Nav accordion ──
+function toggleGroup(el) {
+  el.classList.toggle('collapsed');
+  const items = el.nextElementSibling;
+  if (el.classList.contains('collapsed')) {
+    items.style.maxHeight = '0';
+    items.classList.add('collapsed');
+  } else {
+    items.style.maxHeight = items.scrollHeight + 'px';
+    items.classList.remove('collapsed');
+    // recalc after content loads
+    setTimeout(() => { items.style.maxHeight = '9999px'; }, 260);
+  }
+}
+// Init max-height for all open groups
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.nav-group-items:not(.collapsed)').forEach(el => {
+    el.style.maxHeight = '9999px';
+  });
+});
+
+// ── Search ──
+function filterNav(q) {
+  const term = q.toLowerCase().trim();
+  document.querySelectorAll('.nav-item').forEach(a => {
+    const text = a.textContent.toLowerCase();
+    const match = !term || text.includes(term);
+    a.classList.toggle('hidden', !match);
+  });
+  // Also show/hide content sections
+  document.querySelectorAll('.section[id]').forEach(sec => {
+    if (!term) { sec.classList.remove('hidden'); return; }
+    const headings = sec.querySelectorAll('h2, h3');
+    const text = Array.from(headings).map(h => h.textContent.toLowerCase()).join(' ');
+    sec.classList.toggle('hidden', !text.includes(term));
+  });
+}
+
+// ── Mobile sidebar ──
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+
+// ── Scroll spy ──
+function initScrollSpy() {
+  const sections = document.querySelectorAll('.section[id]');
+  const navItems = document.querySelectorAll('.nav-item[href^="#"]');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navItems.forEach(n => n.classList.remove('active'));
+        const active = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+        if (active) {
+          active.classList.add('active');
+          // scroll nav into view
+          const scroll = document.getElementById('nav-scroll');
+          const offset = active.offsetTop - scroll.clientHeight / 2;
+          scroll.scrollTo({ top: offset, behavior: 'smooth' });
+        }
+      }
+    });
+  }, { rootMargin: '-15% 0% -70% 0%' });
+  sections.forEach(s => observer.observe(s));
+}
+
+// ── Scroll to top ──
+window.addEventListener('scroll', () => {
+  document.getElementById('scrolltop').style.display = window.scrollY > 400 ? 'block' : 'none';
+});
+</script>
+
+</body>
+</html>
