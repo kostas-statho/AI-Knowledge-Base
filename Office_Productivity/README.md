@@ -1,65 +1,161 @@
 # Office Productivity Library
 
-Reusable, exportable toolkit for Excel, PowerPoint, Microsoft 365 Graph API, and Claude AI agent integration.
+A ready-to-use toolkit for automating Excel, PowerPoint, and Microsoft 365 from VBA macros or .NET code. Pick the layer that fits your situation — no need to use all of it.
 
-## Structure
+---
 
-| Path | Purpose |
+## Which part do I need?
+
+| I want to... | Use this |
 |---|---|
-| `VBA/Excel/` | Importable `.bas` modules for Excel automation |
-| `VBA/PowerPoint/` | Importable `.bas` modules for PowerPoint automation |
-| `VBA/Shared/` | Logger and error-handler shared by all VBA modules |
-| `VBNetLibrary/src/` | .NET 8 class library (COM + OpenXML + M365 + Agent tools) |
-| `VBNetLibrary/src/McpServer/` | MCP server exposing tools to Claude Code |
-| `VBNetLibrary/tests/` | xUnit tests |
+| Write a quick Excel/PowerPoint macro | **VBA modules** (`VBA/`) |
+| Automate Office from a C# or VB.NET app, Office is installed | **VBNetLibrary — COM helpers** |
+| Generate `.xlsx` / `.pptx` files on a server (no Office installed) | **VBNetLibrary — File helpers** (ClosedXML / ShapeCrawler) |
+| Upload files to SharePoint or send Teams messages | **VBNetLibrary — M365 helpers** |
+| Let Claude AI read/write your spreadsheets | **VBNetLibrary — Agent Tools** |
 
-## VBA Quick Reference
+---
 
-| Module | Key Procedures |
+## Folder layout
+
+```
+Office_Productivity/
+├── README.md           ← you are here
+├── HOW_TO_USE.md       ← step-by-step examples for beginners
+├── Resources.md        ← links to libraries and docs used
+│
+├── VBA/                ← copy-paste macros, works in any Excel/PowerPoint
+│   ├── Excel/          ← stdWorkbook, stdRange, stdChart, stdExport
+│   ├── PowerPoint/     ← stdPresentation, stdSlide, stdShape
+│   └── Shared/         ← stdLogger, stdErrorHandler (used by all modules)
+│
+└── VBNetLibrary/       ← .NET 8 class library
+    ├── src/
+    │   ├── Common/     ← helper utilities (COM cleanup, STA threading, config)
+    │   ├── Excel/      ← ExcelComHelper (live COM), ExcelFileHelper (ClosedXML)
+    │   ├── PowerPoint/ ← PowerPointComHelper (live COM), PowerPointFileHelper (ShapeCrawler)
+    │   ├── M365/       ← Graph API: SharePoint upload/download, Teams messages
+    │   ├── AgentTools/ ← 6 tools Claude can call (read sheet, write sheet, export, ...)
+    │   └── McpServer/  ← runs the MCP server so Claude Code can use the tools
+    └── tests/          ← automated tests (xUnit)
+```
+
+---
+
+## VBA Modules
+
+### What each module does
+
+**Excel**
+
+| Module | What it does |
 |---|---|
-| `stdWorkbook` | `OpenWorkbook`, `SaveWorkbookAs`, `CloseWorkbook`, `ProtectSheet` |
-| `stdRange` | `ReadRangeToArray`, `WriteArrayToRange`, `FormatRange`, `AutoFitColumns` |
-| `stdChart` | `CreateBarChart`, `UpdateChartSeries`, `ExportChartAsPng` |
-| `stdExport` | `ExportSheetToCSV`, `ExportWorkbookToPDF`, `ExportRangeToNewWorkbook` |
-| `stdPresentation` | `OpenPresentation`, `SavePresentationAs`, `ExportToPDF`, `ClosePresentation` |
-| `stdSlide` | `AddSlide`, `CloneSlide`, `DeleteSlide`, `SetSlideTitle` |
-| `stdShape` | `AddTextBox`, `InsertImage`, `AddTable`, `ApplyTheme` |
-| `stdLogger` | `LogInfo`, `LogWarn`, `LogError` |
-| `stdErrorHandler` | `HandleError` |
+| `stdWorkbook` | Open, save, close, and password-protect workbooks |
+| `stdRange` | Read a range into a variable, write data back, bold/colour cells, auto-fit columns |
+| `stdChart` | Create a bar chart from a data range, update its data, save it as a PNG |
+| `stdExport` | Save a sheet as CSV, export the whole workbook to PDF, copy a range to a new file |
 
-## .NET Quick Reference
+**PowerPoint**
 
-| Class | Engine | Key Methods |
-|---|---|---|
-| `ExcelComHelper` | COM (Office required) | `OpenWorkbook`, `ReadRange`, `WriteRange`, `CreateChart`, `Close` |
-| `ExcelFileHelper` | ClosedXML (no Office) | `OpenWorkbook`, `ReadRange`, `WriteRange`, `SaveAs` |
-| `PowerPointComHelper` | COM (Office required) | `Open`, `AddSlide`, `ExportToPdf`, `Close` |
-| `PowerPointFileHelper` | ShapeCrawler (no Office) | `Open`, `CreateNew`, `AddTextBox`, `SaveAs` |
-| `GraphCredentialFactory` | Azure.Identity | `Build(AuthMode, tenantId, clientId, ...)` |
-| `SharePointHelper` | Graph + PnP | `UploadFileAsync`, `DownloadFileAsync`, `ListFilesAsync` |
-| `TeamsHelper` | Graph | `SendMessageAsync`, `CreateChannelAsync` |
-| `ToolRegistry` | — | `ToClaudeToolsJson()`, `ToMcpManifestJson()` |
+| Module | What it does |
+|---|---|
+| `stdPresentation` | Open, save-as, export to PDF, close presentations |
+| `stdSlide` | Add a new slide, duplicate a slide, delete a slide, set its title |
+| `stdShape` | Add a text box, insert an image, add a table, apply a theme file |
 
-## Agent Tools (6 total)
+**Shared (use in any module)**
 
-**Excel:** `read_sheet`, `write_sheet`, `export_csv`
-**PowerPoint:** `create_presentation`, `add_slide`, `export_pdf`
+| Module | What it does |
+|---|---|
+| `stdLogger` | Write log messages to the Immediate window and optionally a "Log" sheet |
+| `stdErrorHandler` | Standard error-catch wrapper — shows a message box and logs the error |
 
-## Build & Deploy
+### How to import a module
+
+1. Open Excel or PowerPoint
+2. Press **Alt + F11** to open the VBA editor
+3. In the menu: **File → Import File...**
+4. Browse to `VBA/Excel/` (or `VBA/PowerPoint/`, `VBA/Shared/`)
+5. Select the `.bas` file and click **Open**
+6. The module appears in the left-hand **Project** panel — done
+
+> Always import `stdLogger.bas` and `stdErrorHandler.bas` from `VBA/Shared/` first — the other modules use them.
+
+---
+
+## VBNetLibrary (.NET 8)
+
+### Build it
 
 ```bash
 cd VBNetLibrary
 dotnet build OfficeProductivity.sln
+```
+
+Requires: Windows + .NET 8 SDK. Office only needed for the COM helpers (the File helpers work without it).
+
+### Run the tests
+
+```bash
 dotnet test
 ```
 
-**VBA Import:** VBA IDE → File → Import File → select any `.bas` file
+### Two modes for Excel and PowerPoint
 
-## MCP Server
+Every Excel/PowerPoint operation comes in two flavours:
+
+| Class | When to use |
+|---|---|
+| `ExcelComHelper` | Office is installed; you need charts, macros, or need to work with a file already open in Excel |
+| `ExcelFileHelper` | No Office; generating reports on a server; faster for large file creation |
+| `PowerPointComHelper` | Office installed; export to PDF; use PPT animations/themes |
+| `PowerPointFileHelper` | No Office; quickly create or read `.pptx` files |
+
+Both classes have the same method names — you can swap one for the other without changing your calling code.
+
+### M365 / Graph API helpers
+
+Three helpers for Microsoft 365:
+
+| Class | What it does |
+|---|---|
+| `GraphCredentialFactory` | Creates the authenticated Graph client (choose: service principal, interactive login, or managed identity) |
+| `SharePointHelper` | Upload a file, download a file, list files in a folder |
+| `TeamsHelper` | Post a message to a Teams channel, create a channel |
+
+### Agent Tools (Claude integration)
+
+Six tools that Claude AI can call directly:
+
+| Tool name | What it does |
+|---|---|
+| `read_sheet` | Reads rows from an Excel sheet, returns them as JSON |
+| `write_sheet` | Writes JSON rows into an Excel sheet |
+| `export_csv` | Exports a sheet to a CSV file |
+| `create_presentation` | Creates a new `.pptx` from a JSON slide spec |
+| `add_slide` | Adds a slide with a title and content to an existing presentation |
+| `export_pdf` | Exports a presentation to PDF |
+
+Get the tool definitions for the Claude API:
+
+```vb
+Dim registry As New ToolRegistry()
+Dim json As String = registry.ToClaudeToolsJson()
+' paste json into the "tools" parameter of your Claude API call
+```
+
+### MCP Server
+
+Starts a local server so Claude Code can discover and call the tools automatically:
 
 ```bash
 cd VBNetLibrary/src/McpServer
 dotnet run
 ```
 
-Exposes all agent tools via Model Context Protocol for use with Claude Code.
+---
+
+## See also
+
+- **[HOW_TO_USE.md](HOW_TO_USE.md)** — beginner walkthroughs with copy-paste examples
+- **[Resources.md](Resources.md)** — links to all external libraries and docs
