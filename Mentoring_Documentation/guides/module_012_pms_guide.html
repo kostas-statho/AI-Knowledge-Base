@@ -225,7 +225,7 @@ pre code{background:none;color:inherit;padding:0;font-size:inherit}
       <li><span class="obj-num">3</span>Assign permissions to roles and understand how permissions propagate downward through the tree</li>
       <li><span class="obj-num">4</span>Assign roles to Persons both directly and through inheritance from parent roles</li>
       <li><span class="obj-num">5</span>Create employee Person objects from CSV sample data including correct use of the External flag</li>
-      <li><span class="obj-num">6</span>Understand XOrigin propagation: 0x01 Direct, 0x02 Inherited, and bitmask combinations such as 0x03</li>
+      <li><span class="obj-num">6</span>Understand XOrigin propagation: 1 = Direct, 2 = Inherited, and additive combinations such as 3 (both direct and inherited simultaneously)</li>
       <li><span class="obj-num">7</span>Configure access control for the web portal using Application Roles linked to Business Roles</li>
       <li><span class="obj-num">8</span>Verify the resulting access matrix by logging in as different test users and comparing what they can see</li>
     </ul>
@@ -290,36 +290,36 @@ pre code{background:none;color:inherit;padding:0;font-size:inherit}
       <thead>
         <tr>
           <th>Label</th>
-          <th>Hex Value</th>
-          <th>Binary</th>
+          <th>Value (Integer)</th>
+          <th>Bit Pattern</th>
           <th>Meaning</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="xo-direct">Direct</td>
-          <td>0x01</td>
-          <td>0001</td>
+          <td>1</td>
+          <td>bit 0 set</td>
           <td>Person was explicitly assigned to this role by a user or process</td>
         </tr>
         <tr>
           <td class="xo-inherited">Inherited</td>
-          <td>0x02</td>
-          <td>0010</td>
+          <td>2</td>
+          <td>bit 1 set</td>
           <td>Assignment flowed down from a parent role in the hierarchy</td>
         </tr>
         <tr>
           <td class="xo-both">Both</td>
-          <td>0x03</td>
-          <td>0011</td>
-          <td>Directly assigned AND inherited simultaneously — both bits are set</td>
+          <td>3</td>
+          <td>bits 0+1 set</td>
+          <td>Directly assigned AND inherited simultaneously — both bits are set; value = 1 + 2</td>
         </tr>
       </tbody>
     </table>
 
     <div class="callout callout-warning">
       <div class="callout-title">Common Misunderstanding — Bitmask Is Not Exclusive</div>
-      Trainees often expect XOrigin to be a single exclusive value. Show them that 0x03 means <em>both bits are set at once</em>. This is important when removing a direct assignment: if inheritance also applies, the PersonInRole record stays with XOrigin = 0x02 rather than being deleted. The assignment persists via the inherited path even after the direct assignment is removed.
+      Trainees often expect XOrigin to be a single exclusive value. Show them that 3 means <em>both bits are set at once</em> (1 + 2 = 3). This matters operationally: removing a direct assignment when XOrigin = 3 does not delete the PersonInRole record — it drops from 3 to 2. The assignment persists via the inherited path even after the direct assignment is removed.
     </div>
 
     <h3 style="margin-top:1.5rem;">Role Hierarchy for This Module</h3>
@@ -465,7 +465,7 @@ Anna,Lyra,Publisher,0</code></pre>
 
       <div class="callout callout-warning">
         <div class="callout-title">Inherit Assignments Flag</div>
-        The "Inherit assignments" flag on IT Department controls whether entitlements assigned to the parent flow down to child role members. If this flag is off, child role members will not inherit parent-level entitlements, and XOrigin will never show 0x02 (Inherited). Enable it before the exercise to avoid confusion in PMS-4.
+        The <strong>Inherit assignments</strong> flag on the IT Department (parent) Business Role controls whether entitlements assigned to the parent propagate down to all child role members. When this flag is disabled, child role members receive only entitlements directly assigned to their own role — they do not inherit from the parent — and XOrigin on any parent-sourced PersonInRole row will never reach 2 (Inherited). Enable this flag before starting PMS-4 so that the inheritance bitmask scenario is observable.
       </div>
     </div>
 
@@ -522,19 +522,19 @@ Anna,Lyra,Publisher,0</code></pre>
         <li><span class="step-dot"></span>Open Anna Lyra &rarr; <strong>Business Roles</strong> tab &rarr; click Assign &rarr; select "Publisher" &rarr; Save</li>
         <li><span class="step-dot"></span>Run the <strong>DBQueue Processor</strong> (or trigger the job service cycle)</li>
         <li><span class="step-dot"></span>After processing, open a database query tool and query <code>PersonInRole</code> filtered by each Person's UID</li>
-        <li><span class="step-dot"></span>Examine the <code>XOrigin</code> column on each row — note which rows show 0x01, 0x02, or 0x03</li>
-        <li><span class="step-dot"></span>Check for rows where the linked Business Role is "IT Department" (the parent) — these show XOrigin = 0x02 (inherited)</li>
-        <li><span class="step-dot"></span>Discuss: what would happen to XOrigin if you also directly assigned Kalfas to "IT Department" as well as "Tester"?</li>
+        <li><span class="step-dot"></span>Examine the <code>XOrigin</code> column on each row — note which rows show 1, 2, or 3</li>
+        <li><span class="step-dot"></span>Locate the row where the linked Business Role is "IT Department" (the parent) — this row shows XOrigin = 2 (inherited via child membership)</li>
+        <li><span class="step-dot"></span>Discussion point: if you also directly assigned Kalfas to "IT Department" in addition to "Tester", what value would XOrigin show on the IT Department row, and why?</li>
       </ul>
 
       <div class="callout callout-info">
         <div class="callout-title">Mentor Hint &mdash; Reading the Bitmask</div>
-        Direct assignment gives XOrigin = 0x01 on the Tester/Developer/Publisher row. The IT Department parent row will show XOrigin = 0x02 (inherited). If someone is <em>also</em> directly assigned to the parent role, that parent row becomes 0x03 (both bits set: 0x01 + 0x02 = 0x03). Walk trainees through binary: 0x03 = binary 0011 — bit 0 is Direct, bit 1 is Inherited. Multiple sources can be active simultaneously.
+        Direct assignment gives XOrigin = 1 on the Tester/Developer/Publisher row. The IT Department parent row shows XOrigin = 2 (inherited via child membership). If Kalfas is also directly assigned to IT Department, that parent row becomes 3 (1 + 2 — both bits set). Walk trainees through the arithmetic: Direct bit = 1, Inherited bit = 2, both active = 3. The database stores this as an integer; the bit positions encode <em>how</em> the assignment was established, and multiple sources can be active simultaneously.
       </div>
 
       <div class="callout callout-error">
         <div class="callout-title">Common Mistake &mdash; Expecting Exclusive Values</div>
-        Trainees often assume XOrigin is exclusive: either 0x01 or 0x02, never both. Show the actual database rows to prove that 0x03 is a valid and common value. This also matters operationally: removing the direct assignment when 0x03 is set does not delete the row — it becomes 0x02. The assignment persists via inheritance.
+        Trainees consistently assume XOrigin is exclusive: either 1 (Direct) or 2 (Inherited), never both. Show the actual database rows to prove that 3 is a valid and common production value. Operationally: removing a direct assignment when XOrigin = 3 does not delete the PersonInRole row — it drops to 2. The person retains the role via the inherited path. This distinction is critical when troubleshooting why a role removal appears to have no effect.
       </div>
 
       <div class="callout callout-warning">

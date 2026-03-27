@@ -394,17 +394,29 @@
 
   <!-- Architecture -->
   <div class="arch-box" id="architecture">
-    <h2>Architecture Overview &mdash; 4-Endpoint HTTP Contract</h2>
+    <h2>Architecture Overview &mdash; 6-Endpoint HTTP Contract</h2>
     <p>
-      The Angular front-end calls these endpoints in sequence for every bulk CSV action.
-      Understanding this contract is essential before writing any endpoint code.
+      The Angular front-end calls these six endpoints in a fixed sequence for every bulk CSV action.
+      Understanding the contract before writing any code prevents the most common integration failures.
     </p>
-    <ol>
-      <li><code>/csvtemplate</code> &mdash; Returns CSV column headers as a downloadable template file</li>
-      <li><code>/startvalidate</code> &mdash; Pre-flight check; returns <code>{ message, permission, collectImportData? }</code></li>
-      <li><code>/validate</code> &mdash; Per-row validation; returns an array of <code>{ column }</code> or <code>{ column, errorMsg }</code></li>
-      <li><code>/startaction</code>, <code>/action</code>, <code>/endaction</code> &mdash; Per-row processing and post-flight summary</li>
-    </ol>
+    <table style="width:100%;border-collapse:collapse;font-size:.875rem;margin-top:.75rem;">
+      <thead>
+        <tr style="background:var(--purple-dark);color:#fff;">
+          <th style="padding:.5rem .75rem;text-align:left;width:30%;">Endpoint</th>
+          <th style="padding:.5rem .75rem;text-align:left;">Role in the sequence</th>
+          <th style="padding:.5rem .75rem;text-align:left;width:25%;">Response contract</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:#fff;"><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;"><code>/csvtemplate</code></td><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;">Returns downloadable CSV column headers — the user's upload template</td><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;">CSV file / string of headers</td></tr>
+        <tr style="background:#F8F5FB;"><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;"><code>/startvalidate</code></td><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;">Pre-flight: checks user permissions before any CSV is processed</td><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;"><code>{ message, permission, collectImportData? }</code></td></tr>
+        <tr style="background:#fff;"><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;"><code>/validate</code></td><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;">Called once per CSV row; returns per-field validation results</td><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;"><code>[{ column }, { column, errorMsg }]</code></td></tr>
+        <tr style="background:#F8F5FB;"><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;"><code>/startaction</code></td><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;">Pre-action gate; called once before row processing begins</td><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;"><code>{ message, permission }</code></td></tr>
+        <tr style="background:#fff;"><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;"><code>/action</code></td><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;">Called once per CSV row; performs the actual DB write/delete</td><td style="padding:.5rem .75rem;border-bottom:1px solid #DDD;">Success/error string per row</td></tr>
+        <tr style="background:#F8F5FB;"><td style="padding:.5rem .75rem;"><code>/endaction</code></td><td style="padding:.5rem .75rem;">Post-flight: receives import summary statistics, returns final message</td><td style="padding:.5rem .75rem;"><code>{ message }</code></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:.75rem;font-size:.82rem;color:var(--muted);">Angular calls endpoints in this exact order. If any endpoint returns an error, the sequence stops. The <code>/validate</code> and <code>/action</code> endpoints are called once per CSV row — design them to be stateless and row-idempotent.</div>
   </div>
 
   <!-- BA_01 -->
@@ -442,8 +454,18 @@
       <li>Login to ITShop with an Identity that has the CCC_BulkActions group and verify the Bulk Actions feature is accessible.</li>
     </ol>
 
-    <span class="section-label">Test Cases</span>
-    <p class="no-test-note">No formal test table for BA_01. Verify environment by confirming each setup step completes without errors, the Angular build succeeds, and the ITShop login with the test identity shows the Bulk Actions feature.</p>
+    <span class="section-label">Verification Checklist</span>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead><tr><th class="num-col">#</th><th>Verification</th><th>How to confirm</th><th>Expected result</th></tr></thead>
+        <tbody>
+          <tr><td class="num-col">1</td><td>Angular build completes</td><td>Run <code>npm run nx:build-all</code> and observe exit code</td><td>Exit 0; no build errors; output files present in <code>dist/</code></td></tr>
+          <tr><td class="num-col">2</td><td>DLL in both locations</td><td>Check both <code>C:\Program Files\One Identity\One Identity Manager</code> and <code>C:\inetpub\wwwroot\ApiServer\bin</code></td><td><code>BulkActions93.CompositionApi.Server.Plugin.dll</code> present in both</td></tr>
+          <tr><td class="num-col">3</td><td>Bulk Actions visible in ITShop</td><td>Log in to ITShop as the CCC_BulkActions identity</td><td>Bulk Actions navigation item is visible in the portal menu</td></tr>
+          <tr><td class="num-col">4</td><td>Bulk Actions hidden for unpermitted user</td><td>Log in to ITShop as an identity <em>without</em> CCC_BulkActions assignment</td><td>No Bulk Actions item in the portal menu</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <span class="section-label">Mentor Tips / Troubleshooting</span>
     <div class="mentor-box">
@@ -474,13 +496,23 @@
 
     <span class="section-label">Solution Steps</span>
     <ol class="steps-list">
-      <li>Create the proper endpoint class implementing <code>IApiProvider</code> and <code>IApiProviderFor&lt;PortalApiProject&gt;</code>.</li>
-      <li>Build the solution and copy the updated <code>.dll</code> to the Api Server bin directory.</li>
-      <li>Restart the API Server application pool and verify functionality in ITShop.</li>
+      <li>Create an endpoint class implementing both <code>IApiProvider</code> and <code>IApiProviderFor&lt;PortalApiProject&gt;</code>. The class must use namespace <code>QBM.CompositionApi</code>.</li>
+      <li>Register at minimum the <code>/startvalidate</code> endpoint in the <code>Build(IApiBuilder builder)</code> method. Return a hardcoded success response (<code>{ message: "Ready", permission: true }</code>) as a first-pass smoke test before adding real logic.</li>
+      <li>Build the solution; copy the updated DLL to <code>C:\inetpub\wwwroot\ApiServer\bin</code>; recycle the API Server application pool in IIS Manager.</li>
+      <li>Trigger the bulk action from ITShop and confirm the endpoint responds without a 404 or 500 error.</li>
     </ol>
 
     <span class="section-label">Test Cases</span>
-    <p class="no-test-note">No formal test table. Verify the endpoint responds correctly in ITShop by triggering the action from the Bulk Actions UI and confirming the expected response is returned.</p>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead><tr><th class="num-col">#</th><th>Test Scenario</th><th>Test Steps</th><th>Expected Results</th><th>Mentor Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="num-col">1</td><td>Endpoint responds in ITShop</td><td>Trigger the bulk action from the ITShop UI</td><td>No 404 or "endpoint not found" error; the portal reaches the C# endpoint</td><td>If 404, verify DLL naming convention and IIS app pool was recycled.</td></tr>
+          <tr><td class="num-col">2</td><td>Unauthenticated call blocked</td><td>Call the endpoint URL directly in Postman without a valid session</td><td>Session expired / 401 response</td><td>Bulk action endpoints must never be reachable without an active OIM session.</td></tr>
+          <tr><td class="num-col">3</td><td>Namespace check</td><td>Confirm build output DLL in ILSpy or check C# class declaration</td><td>Class namespace is <code>QBM.CompositionApi</code></td><td>Wrong namespace causes the plugin loader to skip the class silently.</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <span class="section-label">Mentor Tips / Troubleshooting</span>
     <div class="mentor-box">
@@ -509,13 +541,22 @@
 
     <span class="section-label">Solution Steps</span>
     <ol class="steps-list">
-      <li>Create the <code>/validate</code> endpoint returning the correct per-row validation array structure.</li>
-      <li>Build the solution and copy the updated DLL to the Api Server.</li>
-      <li>Verify functionality by uploading a test CSV in ITShop and confirming per-row errors are displayed.</li>
+      <li>Create the <code>/validate</code> endpoint. It receives a single-row object and must return an array of objects — one per CSV column. Use <code>{ column = "ColumnName" }</code> for valid fields; use <code>{ column = "ColumnName", errorMsg = "Error description" }</code> for invalid ones.</li>
+      <li>Implement at least one validation rule: e.g., required field check or format check. Return the complete column array regardless — every column must have a corresponding entry, valid or invalid.</li>
+      <li>Build, copy DLL, recycle app pool. Upload a test CSV with at least one intentionally invalid row to confirm error surfacing.</li>
     </ol>
 
     <span class="section-label">Test Cases</span>
-    <p class="no-test-note">No formal test table. Validate by uploading CSVs with known bad rows and confirming errors surface in the correct columns in the ITShop UI.</p>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead><tr><th class="num-col">#</th><th>Test Scenario</th><th>Test Steps</th><th>Expected Results</th><th>Mentor Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="num-col">1</td><td>Valid row — no errors</td><td>Upload a CSV row with all required fields populated correctly</td><td>Row advances to the action phase; no error indicators in the ITShop row</td><td>Confirm the returned array has no <code>errorMsg</code> fields.</td></tr>
+          <tr><td class="num-col">2</td><td>Invalid row — required field missing</td><td>Upload a CSV row with a mandatory column left empty</td><td>Row flagged with error; the specific column shows the error message in the ITShop UI</td><td>Verify the <code>column</code> value in the error object matches the exact column name Angular expects.</td></tr>
+          <tr><td class="num-col">3</td><td>Empty <code>errorMsg</code> string</td><td>Return <code>{ column, errorMsg: "" }</code> for an invalid field</td><td>Row may incorrectly appear valid in the UI</td><td>An empty string is not the same as omitting <code>errorMsg</code>. Always omit the field entirely for valid columns — do not send an empty string.</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <span class="section-label">Mentor Tips / Troubleshooting</span>
     <div class="mentor-box">
@@ -542,13 +583,22 @@
 
     <span class="section-label">Solution Steps</span>
     <ol class="steps-list">
-      <li>Create the <code>/action</code> endpoint using <code>qr.Session.StartUnitOfWork()</code>, <code>u.PutAsync()</code> or <code>u.DeleteAsync()</code>, and <code>u.CommitAsync()</code>.</li>
-      <li>Build the solution and copy the updated DLL to the Api Server.</li>
-      <li>Verify functionality by processing a valid CSV row and confirming the DB change.</li>
+      <li>Create the <code>/action</code> endpoint. Open a UnitOfWork, perform the DB operation (<code>PutAsync</code> to create/update, <code>DeleteAsync</code> to remove), then commit: <code>await u.CommitAsync(ct).ConfigureAwait(false)</code>. The <code>using</code> block ensures disposal on exception.</li>
+      <li>Add error handling: catch exceptions from the DB write and return a descriptive string rather than letting unhandled exceptions propagate to the portal as generic errors.</li>
+      <li>Build, copy DLL, recycle app pool. Process at least one valid row and verify the change persists in the OIM database.</li>
     </ol>
 
     <span class="section-label">Test Cases</span>
-    <p class="no-test-note">No formal test table. Verify by running a full action through the ITShop UI and confirming the expected records are created or modified in the OIM database.</p>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead><tr><th class="num-col">#</th><th>Test Scenario</th><th>Test Steps</th><th>Expected Results</th><th>Mentor Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="num-col">1</td><td>Valid row — DB record created/updated</td><td>Process a valid CSV row end-to-end through the ITShop UI</td><td>Record created or modified in OIM; verifiable in Designer or Manager immediately after processing</td><td>Query the relevant table directly to confirm — do not rely solely on the portal's success message.</td></tr>
+          <tr><td class="num-col">2</td><td>Missing CommitAsync</td><td>Comment out <code>u.CommitAsync</code> and process a row</td><td>No error in portal, but no DB change — the unit of work is disposed without committing</td><td>This is a common silent failure. Stress to trainees: <em>no commit = no change</em>, and OIM does not warn you.</td></tr>
+          <tr><td class="num-col">3</td><td>Unauthorized identity</td><td>Process a row as an identity that lacks write permission on the target table</td><td>Authorization exception or descriptive error returned to portal</td><td>Verify the error is user-friendly, not a raw C# stack trace. Handle <code>EntityWriteException</code> and return a clean message.</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <span class="section-label">Mentor Tips / Troubleshooting</span>
     <div class="mentor-box">

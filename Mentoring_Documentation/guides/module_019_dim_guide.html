@@ -424,7 +424,7 @@ h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0
       <ol class="numbered-steps">
         <li><span class="step-num">1</span>Create a properly structured CSV file with all mandatory Person fields and at least 2-3 test rows</li>
         <li><span class="step-num">2</span>Open Data Importer and load the CSV file</li>
-        <li><span class="step-num">3</span>File Structure: set encoding (UTF-8), delimiter (semicolon), and text qualifier as needed</li>
+        <li><span class="step-num">3</span>File Structure: set encoding = <strong>UTF-8</strong>, delimiter = <strong>semicolon (;)</strong>, text qualifier = <strong>double-quote (&quot;)</strong></li>
         <li><span class="step-num">4</span>Line Structure: confirm column mapping matches CSV headers</li>
         <li><span class="step-num">5</span>Line Condition: leave as-is (no filter needed for this exercise)</li>
         <li><span class="step-num">6</span>Match Target: select target table (Person), map columns, and set the Primary Key column</li>
@@ -574,7 +574,13 @@ h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0
       <div class="mentor-tips">
         <div class="tips-header">Mentor Tips / Troubleshooting</div>
         <ul>
-          <li>Connection string format: <code>Server=HOSTNAME;Database=OIM_DB;Integrated Security=True;</code> or with username/password depending on environment</li>
+          <li>Connection string — two forms:
+            <ul style="margin-top:4px;margin-left:1.2rem;list-style:disc;">
+              <li>Windows auth (service account): <code>Server=HOSTNAME;Database=OneIM;Integrated Security=True;TrustServerCertificate=True;</code></li>
+              <li>SQL auth (username/password): <code>Server=HOSTNAME;Database=OneIM;User ID=sa;Password=YourPassword;TrustServerCertificate=True;</code></li>
+            </ul>
+            Use Windows auth in production when the Data Importer runs under a domain service account. Use SQL auth in training environments where individual passwords are configured.
+          </li>
           <li>If "Login failed" errors occur, verify SQL Server authentication mode and that the connecting account has db_datareader rights</li>
           <li>Always test the SELECT query in Object Browser first &mdash; confirmed row results there means the query is valid before pasting into Data Importer</li>
         </ul>

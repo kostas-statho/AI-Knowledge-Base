@@ -644,20 +644,37 @@
     <div class="setup-grid">
       <div class="setup-item">
         <strong>IDE</strong>
-        Visual Studio 2022 with .NET Framework 4.8 workload installed
+        Visual Studio 2022 with <strong>.NET 8.0</strong> SDK installed (not .NET Framework — all OIM 9.3 plugins target net8.0)
       </div>
       <div class="setup-item">
         <strong>DLL Naming</strong>
-        Project output DLL must match <code>*.CompositionApi.Server.Plugin.dll</code> — API Server only loads DLLs matching this pattern exactly
+        Project output DLL must match <code>*.CompositionApi.Server.Plugin.dll</code> — the API Server plugin loader only picks up DLLs matching this exact suffix. A single deviation means the plugin is silently ignored at startup.
       </div>
       <div class="setup-item">
         <strong>Debug Output</strong>
-        Point Debug build output to the OIM install dir (next to <code>ImxClient.exe</code>); Release output goes to <code>bin/</code> folder
+        Point the Debug build output path to the OIM install directory (same folder as <code>ImxClient.exe</code>). Release builds go to <code>bin\Release\net8.0\</code>.
       </div>
       <div class="setup-item">
         <strong>Postman XSRF</strong>
-        Add XSRF pre-request script to Postman for all POST requests — OIM enforces XSRF protection on non-GET endpoints
+        POST requests to the OIM API require the <code>X-XSRF-TOKEN</code> header. Add the pre-request script below to the Postman collection. GET endpoints do not require it.
       </div>
+    </div>
+
+    <h3 style="margin-top:1.2rem;">Postman XSRF Pre-Request Script</h3>
+    <p style="font-size:.875rem;margin-bottom:.5rem;">Add this to the <strong>Pre-request Script</strong> tab at the Postman collection level so it applies automatically to all requests:</p>
+    <pre>// OIM CompositionAPI — XSRF pre-request script
+// Reads the XSRF-TOKEN cookie (set by OIM on login) and injects
+// the X-XSRF-TOKEN header required on all non-GET requests.
+const xsrfToken = pm.cookies.get('XSRF-TOKEN');
+if (xsrfToken) {
+    pm.request.headers.add({
+        key: 'X-XSRF-TOKEN',
+        value: xsrfToken
+    });
+}</pre>
+    <div class="callout callout-warning">
+      <div class="callout-title">XSRF Token Source</div>
+      The <code>XSRF-TOKEN</code> cookie is set by OIM on successful login. If you call a POST endpoint without first logging in through the same Postman session, the cookie will be absent and the script will not inject the header — resulting in a 403 or "session expired" response even though the endpoint URL is correct. Always log in before testing authenticated endpoints.
     </div>
 
     <h3 style="margin-top:1.2rem;">Starting the Local API Server</h3>
@@ -665,13 +682,13 @@
 
     <div class="callout callout-info">
       <div class="callout-title">Administration Portal Activation</div>
-      Navigate to <strong>http://localhost:8182/</strong> on first run and activate globally. This must be done once before any custom endpoints will respond.
+      Navigate to <strong>http://localhost:8182/</strong> on first run and activate globally. This is a one-time step per API Server instance. Without it, all custom endpoints return 404 regardless of DLL deployment status.
     </div>
 
     <h3 style="margin-top:1rem;">Prerequisites</h3>
     <ul class="prereq-list" style="margin-top:0.5rem;">
       <li class="prereq-tag">Visual Studio 2022</li>
-      <li class="prereq-tag">.NET Framework 4.8</li>
+      <li class="prereq-tag">.NET 8.0 SDK</li>
       <li class="prereq-tag">Postman</li>
       <li class="prereq-tag">OIM API Server access</li>
       <li class="prereq-tag">OIM Designer access</li>

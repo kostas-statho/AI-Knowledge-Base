@@ -422,9 +422,15 @@
     <div class="mentor-box">
       <strong class="mentor-title">Mentor Notes</strong>
       <ul>
-        <li>DataExplorer+ requires <strong>both</strong> a Program Function AND a Predefined SQL assigned to the permission group. Missing either one results in the feature being invisible &mdash; a common setup mistake.</li>
-        <li>Permission Group assignment propagates via the AERole. Confirm the test identity has the AERole assigned and that OIM has synchronized the role membership.</li>
-        <li>Configuration Parameters must match the expected key names exactly &mdash; the portal reads these at runtime to determine which Predefined SQL to invoke.</li>
+        <li><strong>Why both Program Function AND Predefined SQL?</strong> They serve different purposes and the portal checks both independently:
+          <ul style="margin-top:6px;margin-left:1.2rem;list-style:disc;">
+            <li><em>Program Function</em> — controls navigation visibility. The portal checks this gate to decide whether the DataExplorer+ menu item appears at all. Think of it as the "can this user see this feature?" check.</li>
+            <li><em>Predefined SQL</em> — provides the actual data query. Once the menu item is visible, the portal uses the Predefined SQL (resolved via Configuration Parameters) to load the view's data.</li>
+          </ul>
+          If the Program Function is missing, the menu item never appears and no error is shown. If the Predefined SQL is missing or incorrectly linked, the menu item appears but shows no data and no helpful error. Both failures look identical to the end user: a blank or missing feature. This is the most common source of "it's not working" support calls on DataExplorer+ deployments.
+        </li>
+        <li>Permission Group assignment propagates via the AERole. Confirm the test identity has the AERole assigned and that OIM has processed the role membership through the DBQueue before testing.</li>
+        <li>Configuration Parameters must match the expected key names exactly — the portal reads these at runtime to resolve which Predefined SQL to invoke. A single character mismatch causes silent data failure with no error in the UI.</li>
       </ul>
     </div>
   </div>

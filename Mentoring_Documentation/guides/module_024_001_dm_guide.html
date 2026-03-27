@@ -745,8 +745,9 @@ h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0
       <div class="mentor-tips">
         <div class="tips-header">Mentor Tips / Troubleshooting</div>
         <ul>
-          <li>Template placeholders must use the same variable names as the CSV column headers &mdash; a mismatch produces empty values, not an error</li>
-          <li>Always check the output count: if the CSV has 3 rows, expect 3 created objects</li>
+          <li><strong>Placeholder syntax:</strong> In DM XML templates, reference CSV column values using <code>$ColumnName$</code> where <code>ColumnName</code> must exactly match the CSV header — including case. For example, if the CSV has a column <code>DisplayName</code>, the template references it as <code>$DisplayName$</code>. A case mismatch or typo produces empty values in the created object with no error or warning from DM.</li>
+          <li><strong>Minimal example:</strong> A CSV with headers <code>DisplayName,Description</code> and a template XML element <code>&lt;Value ColumnName="DisplayName"&gt;$DisplayName$&lt;/Value&gt;</code> will populate the DisplayName column from each CSV row.</li>
+          <li>Always check the output count: if the CSV has 3 data rows, exactly 3 objects must be created in OIM. A lower count means some rows were skipped — check DM logs for silent validation failures.</li>
         </ul>
       </div>
     </div>
