@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Module 005 — BAS — Mentor Guide | Intragen Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple: #7B2D8B;
+  --purple-dark: #5C1F6B;
+  --teal: #007B77;
+  --golden: #F0A800;
+  --body-bg: #FAF8F5;
+  --code-bg: #1E1E1E;
+  --border: #DDD;
+  --text: #2C2C2C;
+  --muted: #6B6B6B;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.6; background: #F0EDE8; color: var(--text); }
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  background: var(--purple);
+  color: #fff;
+  width: 260px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.intragen-logo {
+  padding: 1.25rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+.logo-dot { color: var(--golden); }
+.module-label {
+  padding: 0.75rem 1rem 0.25rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.45);
+}
+.module-title-sidebar {
+  padding: 0.5rem 1rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--golden);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.nav-section-label {
+  padding: 0.75rem 1rem 0.2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+.sidebar a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.82rem;
+  border-left: 3px solid transparent;
+}
+.sidebar a:hover {
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--teal);
+  color: #fff;
+}
+
+/* Main */
+main { padding: 2rem; max-width: 1080px; }
+
+/* Module Header */
+.module-header {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+  color: #fff;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.module-header::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.module-header .intragen-watermark {
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+.module-header .intragen-watermark .dot { color: var(--golden); }
+.module-header h1 { font-size: 1.6rem; margin-bottom: 0.4rem; font-weight: 700; }
+.module-header p { opacity: 0.85; font-size: 0.9rem; }
+
+/* Badges */
+.badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.beginner { background: #d4edda; color: #155724; }
+.intermediate { background: #fff3cd; color: #856404; }
+.advanced { background: #f8d7da; color: #721c24; }
+
+/* Overview grid */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+.info-card {
+  background: #fff;
+  border-left: 4px solid var(--teal);
+  padding: 1.1rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.info-card h3 { color: var(--purple-dark); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.info-card ul { padding-left: 1.2rem; }
+.info-card li { font-size: 0.9rem; margin-bottom: 0.25rem; }
+
+/* Sections */
+section { margin-bottom: 2.5rem; }
+
+/* Section Banner */
+.section-banner {
+  background: var(--purple-dark);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.55rem 0.9rem;
+  margin-bottom: 1.25rem;
+  border-radius: 3px;
+}
+
+/* Section sub-label */
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--purple);
+  margin: 0.9rem 0 0.3rem;
+}
+
+/* Exercise Cards */
+.exercise-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--teal);
+  border-radius: 0 8px 8px 0;
+  padding: 1.5rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.exercise-card h2 {
+  color: var(--purple-dark);
+  font-size: 1.15rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #EDE8F0;
+}
+.ex-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.ex-num {
+  background: var(--purple-dark);
+  color: #fff;
+  min-width: 48px;
+  height: 38px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+.ex-header h3 { color: var(--purple-dark); font-size: 1rem; margin: 0; font-weight: 600; }
+
+/* Callouts */
+.callout {
+  padding: 0.85rem 1rem;
+  border-radius: 0 6px 6px 0;
+  margin: 0.75rem 0;
+  font-size: 0.88rem;
+}
+.callout strong, .callout b {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.callout-tip { background: #F0FDF4; border-left: 4px solid #22C55E; }
+.callout-warn { background: #FFF8E1; border-left: 4px solid #F59E0B; }
+.callout-important { background: #F5EFF8; border-left: 4px solid var(--purple); }
+.callout-note { background: #E8F4FF; border-left: 4px solid #2D6DB5; }
+.callout-mentor { background: #F5EFF8; border-left: 4px solid var(--purple); }
+.callout-error { background: #FFF0F0; border-left: 4px solid #DC2626; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1rem; font-size: 0.87rem; }
+th {
+  background: var(--purple-dark);
+  color: #fff;
+  padding: 0.55rem 0.8rem;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:nth-child(even) td { background: #F8F5FB; }
+td.pass { color: #15803D; font-weight: 600; }
+td.fail { color: #B91C1C; font-weight: 600; }
+
+/* Steps */
+.steps { padding-left: 1.4rem; margin: 0.4rem 0; }
+.steps li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+
+/* Code */
+.code-block {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  font-family: 'Cascadia Code','Fira Code', Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  padding: 1rem 1.1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+  white-space: pre;
+}
+pre {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  font-family: 'Cascadia Code','Fira Code', Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  padding: 1rem 1.1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+code {
+  background: #EDE8F0;
+  color: #8B2080;
+  font-family: 'Cascadia Code','Fira Code', Consolas, monospace;
+  font-size: 0.82rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+    <div class="module-label">Module</div>
+    <div class="module-title-sidebar">MODULE 005 &mdash; BAS</div>
+    <nav>
+      <div class="nav-section-label">Navigation</div>
+      <a href="#overview">Overview</a>
+      <div class="nav-section-label">Exercises</div>
+      <a href="#ex1">BAS-1: Role Assignment Basics</a>
+      <a href="#ex2">BAS-2: Block Inheritance</a>
+      <a href="#ex3">BAS-3: XOrigin &amp; XIsInEffect</a>
+      <a href="#ex4">BAS-4: Department Assignments</a>
+      <a href="#ex5">BAS-5: IT Shop — System Role</a>
+      <a href="#ex6">BAS-6: IT Shop — Assignment Resource</a>
+      <a href="#ex7">BAS-7: Manager Approval Workflow</a>
+      <a href="#ex8">BAS-8: Complex Approval + Conditions</a>
+      <div class="nav-section-label">Reference</div>
+      <a href="#troubleshoot">Troubleshooting</a>
+    </nav>
+  </aside>
+  <main>
+    <div class="module-header">
+      <div class="intragen-watermark">INTRAGEN<span class="dot">.</span> Academy</div>
+      <h1>Basic Account Synchronization</h1>
+      <p>Code: BAS &nbsp;|&nbsp; <span class="badge beginner">Beginner</span> &nbsp;|&nbsp; 8 exercises &nbsp;|&nbsp; ~3 days</p>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section id="overview">
+      <div class="section-banner">Overview</div>
+      <div class="overview-grid">
+        <div class="info-card">
+          <h3>Module Purpose</h3>
+          <ul>
+            <li>Introduces OIM's role model and inheritance</li>
+            <li>Covers Business Roles, System Roles, and Resources</li>
+            <li>Hands-on IT Shop configuration and usage</li>
+            <li>Approval workflow design and testing</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Prerequisites</h3>
+          <ul>
+            <li>OIM installed and accessible</li>
+            <li>Basic OIM navigation</li>
+            <li>Login credentials provided</li>
+            <li>Web portal and API Server accessible</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Key Concepts</h3>
+          <ul>
+            <li><strong>XOrigin:</strong> 1=Direct, 2=Indirect (inherited), 3=Both</li>
+            <li><strong>XIsInEffect:</strong> 0=Blocked/Disabled, 1=Active/Effective</li>
+            <li><strong>Block Inheritance:</strong> Stops cascade DOWN from Business Role</li>
+            <li><strong>Identities do not inherit:</strong> Members of role get NO resources</li>
+            <li><strong>IT Shop:</strong> Self-service portal for access requests</li>
+            <li><strong>Assignment Resource:</strong> IT Shop wrapper for Business Roles</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Mentor Guidance</h3>
+          <ul>
+            <li>Draw XOrigin/XIsInEffect on whiteboard before BAS-3</li>
+            <li>Show IT Shop as end-user FIRST, then admin config (BAS-5/6)</li>
+            <li>Use two browser sessions for BAS-7/8 approval flows</li>
+            <li>BAS-8 builds on BAS-7: do them in sequence</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- BAS-1 -->
+    <section id="ex1">
+      <div class="section-banner">Exercises</div>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">BAS-1</div>
+          <h3>Role Assignment Basics</h3>
+        </div>
+        <div class="section-label">Overview</div>
+        <p style="font-size:.9rem">Introduces trainees to the fundamental role assignment workflow in OIM Manager. Trainees navigate the role model and make their first assignments involving Business Roles and the identity overview. Steps 1&ndash;12 cover initial navigation, first role assignments, and verifying assignments on the identity record.</p>
+
+        <div class="section-label">Key Steps (1&ndash;12)</div>
+        <ul class="steps">
+          <li>Navigate to OIM Manager and locate the Role Model section</li>
+          <li>Identify Business Roles, System Roles, and Resources in the hierarchy</li>
+          <li>Assign a Business Role to a test identity and verify it appears on the identity overview</li>
+          <li>Remove the assignment and confirm it is reflected on the overview</li>
+          <li>Observe how the identity's assignments update in real time</li>
+          <li>Steps 6&ndash;12 continue building on direct and indirect role assignment navigation</li>
+        </ul>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          BAS-1 is intentionally light on configuration &mdash; it is about orientation. Make sure trainees can confidently navigate to an identity, see its assignments, and understand what "Business Role" vs "System Role" vs "Resource" means before moving on.
+        </div>
+      </div>
+    </section>
+
+    <!-- BAS-2 -->
+    <section id="ex2">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">BAS-2</div>
+          <h3>Block Inheritance on Business Roles</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Configure blocking inheritance on Business Roles. Observe the effect on resources that would normally cascade down through the role hierarchy.</p>
+
+        <div class="section-label">Solution</div>
+        <ul class="steps">
+          <li>After blocking inheritance on Business Role X: <strong>Resource R1</strong> (assigned on System Role A, assigned on Business Role X) is <strong>NOT inherited</strong></li>
+          <li>After blocking inheritance on Business Role Y: <strong>Resource R2</strong> (assigned on System Role B, assigned on Business Role Y) is <strong>NOT inherited</strong></li>
+        </ul>
+
+        <div class="callout callout-tip">
+          <b>Teaching Point</b>
+          Block Inheritance is a "wall" that stops resources cascading DOWN. Draw the hierarchy: Business Role X &rarr; System Role A &rarr; Resource R1. Blocking on X means R1 never reaches identities assigned to X.
+        </div>
+      </div>
+    </section>
+
+    <!-- BAS-3 -->
+    <section id="ex3">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">BAS-3</div>
+          <h3>XOrigin &amp; XIsInEffect &mdash; Deep Dive</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Assign Business Roles X and Y to identity "Akis". Test various block inheritance and "Identities do not inherit" combinations. Directly assign System Roles A and B to Akis. Observe XOrigin and XIsInEffect values throughout.</p>
+
+        <div class="section-label">Solution &mdash; Step by Step</div>
+        <ul class="steps">
+          <li><strong>Step 1:</strong> Assign Business Role X to Akis &mdash; visible on identity overview. Remove &mdash; visible on overview.</li>
+          <li><strong>Step 2:</strong> Same procedure with Business Role Y.</li>
+          <li><strong>Step 3:</strong> Enable/Disable Block inheritance on X/Y via Main Data:
+            <ul style="margin-top:.3rem;padding-left:1.2rem">
+              <li>"Block inheritance" = blocks RESOURCES from being inherited TO X/Y (no resources cascade in from above)</li>
+              <li>"Identities do not inherit" = blocks identities assigned to X/Y from inheriting resources FROM X/Y (no resources cascade out to members)</li>
+            </ul>
+          </li>
+          <li><strong>Step 4:</strong> Assign System Roles A and B directly to Akis.</li>
+          <li><strong>Steps 5&ndash;7:</strong> Various assignment combinations &mdash; test with and without block settings active.</li>
+          <li><strong>Step 8:</strong> By blocking inheritance, Akis loses resources inherited from system roles. R1 and R2 are not inherited from A, B to Akis.</li>
+        </ul>
+
+        <div class="section-label">XOrigin &amp; XIsInEffect Reference</div>
+        <table>
+          <thead><tr><th>Field</th><th>Value</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>XOrigin</td><td>1</td><td>Directly assigned</td></tr>
+            <tr><td>XOrigin</td><td>2</td><td>Indirectly assigned (inherited)</td></tr>
+            <tr><td>XOrigin</td><td>3</td><td>Both directly AND indirectly assigned</td></tr>
+            <tr><td>XIsInEffect</td><td>0</td><td>Relationship exists but cannot be utilized (disabled/blocked)</td></tr>
+            <tr><td>XIsInEffect</td><td>1</td><td>Relationship is active and can be utilized</td></tr>
+          </tbody>
+        </table>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Assign Business Role X to Akis</td><td>Assign BR X</td><td>Visible on identity overview</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Remove BR X from Akis</td><td>Remove BR X</td><td>Removal visible on overview</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Block inheritance on X</td><td>Enable Block inheritance on X via Main Data</td><td>R1 from System Role A not inherited to Akis</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          Draw XOrigin and XIsInEffect on a whiteboard BEFORE this exercise. These two fields are foundational for ALL future modules. Trainees who understand them here will find everything downstream much easier.
+        </div>
+      </div>
+    </section>
+
+    <!-- BAS-4 -->
+    <section id="ex4">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">BAS-4</div>
+          <h3>Department Assignments &mdash; Resources, System Roles, Location, Cost Center</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Configure a department with multiple assignment types: assigned Resources, System Roles, Location, and Cost Center. Use SQL queries to verify the assignments are reflected correctly in the database.</p>
+
+        <div class="section-label">Solution</div>
+        <ul class="steps">
+          <li><strong>Step 1:</strong> Open the target department in OIM Manager.</li>
+          <li><strong>Step 2:</strong> Assign Resources, System Roles, Location, and Cost Center to the department.</li>
+          <li><strong>Step 3:</strong> Run the provided SQL queries against the OIM database to verify that the assignment rows appear in the correct join tables (e.g., <code>DepartmentHasQERResource</code>, <code>DepartmentHasEset</code>).</li>
+        </ul>
+
+        <div class="callout callout-tip">
+          <b>Teaching Point</b>
+          Every assignment in OIM creates a row in a "join" table. If the assignment does not appear in the join table, the relationship does not exist &mdash; regardless of what the UI shows. SQL queries are the ground truth.
+        </div>
+      </div>
+    </section>
+
+    <!-- BAS-5 -->
+    <section id="ex5">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">BAS-5</div>
+          <h3>IT Shop &mdash; Enable System Role for Self-Service</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Enable System Role "A" for the IT Shop so identities can request it via the web portal (ApiServer). Configure a Service Item and add it to the "Access Lifecycle" IT Shop.</p>
+
+        <div class="section-label">Solution</div>
+        <ul class="steps">
+          <li><strong>Step 1:</strong> Open System Role "A" &rarr; Main Data &rarr; enable the "IT Shop" option. Create Service Item named <code>Service_Item_A</code>.</li>
+          <li><strong>Step 2:</strong> Navigate to the IT Shop configuration. Add <code>Service_Item_A</code> to the "Access Lifecycle" IT Shop shelf.</li>
+          <li><strong>Step 3:</strong> Log into the ApiServer (web portal) as a test user. Request <code>Service_Item_A</code> from the IT Shop.</li>
+          <li><strong>Step 4:</strong> After the request is fulfilled, unsubscribe from the item.</li>
+        </ul>
+
+        <div class="section-label">Testing</div>
+        <table>
+          <thead><tr><th>#</th><th>Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Create service item and add to IT Shop</td><td>Enable IT Shop on System Role A, create Service_Item_A, add to Access Lifecycle shelf</td><td>Service item visible in IT Shop catalog</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Request the item via ApiServer</td><td>Log in as test user, request Service_Item_A</td><td>Request submitted; System Role A assigned after approval/auto-approval</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Verify assignment</td><td>Check identity's assignments after request fulfilled</td><td>System Role A appears in identity's assignments</td><td class="pass">PASS</td></tr>
+            <tr><td>4</td><td>Unsubscribe from item</td><td>Unsubscribe via IT Shop portal</td><td>System Role A removed from identity's assignments</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          Show trainees how to navigate the IT Shop as an END-USER first (requesting, viewing status, unsubscribing), then open the admin configuration behind it. Seeing the user experience first makes the admin config meaningful.
+        </div>
+      </div>
+    </section>
+
+    <!-- BAS-6 -->
+    <section id="ex6">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">BAS-6</div>
+          <h3>IT Shop &mdash; Assignment Resource for Business Role</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Create an Assignment Resource for Business Role "X" to make it requestable via the IT Shop. Add it to the "Access Lifecycle" shelf. Test the full request/unsubscribe/re-request cycle.</p>
+
+        <div class="section-label">Solution</div>
+        <ul class="steps">
+          <li><strong>Step 1:</strong> Create an Assignment Resource for Business Role "X". This creates an IT Shop-requestable wrapper around the Business Role.</li>
+          <li><strong>Step 2:</strong> Add the Assignment Resource "X" (its service item <code>X_Service_Item</code>) to the "Access Lifecycle" IT Shop shelf.</li>
+          <li><strong>Step 3:</strong> Request <code>X_Service_Item</code> via the ApiServer web portal:
+            <ul style="margin-top:.3rem;padding-left:1.2rem">
+              <li>After page refresh, status is automatically set to <strong>Assigned</strong></li>
+              <li>After assignment is visible, the <strong>Unsubscribe</strong> option appears</li>
+              <li>After unsubscribing, the item can be requested again and is auto-approved again</li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="section-label">Database Note</div>
+        <div class="callout callout-tip">
+          <b>SQL Query</b>
+          When adding a service item to a shelf, OIM creates a new row in the <code>ITShopOrgHasQERAssign</code> table. You can verify the shelf assignment with:<br>
+          <code>SELECT * FROM ITShopOrgHasQERAssign WHERE UID_QERAssign = '&lt;uid of assignment resource&gt;'</code>
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Request service item</td><td>Request "X_Service_Item" via IT Shop portal</td><td>Status changes to Assigned automatically</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Unsubscribe</td><td>Click Unsubscribe on the assigned item</td><td>Unsubscribe option appears after assignment; item removed on confirmation</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Request again after unsubscribe</td><td>Request X_Service_Item a second time</td><td>Automatically approved again; status returns to Assigned</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          The Assignment Resource is the standard pattern for making Business Roles available in the IT Shop. Emphasise: the Business Role itself is NOT directly visible in the IT Shop &mdash; the Assignment Resource acts as the requestable "product" that, when approved, assigns the Business Role.
+        </div>
+      </div>
+    </section>
+
+    <!-- BAS-7 -->
+    <section id="ex7">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">BAS-7</div>
+          <h3>Manager Approval Workflow</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Create a Manager (M) and an Identity (I). Set M as the line manager of I. Configure the CM-Recipient's Manager approval workflow. Test the request and approval cycle from both perspectives.</p>
+
+        <div class="section-label">Solution</div>
+        <ul class="steps">
+          <li><strong>Step 1:</strong> Create Manager identity "M" and Identity "I". Set M as the line manager of I in I's Main Data.</li>
+          <li><strong>Step 3:</strong> Assign the line manager approval workflow (<strong>CM-Recipient's Manager</strong>) to the service item's approval policy.</li>
+          <li><strong>Test 1:</strong> Log in as Identity I. Request the IT Shop item. Observe request status &mdash; it should show "Waiting for approval" and display who must approve.</li>
+          <li><strong>Test 2:</strong> Review the request status from I's perspective &mdash; see the pending approval.</li>
+          <li><strong>Test 3:</strong> Switch browser session to Manager M. Approve the pending request.</li>
+          <li><strong>Test 4:</strong> Confirm the item is now assigned to I after M's approval.</li>
+          <li><strong>Test 5:</strong> Log back in as I. Unsubscribe from the item.</li>
+        </ul>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          Use two browser sessions simultaneously &mdash; one as Identity I, one as Manager M. This makes the approval flow tangible. Trainees can see the request appear in M's approval queue in real time when I submits it.
+        </div>
+
+        <div class="callout callout-tip">
+          <b>CM-Recipient's Manager</b>
+          This is OIM's built-in "ask the requester's manager" approval workflow. It automatically resolves to the identity set as the line manager in Main Data &mdash; no custom configuration needed for the resolver itself.
+        </div>
+      </div>
+    </section>
+
+    <!-- BAS-8 -->
+    <section id="ex8">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">BAS-8</div>
+          <h3>Complex Approval Workflow with Conditions</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Build a conditional approval workflow with fallback logic. The workflow checks whether the manager is "valid" (not disabled, not permanently deactivated, has an active AD account). If the manager is invalid, routing falls back to the "FallBack_Approval_Supervisor" Business Role.</p>
+
+        <div class="callout callout-warn">
+          <b>Exercise Order Note</b>
+          Test Case 3 &rarr; 2 &rarr; 1 in execution order. The exercises deliberately build on each other &mdash; complete them in sequence.
+        </div>
+
+        <div class="section-label">Solution &mdash; Configuration Steps</div>
+        <ul class="steps">
+          <li><strong>Step 1:</strong> Verify the manager identity has a connected AD account. If not, create one: AD Forest &rarr; Domain &rarr; AD user account (ADS tab).</li>
+          <li><strong>Step 2:</strong> Create an approval procedure with the appropriate query for the <code>IsValidManager</code> calculation.</li>
+          <li><strong>Step 3:</strong> Create an approval workflow with the following conditions:
+            <ul style="margin-top:.3rem;padding-left:1.2rem">
+              <li>Identity is NOT temporarily disabled: <code>"Identity/Organizational/Temporarily Inactive"</code></li>
+              <li>Identity is NOT permanently disabled: <code>"Identity/Tasks/Deactivate identity permanently"</code></li>
+              <li>Active AD account connected: <code>"Identity/Tasks/Assign AD user acc"</code></li>
+            </ul>
+          </li>
+          <li><strong>Step 4:</strong> Create an approval policy.</li>
+          <li><strong>Step 5:</strong> Assign the workflow to the policy.</li>
+          <li><strong>Step 6:</strong> Assign the policy to service item <code>X_Service_Item</code> via Main Data &rarr; Approval Policy.</li>
+          <li><strong>Step 7:</strong> Apply conditions on the workflow. Add the required approval steps. Set the condition on the Calculated Approval step: <code>IsValidManager</code>.</li>
+        </ul>
+
+        <div class="section-label">Full Test Case Matrix</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Test Steps</th><th>Expected Results</th><th>Pass/Fail</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Request with valid manager</td>
+              <td>Create valid manager (not disabled, has AD account), assign to employee, request X_Service_Item, wait for approval</td>
+              <td>Request waits for manager's approval &mdash; routed correctly to M</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Request with invalid manager</td>
+              <td>Temporarily disable M, permanently disable M, unassign AD user from M. Update M and attempt approval</td>
+              <td>Request redirected to "FallBack_Approval_Supervisor" business role. After updating manager to valid state, routed to proper manager</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Approve from fallback BR without updating manager</td>
+              <td>Reconfigure manager as invalid. Approve from FallBack_Approval_Supervisor before fixing manager</td>
+              <td>After fallback approval attempt, request is redirected AGAIN to "FallBack_Approval_Supervisor" (invalid manager not corrected)</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Invalid manager with another user's request pending</td>
+              <td>Replicate tests 2 &amp; 3 with a concurrent request from a different user on the same service item</td>
+              <td>Both requests independently redirected to "FallBack_Approval_Supervisor"</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Invalid manager with different service item pending (same policy)</td>
+              <td>Replicate tests 2 &amp; 3 with a different service item that uses the same approval policy</td>
+              <td>Request for different service item also redirected to "FallBack_Approval_Supervisor"</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Valid manager reconfigured to invalid before acceptance</td>
+              <td>Request with valid manager. Reconfigure M to invalid AFTER request submitted but BEFORE approved. Accept while invalid</td>
+              <td>After invalid manager attempts to approve, request is redirected to "FallBack_Approval_Supervisor"</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-error">
+          <b>Production Pattern &mdash; FallBack_Approval_Supervisor</b>
+          The FallBack_Approval_Supervisor Business Role is the safety net when the primary approver chain is broken. In production, this role should always have active, responsible members assigned. If it has no members, requests with invalid managers will become stuck indefinitely. Emphasise this is a real, widely-used production pattern.
+        </div>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          Use two browser sessions simultaneously &mdash; one as Identity I, one as Manager M. BAS-8 builds directly on BAS-7: trainees must complete BAS-7 first. For AD account creation failures, check that AD Forest and Domain are configured before attempting to create the AD user account in the ADS tab.
+        </div>
+      </div>
+    </section>
+
+    <!-- TROUBLESHOOTING -->
+    <section id="troubleshoot">
+      <div class="section-banner">Troubleshooting Reference</div>
+      <table>
+        <thead><tr><th>Problem</th><th>Likely Cause</th><th>Solution</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Resource not inherited to identity</td>
+            <td>Block inheritance enabled on Business Role</td>
+            <td>Check Main Data &rarr; Block inheritance; also check "Identities do not inherit" setting on the role</td>
+          </tr>
+          <tr>
+            <td>XIsInEffect shows 0</td>
+            <td>Inheritance blocked &mdash; relationship exists but is disabled</td>
+            <td>Review inheritance settings on all Business Roles in the chain</td>
+          </tr>
+          <tr>
+            <td>XOrigin shows 2 when expecting 1</td>
+            <td>Role was assigned via inheritance, not directly</td>
+            <td>Assign the role directly to the identity to see XOrigin=1; when both paths exist XOrigin=3</td>
+          </tr>
+          <tr>
+            <td>IT Shop item not visible to requester</td>
+            <td>Service item not added to IT Shop shelf</td>
+            <td>Check service item &rarr; IT Shop tab &rarr; assign to organisation/shelf in Access Lifecycle</td>
+          </tr>
+          <tr>
+            <td>Service item not auto-approving</td>
+            <td>Auto-approval workflow not configured</td>
+            <td>Check approval policy on service item; default requires manager approval &mdash; configure auto-approve policy if needed</td>
+          </tr>
+          <tr>
+            <td>FallBack not triggering</td>
+            <td>Business Role "FallBack_Approval_Supervisor" missing members</td>
+            <td>Add test users to this business role so approval routing has a target</td>
+          </tr>
+          <tr>
+            <td>AD account creation fails in BAS-8</td>
+            <td>Forest/Domain not configured</td>
+            <td>Create AD Forest &rarr; Domain first, then create AD user account in the identity's ADS tab</td>
+          </tr>
+          <tr>
+            <td>Approval workflow conditions not working</td>
+            <td>Condition expression syntax error</td>
+            <td>Check condition format: <code>{Value = $IsTemporaryDeactivated:Bool$}</code> &mdash; colons, dollar signs, and Bool type must match exactly</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer style="margin-top:3rem;padding:1.25rem 2rem;background:#F5EFF8;border-top:2px solid #EDE8F0;font-size:0.78rem;color:var(--muted);text-align:center;">
+      INTRAGEN<span style="color:var(--golden)">.</span> Academy &mdash; Mentoring Documentation &mdash;
+      &copy; Intragen International. This document remains strictly private and confidential.
+    </footer>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 017 &#8212; APIs | Intragen OIM Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #7B2D8B;
+    --purple-dark: #5C1F6B;
+    --teal: #007B77;
+    --golden: #F0A800;
+    --body-bg: #FAF8F5;
+    --code-bg: #1E1E1E;
+    --border: #DDD;
+    --text: #2C2C2C;
+    --muted: #6B6B6B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #F0EDE8;
+    color: var(--text);
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    background: var(--purple);
+    color: #fff;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 0 0 2rem 0;
+  }
+
+  .sidebar-header {
+    background: rgba(0,0,0,0.18);
+    padding: 1.4rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .sidebar-logo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #fff;
+    margin-bottom: 0.6rem;
+  }
+
+  .sidebar-module-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--golden);
+    margin-bottom: 0.2rem;
+  }
+
+  .sidebar-module-sub {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .sidebar-section {
+    padding: 1rem 1rem 0.35rem 1rem;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+  }
+
+  aside nav a {
+    display: block;
+    padding: 0.5rem 1rem 0.5rem 1.25rem;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.83rem;
+    border-left: 3px solid transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  aside nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-left-color: var(--teal);
+    color: #fff;
+  }
+
+  aside nav a.active {
+    background: rgba(255,255,255,0.1);
+    border-left-color: var(--teal);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .sidebar-meta {
+    margin: 1.4rem 1rem 0 1rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    padding: 0.9rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.65);
+  }
+
+  .sidebar-meta .meta-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+  }
+
+  .sidebar-meta .meta-row:last-child { margin-bottom: 0; }
+  .sidebar-meta .meta-label { color: rgba(255,255,255,0.4); }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    padding: 2rem 2.5rem;
+    max-width: 1000px;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    background: linear-gradient(135deg, #5C1F6B, #7B2D8B);
+    color: #fff;
+    border-radius: 10px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header .watermark {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    color: #fff;
+  }
+
+  .page-header .breadcrumb {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 0.6rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header h1 span { color: var(--golden); }
+
+  .page-header .subtitle {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 1rem;
+  }
+
+  .badge-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-advanced { background: #f8d7da; color: #721c24; }
+  .badge-intermediate { background: #fff3cd; color: #856404; }
+  .badge-beginner { background: #e6f4ea; color: #1e7e34; }
+  .badge-info { background: rgba(255,255,255,0.15); color: #fff; }
+
+  /* ── SECTION HEADINGS ── */
+  h2 {
+    font-size: 1.15rem;
+    color: var(--purple-dark);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  h2 .section-icon {
+    display: inline-block;
+    background: var(--purple-dark);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.5rem 0.9rem;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  h3 {
+    font-size: 0.95rem;
+    color: var(--purple-dark);
+    margin-bottom: 0.55rem;
+    font-weight: 600;
+  }
+
+  .content-section { margin-bottom: 2.5rem; }
+
+  /* ── INFO GRID ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .info-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    border-top: 3px solid var(--purple);
+  }
+
+  .info-card .ic-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .info-card .ic-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--purple-dark);
+  }
+
+  /* ── PREREQ TAGS ── */
+  .prereq-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .prereq-tag {
+    background: #F5EFF8;
+    color: var(--purple-dark);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid #DDD;
+  }
+
+  /* ── SETUP GRID ── */
+  .setup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.85rem;
+    margin: 1rem 0;
+  }
+
+  .setup-item {
+    background: #fff;
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--teal);
+    font-size: 0.855rem;
+  }
+
+  .setup-item strong {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--teal);
+    margin-bottom: 0.3rem;
+  }
+
+  /* ── EXERCISE CARDS ── */
+  .exercise-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--teal);
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+
+  .exercise-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .exercise-id {
+    background: var(--purple);
+    color: #fff;
+    padding: 0.2rem 0.65rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: Consolas, monospace;
+    white-space: nowrap;
+  }
+
+  .exercise-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--purple-dark);
+  }
+
+  .exercise-goal {
+    font-size: 0.875rem;
+    color: var(--text);
+    margin-bottom: 1rem;
+    padding: 0.65rem 0.9rem;
+    background: var(--body-bg);
+    border-radius: 5px;
+  }
+
+  /* ── SUBSECTION LABELS ── */
+  .sub-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    background: var(--purple-dark);
+    color: #fff;
+    padding: 0.5rem 0.9rem;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 1rem 0 0.55rem 0;
+  }
+
+  /* ── STEPS LIST ── */
+  .steps-list { list-style: none; padding: 0; margin-bottom: 0.75rem; }
+
+  .steps-list li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    font-size: 0.875rem;
+    padding: 0.3rem 0;
+  }
+
+  .step-dot {
+    width: 8px; height: 8px;
+    background: var(--teal);
+    border-radius: 50%;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: 0 6px 6px 0;
+    padding: 0.85rem 1rem;
+    margin: 0.85rem 0;
+    font-size: 0.875rem;
+    border-left: 4px solid;
+  }
+
+  .callout-title {
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.3rem;
+  }
+
+  .callout-tip { background: #F0FDF4; border-color: #22C55E; }
+  .callout-tip .callout-title { color: #15803D; }
+  .callout-warn, .callout-warning { background: #FFF8E1; border-color: #F59E0B; }
+  .callout-warn .callout-title, .callout-warning .callout-title { color: #B45309; }
+  .callout-important, .callout-critical { background: #F5EFF8; border-color: var(--purple); }
+  .callout-important .callout-title, .callout-critical .callout-title { color: var(--purple-dark); }
+  .callout-note, .callout-info { background: #E8F4FF; border-color: #2D6DB5; }
+  .callout-note .callout-title, .callout-info .callout-title { color: #1E4D8C; }
+
+  /* ── CODE ── */
+  pre, .code-block {
+    background: var(--code-bg);
+    color: #D4D4D4;
+    font-family: Consolas, monospace;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 0.75rem 0;
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+
+  code {
+    font-family: Consolas, monospace;
+    font-size: 0.85em;
+    background: #EDE8F0;
+    color: #8B2080;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  pre code, .code-block code { background: none; color: inherit; padding: 0; font-size: inherit; }
+
+  /* ── TEST CASES TABLE ── */
+  .test-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.845rem;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    margin: 0.75rem 0 1rem 0;
+  }
+
+  .test-table thead tr { background: var(--purple-dark); color: #fff; }
+
+  .test-table th {
+    padding: 0.55rem 0.8rem;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .test-table td {
+    padding: 0.65rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .test-table tbody tr:nth-child(even) td { background: #F8F5FB; }
+  .test-table tbody tr:last-child td { border-bottom: none; }
+
+  .test-table td:first-child {
+    font-weight: 700;
+    color: var(--purple-dark);
+    width: 36px;
+    text-align: center;
+  }
+
+  .expected { font-style: italic; color: #15803D; font-size: 0.82rem; }
+  .expected.error { color: #C0392B; }
+
+  /* ── MENTOR TIPS BOX ── */
+  .mentor-tips {
+    background: #F5EFF8;
+    border: 1px solid #DDD;
+    border-radius: 8px;
+    padding: 1.1rem 1.3rem;
+    margin-top: 1rem;
+  }
+
+  .mentor-tips .tips-header {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: var(--purple-dark);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .mentor-tips .tips-header::before {
+    content: '';
+    display: inline-block;
+    width: 10px; height: 10px;
+    background: var(--purple);
+    border-radius: 50%;
+  }
+
+  .mentor-tips ul { list-style: none; padding: 0; }
+  .mentor-tips li {
+    font-size: 0.875rem;
+    padding: 0.28rem 0;
+    padding-left: 1.1rem;
+    position: relative;
+    color: var(--text);
+  }
+
+  .mentor-tips li::before {
+    content: '\203A';
+    position: absolute;
+    left: 0;
+    color: var(--purple);
+    font-weight: 700;
+  }
+
+  /* ── OOTB API LIST ── */
+  .api-list {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    overflow: hidden;
+    margin: 0.75rem 0;
+  }
+
+  .api-list .api-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.855rem;
+  }
+
+  .api-list .api-row:last-child { border-bottom: none; }
+
+  .method-badge {
+    font-family: Consolas, monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    white-space: nowrap;
+    min-width: 42px;
+    text-align: center;
+  }
+
+  .method-get { background: #F0FDF4; color: #15803D; }
+  .method-post { background: #F5EFF8; color: var(--purple-dark); }
+
+  .api-path { font-family: Consolas, monospace; font-size: 0.82rem; color: var(--purple-dark); }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════ -->
+<aside>
+  <div class="sidebar-header">
+    <div class="sidebar-logo">INTRAGEN<span style="color:#F0A800">.</span></div>
+    <div class="sidebar-module-title">Module 017 &mdash; APIs</div>
+    <div class="sidebar-module-sub">Advanced</div>
+  </div>
+
+  <div class="sidebar-section">On This Page</div>
+  <nav>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#devsetup">Dev Environment Setup</a>
+    <a href="#exercises">Exercises</a>
+    <a href="#api1">API-1: Hello World GET</a>
+    <a href="#api2">API-2: POST with Body</a>
+    <a href="#api3">API-3: Authentication</a>
+    <a href="#api4">API-4: CRUD + Permissions</a>
+    <a href="#api5">API-5: Filtered List + IT Shop</a>
+    <a href="#api6">API-6: GET PWO by Group</a>
+    <a href="#api7">API-7: GET All Columns</a>
+    <a href="#api8">API-8: OOTB AppServer APIs</a>
+    <a href="#api9">API-9: Custom AppID</a>
+    <a href="#mentor-tips">Mentor Tips</a>
+  </nav>
+
+  <div class="sidebar-meta">
+    <div class="meta-row">
+      <span class="meta-label">Code</span>
+      <span>API</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Level</span>
+      <span>Advanced</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Exercises</span>
+      <span>9</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Requires</span>
+      <span>C# + VS 2022</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════ -->
+<main>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header" id="overview">
+    <div class="watermark">INTRAGEN.</div>
+    <div class="breadcrumb">Intragen OIM Academy &rsaquo; Mentor Guides &rsaquo; Module 017</div>
+    <h1>Module 017 &mdash; <span>APIs</span></h1>
+    <p class="subtitle">Build custom REST API endpoints for the OIM Web Portal using C# CompositionApi Server Plugins. Covers GET/POST endpoints, authentication, CRUD operations, IT Shop integration, and OOTB AppServer APIs.</p>
+    <div class="badge-row">
+      <span class="badge badge-advanced">Advanced</span>
+      <span class="badge badge-info">9 Exercises</span>
+      <span class="badge badge-info">C# + Visual Studio 2022</span>
+      <span class="badge badge-info">Postman Required</span>
+    </div>
+  </div>
+
+  <!-- INFO GRID -->
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ic-label">Module Code</div>
+      <div class="ic-value">API</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Exercises</div>
+      <div class="ic-value">9</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Level</div>
+      <div class="ic-value">Advanced</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Language</div>
+      <div class="ic-value">C# / .NET</div>
+    </div>
+  </div>
+
+  <!-- DEV ENVIRONMENT SETUP -->
+  <div class="content-section" id="devsetup">
+    <h2><span class="section-icon">01</span> Dev Environment Setup</h2>
+
+    <div class="setup-grid">
+      <div class="setup-item">
+        <strong>IDE</strong>
+        Visual Studio 2022 with .NET Framework 4.8 workload installed
+      </div>
+      <div class="setup-item">
+        <strong>DLL Naming</strong>
+        Project output DLL must match <code>*.CompositionApi.Server.Plugin.dll</code> — API Server only loads DLLs matching this pattern exactly
+      </div>
+      <div class="setup-item">
+        <strong>Debug Output</strong>
+        Point Debug build output to the OIM install dir (next to <code>ImxClient.exe</code>); Release output goes to <code>bin/</code> folder
+      </div>
+      <div class="setup-item">
+        <strong>Postman XSRF</strong>
+        Add XSRF pre-request script to Postman for all POST requests — OIM enforces XSRF protection on non-GET endpoints
+      </div>
+    </div>
+
+    <h3 style="margin-top:1.2rem;">Starting the Local API Server</h3>
+    <pre>imxclient.exe run-apiserver -B /plugin CCC.CompositionApi.Server.Plugin.dll /conndialog fallback</pre>
+
+    <div class="callout callout-info">
+      <div class="callout-title">Administration Portal Activation</div>
+      Navigate to <strong>http://localhost:8182/</strong> on first run and activate globally. This must be done once before any custom endpoints will respond.
+    </div>
+
+    <h3 style="margin-top:1rem;">Prerequisites</h3>
+    <ul class="prereq-list" style="margin-top:0.5rem;">
+      <li class="prereq-tag">Visual Studio 2022</li>
+      <li class="prereq-tag">.NET Framework 4.8</li>
+      <li class="prereq-tag">Postman</li>
+      <li class="prereq-tag">OIM API Server access</li>
+      <li class="prereq-tag">OIM Designer access</li>
+      <li class="prereq-tag">C# fundamentals</li>
+    </ul>
+  </div>
+
+  <!-- EXERCISES SECTION -->
+  <div class="content-section" id="exercises">
+    <h2><span class="section-icon">02</span> Exercises</h2>
+
+    <!-- API-1 -->
+    <div class="exercise-card" id="api1">
+      <div class="exercise-header">
+        <span class="exercise-id">API-1</span>
+        <span class="exercise-title">Hello World GET Endpoint</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create the simplest possible custom API endpoint &mdash; a GET endpoint that returns a static string. Establishes the plugin compile &rarr; deploy &rarr; activate &rarr; test loop.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>C# class implementing <code>IApiProvider</code> and <code>IApiProviderFor&lt;PortalApiProject&gt;</code></li>
+        <li><span class="step-dot"></span>Endpoint registered via <code>builder.AddMethod(Method.Define(...))</code> with GET handler</li>
+        <li><span class="step-dot"></span>Returns static string <code>"Hello World!"</code></li>
+        <li><span class="step-dot"></span>Plugin DLL compiled and placed in API Server plugin directory</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Step 1: Write C# code for the endpoint class and compile the project</li>
+        <li><span class="step-dot"></span>Step 2: Navigate to Administration Portal <code>http://localhost:8182/</code> and activate the plugin globally</li>
+        <li><span class="step-dot"></span>Step 3: Send a GET request via Postman to the registered endpoint path</li>
+      </ul>
+
+      <div class="sub-label">Test Cases</div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>GET on correct path</td>
+            <td>Send GET request to registered endpoint path</td>
+            <td class="expected">"Hello World!" returned in response body</td>
+            <td>Confirm 200 OK status; verify plugin was activated in Admin Portal</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>POST on correct path</td>
+            <td>Send POST request to the same path</td>
+            <td class="expected error">Error: "The (POST) HTTP method is not allowed. The API ApiExercise1 only supports GET."</td>
+            <td>Validates method restriction; OIM returns descriptive error naming the API and allowed methods</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>GET on wrong path</td>
+            <td>Send GET to a slightly modified/incorrect path</td>
+            <td class="expected error">404 Not Found</td>
+            <td>Confirms path registration is exact; common mistake is typos in the route string</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>If the endpoint returns 404 even after activation, check the DLL filename matches <code>*.CompositionApi.Server.Plugin.dll</code> exactly</li>
+          <li>Administration Portal activation is a one-time step per API Server instance &mdash; trainees often miss this on first run</li>
+          <li>Make sure the API Server was restarted after copying the new DLL</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- API-2 -->
+    <div class="exercise-card" id="api2">
+      <div class="exercise-header">
+        <span class="exercise-id">API-2</span>
+        <span class="exercise-title">POST Endpoint with Request Body</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create a POST endpoint that accepts a JSON body with a message field and echoes it back. Introduces request body deserialization and helper classes.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Two helper classes: one for the posted body, one for the response shape</li>
+        <li><span class="step-dot"></span>POST-only handler that reads the body and returns <code>"Hello World! @msg"</code></li>
+        <li><span class="step-dot"></span>Verify behavior with both empty and populated body</li>
+        <li><span class="step-dot"></span>Must use <code>.AllowUnauthenticated()</code> for this exercise</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Step 1: Add two helper classes (posted body DTO and response DTO)</li>
+        <li><span class="step-dot"></span>Step 2: Add the <code>PostApi</code> endpoint class with POST handler</li>
+        <li><span class="step-dot"></span>Step 3: Compile, deploy, and send an empty Body/raw POST to verify null handling</li>
+        <li><span class="step-dot"></span>Step 4: Fill Body/raw JSON with a message value and send POST</li>
+      </ul>
+
+      <div class="sub-label">Test Cases</div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>POST to correct path with body</td>
+            <td>Send POST with JSON body containing a message value</td>
+            <td class="expected">"Hello World! @msg" (with actual message value interpolated)</td>
+            <td>Confirm the message value from body is reflected in the response string</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>GET on correct path</td>
+            <td>Send GET to the same path</td>
+            <td class="expected error">"The (GET) HTTP method is not allowed. The API ApiExercise2 only supports POST."</td>
+            <td>Mirrors API-1 test 2 in reverse; confirms POST-only restriction</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>POST to wrong path</td>
+            <td>Send POST to a modified/incorrect path</td>
+            <td class="expected error">404 Not Found</td>
+            <td>Same path-accuracy check as API-1</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>If empty body causes a null reference exception, verify null-checking on the posted body DTO before accessing properties</li>
+          <li>XSRF pre-request script in Postman is required for POST &mdash; if missing, POST returns 403 or 400</li>
+          <li>Remind trainees that <code>.AllowUnauthenticated()</code> is intentional here &mdash; it will be removed in API-3</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- API-3 -->
+    <div class="exercise-card" id="api3">
+      <div class="exercise-header">
+        <span class="exercise-id">API-3</span>
+        <span class="exercise-title">Authentication Required</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Enforce authentication on the POST endpoint by removing <code>.AllowUnauthenticated()</code>. Verify that unauthenticated requests are rejected and that a logged-in session can access the endpoint.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Copy ApiExercise2 to ApiExercise3 class</li>
+        <li><span class="step-dot"></span>Remove <code>.AllowUnauthenticated()</code> from the method definition</li>
+        <li><span class="step-dot"></span>Confirm session expiry message for unauthenticated requests</li>
+        <li><span class="step-dot"></span>Login via Postman and verify authenticated access works</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Step 1: Copy ApiExercise2 class to ApiExercise3, remove <code>.AllowUnauthenticated()</code></li>
+        <li><span class="step-dot"></span>Step 2: Compile, deploy, send empty body POST unauthenticated &mdash; expect session expired</li>
+        <li><span class="step-dot"></span>Step 3: Login via Postman, then send filled body POST</li>
+      </ul>
+
+      <div class="sub-label">Test Cases</div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>POST without login</td>
+            <td>Send POST without any authentication</td>
+            <td class="expected error">"Your session has expired. Reload this page and log in again."</td>
+            <td>Core test: confirms authentication gate is active after removing AllowUnauthenticated()</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Login then GET</td>
+            <td>Authenticate via Postman login, then send GET</td>
+            <td class="expected error">Method not allowed (only POST is registered)</td>
+            <td>Auth does not change method restrictions; GET is still blocked</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Login then POST to wrong path</td>
+            <td>Authenticated; send POST to wrong path</td>
+            <td class="expected error">404 Not Found</td>
+            <td>Auth does not affect routing; wrong paths still 404</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Login then POST to correct path</td>
+            <td>Authenticated; send POST with JSON body</td>
+            <td class="expected">"Hello World! @msg" (message interpolated)</td>
+            <td>Full happy path with auth; same as API-2 test 1 but now requires a valid session</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Logout then GET</td>
+            <td>Log out, then send GET request</td>
+            <td class="expected error">Session expired message</td>
+            <td>Confirms session invalidation is immediate; important for security testing mindset</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li><code>.AllowUnauthenticated()</code> is the single toggle between public and protected; removing it is the only change from API-2 to API-3</li>
+          <li>If trainee still gets access after removing the flag, verify the DLL was redeployed and the API Server was restarted</li>
+          <li>Session cookies persist in Postman &mdash; remind trainees to use a new Postman tab or clear cookies when testing unauthenticated scenarios</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- API-4 -->
+    <div class="exercise-card" id="api4">
+      <div class="exercise-header">
+        <span class="exercise-id">API-4</span>
+        <span class="exercise-title">Full CRUD for AADGroup with Permission Groups</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Build a complete Create/Read/Update/Delete API for AADGroup objects. Introduce permission group enforcement by restricting access to identities assigned the <code>CCC_Api01</code> Application Role.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Four endpoints: <code>getByUID</code>, <code>InsertAADGroup</code>, <code>UpdateAADGroup</code>, <code>DeleteAADGroup</code></li>
+        <li><span class="step-dot"></span>DisplayName validation: must start with <code>'AAD'</code></li>
+        <li><span class="step-dot"></span>Permission group <code>CCC_Api01</code> created in OIM Designer; AERole assigned to Test,A using this permission group</li>
+        <li><span class="step-dot"></span>Test,B account has no <code>CCC_Api01</code> assignment</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Step 1: Create the <code>getByUID</code> POST endpoint</li>
+        <li><span class="step-dot"></span>Step 2: Create the <code>InsertAADGroup</code> endpoint with DisplayName validation</li>
+        <li><span class="step-dot"></span>Step 3: Create the <code>UpdateAADGroup</code> endpoint</li>
+        <li><span class="step-dot"></span>Step 4: Create the <code>DeleteAADGroup</code> endpoint</li>
+        <li><span class="step-dot"></span>Step 5: Plugin initialization and DLL deployment</li>
+        <li><span class="step-dot"></span>Step 6: Create permission group <code>CCC_Api01</code> in OIM Designer</li>
+        <li><span class="step-dot"></span>Step 7: Create AERole and assign to Test,A using <code>CCC_Api01</code> permission group</li>
+      </ul>
+
+      <div class="sub-label">Test Cases</div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>POST without login</td>
+            <td>Send any endpoint call unauthenticated</td>
+            <td class="expected error">Session expired</td>
+            <td>Baseline auth check; same as API-3</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Login then GET</td>
+            <td>Authenticate as Test,A; send GET</td>
+            <td class="expected error">Method not allowed</td>
+            <td>All endpoints are POST-only; GET should always be blocked</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Login then POST to wrong path</td>
+            <td>Authenticated; send POST to incorrect path</td>
+            <td class="expected error">404 Not Found</td>
+            <td>Routing check; same as earlier exercises</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>POST getByUID (authenticated)</td>
+            <td>Authenticated POST with valid UID_AADGroup</td>
+            <td class="expected">AADGroup record data returned</td>
+            <td>Confirm all relevant fields are present in the response object</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Test,A: InsertAADGroup with valid data</td>
+            <td>POST with DisplayName starting with 'AAD'</td>
+            <td class="expected">"AADGroup 'AADTestName' created successfully."</td>
+            <td>Happy path insert; verify record exists in OIM after creation</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Test,A: Insert with invalid DisplayName</td>
+            <td>POST with DisplayName NOT starting with 'AAD'</td>
+            <td class="expected error">"Invalid DisplayName. Must start with 'AAD'."</td>
+            <td>Validation gate; confirm no record was created in OIM</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>Test,A: Update with non-existent UID</td>
+            <td>POST UpdateAADGroup with a made-up UID_AADGroup</td>
+            <td class="expected error">"No AADGroup found with UID_AADGroup = d7b7e4cd-..."</td>
+            <td>Error message should include the UID that was searched; helps debugging</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>Test,A: Update with invalid DisplayName</td>
+            <td>POST UpdateAADGroup with bad DisplayName on existing record</td>
+            <td class="expected error">"Invalid DisplayName."</td>
+            <td>Update-path validation; same rule as insert</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>Test,A: Update with valid data</td>
+            <td>POST UpdateAADGroup with valid UID and valid DisplayName</td>
+            <td class="expected">"AADGroup 0bb5092b-... updated successfully."</td>
+            <td>Verify field changed in OIM after update</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>Test,A: Delete with non-existent UID</td>
+            <td>POST DeleteAADGroup with made-up UID</td>
+            <td class="expected error">"No AADGroup found with UID_AADGroup..."</td>
+            <td>Delete path error handling; no exception should be thrown</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td>Test,A: Delete valid record</td>
+            <td>POST DeleteAADGroup with valid existing UID</td>
+            <td class="expected">"Result: Successful"</td>
+            <td>Verify record is gone from OIM after deletion</td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td>Test,B (no permissions)</td>
+            <td>Authenticate as Test,B (no CCC_Api01 assignment)</td>
+            <td class="expected error">Session expired / access denied (no CCC_Api01)</td>
+            <td>Critical permission test; confirms CCC_Api01 gate is enforced &mdash; Test,B must not be able to perform any operations</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Always test both Test,A (privileged) and Test,B (unprivileged) &mdash; permission enforcement is only proven by showing both sides</li>
+          <li>If Test,B gets access, verify the permission group is correctly linked to the AERole and that Test,B has no direct or indirect CCC_Api01 assignment</li>
+          <li>DisplayName validation logic should be the same in both Insert and Update paths &mdash; centralise it in a helper method</li>
+          <li>Deletion uses a <code>UnitOfWork</code>; remind trainees to always <code>CommitAsync</code> inside the <code>using</code> block</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- API-5 -->
+    <div class="exercise-card" id="api5">
+      <div class="exercise-header">
+        <span class="exercise-id">API-5</span>
+        <span class="exercise-title">Filtered List + IT Shop Integration</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create a filtered list endpoint for AADGroups, then wire up IT Shop so a user can request membership in a group via the Web Portal. Validate the endpoint retrieves the requesting user's AADUser by UserPrincipalName.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Endpoint returns filtered list of AADGroups visible to the caller</li>
+        <li><span class="step-dot"></span>AADGroup created in OIM, IT Shop enabled, Service Item created</li>
+        <li><span class="step-dot"></span>Approval Policy assigned to the Service Item</li>
+        <li><span class="step-dot"></span>Group added to IT Shop; product published and requestable from Web Portal</li>
+        <li><span class="step-dot"></span>Membership creation endpoint validates <code>username</code> and <code>UID_Org</code> parameters</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Step 1: Create endpoint returning filtered AADGroup list</li>
+        <li><span class="step-dot"></span>Step 2: Create AADGroup, enable IT Shop, create Service Item</li>
+        <li><span class="step-dot"></span>Step 3: Assign Approval Policy to the Service Item</li>
+        <li><span class="step-dot"></span>Step 4: Add group to IT Shop</li>
+        <li><span class="step-dot"></span>Step 5: Verify product is published; test request and unsubscribe from Web Portal</li>
+        <li><span class="step-dot"></span>Step 6: Validate endpoint correctly retrieves AADUser's UserPrincipalName</li>
+      </ul>
+
+      <div class="sub-label">Test Cases</div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>POST without login</td>
+            <td>Unauthenticated request</td>
+            <td class="expected error">Session expired</td>
+            <td>Baseline auth check</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Login then GET</td>
+            <td>Authenticated GET request</td>
+            <td class="expected error">Method not allowed</td>
+            <td>Endpoint is POST-only</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Login then POST to wrong path</td>
+            <td>POST to incorrect path</td>
+            <td class="expected error">404 Not Found</td>
+            <td>Routing check</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Login then POST to correct path</td>
+            <td>Authenticated POST with valid filter</td>
+            <td class="expected">Filtered list of AADGroups returned</td>
+            <td>Verify filter criteria are applied correctly; spot-check against OIM Manager</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>POST membership creation (valid)</td>
+            <td>POST with valid username and UID_Org</td>
+            <td class="expected">Membership created successfully</td>
+            <td>Verify membership record exists in OIM PersonWantsOrg or AADGroupMembership table</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>POST with empty username</td>
+            <td>POST with username field missing or empty</td>
+            <td class="expected error">"Failed with error: username is required."</td>
+            <td>Input validation; ensure friendly error message, not a raw exception</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>POST with invalid username</td>
+            <td>POST with username that does not match any AADUser</td>
+            <td class="expected error">"No AADUser found with username."</td>
+            <td>Lookup failure path; confirm exact error message format</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>POST with empty UID_Org</td>
+            <td>POST with UID_Org missing or empty</td>
+            <td class="expected error">"UID_Org is required."</td>
+            <td>Parallel validation to empty username check</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>POST with invalid UID_Org</td>
+            <td>POST with UID_Org that has no matching AADGroup product</td>
+            <td class="expected error">"No Product found for AADGroup."</td>
+            <td>Org resolution failure; ensure IT Shop setup is complete before this test</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>IT Shop setup must be completed before membership creation tests &mdash; if product is not published, tests 5-9 will all fail</li>
+          <li>If "No Product found" appears on a valid UID_Org, check whether the group is actually added to the IT Shop shelf (step 4)</li>
+          <li>Approval Policy assignment can be a source of confusion &mdash; a missing policy causes the request to hang rather than error</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- API-6 -->
+    <div class="exercise-card" id="api6">
+      <div class="exercise-header">
+        <span class="exercise-id">API-6</span>
+        <span class="exercise-title">GET PWO Requests by Group</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Build a GET endpoint that returns all PersonWantsOrg (PWO) requests associated with a given AADGroup, identified by its DisplayName.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>GET endpoint accepting <code>GroupName</code> as a query/path parameter</li>
+        <li><span class="step-dot"></span>Looks up AADGroup by DisplayName, returns associated PWO records</li>
+        <li><span class="step-dot"></span>Handles group not found and no PWO records as distinct error messages</li>
+        <li><span class="step-dot"></span>Authentication required</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Create endpoint that accepts DisplayName, queries AADGroup, then queries PersonWantsOrg for matching UIDs, and returns the result list</li>
+      </ul>
+
+      <div class="sub-label">Test Cases</div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>GET without login</td>
+            <td>Unauthenticated GET request</td>
+            <td class="expected error">Session expired</td>
+            <td>Baseline auth check</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Login then POST</td>
+            <td>Authenticated POST request</td>
+            <td class="expected error">Method not allowed (GET only)</td>
+            <td>This is a GET-only endpoint unlike the previous exercises</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Login then GET to wrong path</td>
+            <td>GET to incorrect path</td>
+            <td class="expected error">404 Not Found</td>
+            <td>Routing check</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>GET with invalid GroupName</td>
+            <td>GET with DisplayName that matches no AADGroup</td>
+            <td class="expected error">"No Group found with DisplayName 'invalid'"</td>
+            <td>First lookup failure; error message should echo the provided DisplayName</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>GET for valid group with no PWO records</td>
+            <td>GET with valid group DisplayName that has no pending requests</td>
+            <td class="expected error">"No PersonWantsOrg records found for group 'AAD_QA'"</td>
+            <td>Distinguish between "group not found" and "group found but no requests" &mdash; two different error messages</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>GET for valid group with PWO records</td>
+            <td>GET with valid group DisplayName that has active requests</td>
+            <td class="expected">List of PWO request objects returned</td>
+            <td>Create a test request in IT Shop first to ensure at least one PWO record exists</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Tests 4 and 5 check different failure modes &mdash; ensure trainee uses distinct error messages for "group not found" vs "no PWO records"</li>
+          <li>Before running test 6, create an IT Shop request for the group and ensure it is in a Pending state (not yet approved/denied)</li>
+          <li>DisplayName lookups are case-sensitive in OIM by default &mdash; clarify this if trainees report unexpected "not found" results</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- API-7 -->
+    <div class="exercise-card" id="api7">
+      <div class="exercise-header">
+        <span class="exercise-id">API-7</span>
+        <span class="exercise-title">GET All Columns for an AADGroup</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Build a GET endpoint that returns every column available on an AADGroup record, given its UID. Useful for exploratory tooling and portal debugging.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>GET endpoint accepting <code>UID_AADGroup</code> as a parameter</li>
+        <li><span class="step-dot"></span>Returns all columns (key-value pairs) for the matched record</li>
+        <li><span class="step-dot"></span>Validates that <code>UID_AADGroup</code> is not empty and that a record exists</li>
+        <li><span class="step-dot"></span>Authentication required</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Create GET endpoint that loads the AADGroup entity by UID and reflects all column values into the response</li>
+      </ul>
+
+      <div class="sub-label">Test Cases</div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>GET without login</td>
+            <td>Unauthenticated request</td>
+            <td class="expected error">Session expired</td>
+            <td>Baseline auth check</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Login then POST</td>
+            <td>Authenticated POST</td>
+            <td class="expected error">Method not allowed (GET only)</td>
+            <td>Confirms method restriction</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Login then GET to wrong path</td>
+            <td>GET to incorrect path</td>
+            <td class="expected error">404 Not Found</td>
+            <td>Routing check</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>GET with empty UID_AADGroup</td>
+            <td>GET without supplying UID_AADGroup parameter</td>
+            <td class="expected error">"Parameter UID_AADGroup is required"</td>
+            <td>Input validation; must check for null/empty before querying</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>GET with invalid UID_AADGroup</td>
+            <td>GET with a UID value that matches no record</td>
+            <td class="expected error">"No AADGroup found with UID_AADGroup 'invalid'"</td>
+            <td>Lookup failure; error should echo the provided UID value</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>GET with valid UID_AADGroup</td>
+            <td>GET with a valid, existing UID_AADGroup</td>
+            <td class="expected">Complete list of all columns and their current values returned</td>
+            <td>Cross-check a few field values against OIM Manager to confirm accuracy</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Column enumeration is done via the entity's column collection &mdash; no hardcoded field list is needed; this is a good pattern to introduce for schema exploration</li>
+          <li>Some columns may return empty or null &mdash; this is expected; the endpoint should include them in the response, not skip them</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- API-8 -->
+    <div class="exercise-card" id="api8">
+      <div class="exercise-header">
+        <span class="exercise-id">API-8</span>
+        <span class="exercise-title">OOTB AppServer APIs</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Explore the out-of-the-box AppServer REST API. Assign the <code>AppServer_Api</code> permission to a test identity and verify CRUD operations on Person entities via the standard API. Understand the difference in visibility between super_user and identity accounts.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Permission <code>AppServer_Api</code> assigned to test identity</li>
+        <li><span class="step-dot"></span>View, Edit, and Insert permissions on Person (FirstName, LastName columns)</li>
+        <li><span class="step-dot"></span>Postman configured to authenticate as the test identity</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Step 1: Give AppServer_Api permission to the test identity in OIM Designer</li>
+        <li><span class="step-dot"></span>Step 2: Grant View/Edit/Insert permissions on Person &mdash; specifically FirstName and LastName columns</li>
+        <li><span class="step-dot"></span>Step 3: Configure Postman and authenticate as the test identity (server: stathopoulosk)</li>
+      </ul>
+
+      <div class="sub-label">OOTB API Endpoints (server: stathopoulosk)</div>
+      <div class="api-list">
+        <div class="api-row"><span class="method-badge method-get">GET</span><span class="api-path">/AppServer/api/entities/Person?offset=1&amp;limit=50&amp;loadType=Default</span></div>
+        <div class="api-row"><span class="method-badge method-post">POST</span><span class="api-path">/AppServer/api/entities/Person</span></div>
+        <div class="api-row"><span class="method-badge method-get">GET</span><span class="api-path">/AppServer/api/entities/Person/count</span></div>
+        <div class="api-row"><span class="method-badge method-post">POST</span><span class="api-path">/AppServer/api/entity/Person</span></div>
+        <div class="api-row"><span class="method-badge method-get">GET</span><span class="api-path">/AppServer/api/entity/Person/{uid}</span></div>
+        <div class="api-row"><span class="method-badge method-get">GET</span><span class="api-path">/AppServer/api/entities (entity list)</span></div>
+        <div class="api-row"><span class="method-badge method-post">POST</span><span class="api-path">/AppServer/api/entities (create entity)</span></div>
+      </div>
+
+      <div class="sub-label">Test Cases</div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>OOTB APIs without login</td>
+            <td>Call any OOTB API endpoint without authentication</td>
+            <td class="expected error">401 Unauthorized</td>
+            <td>OOTB APIs enforce authentication at the HTTP level (401), unlike custom endpoints that return a session message</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Login without AppServer_Api permission</td>
+            <td>Authenticate; call OOTB endpoint before AppServer_Api permission is assigned</td>
+            <td class="expected error">403 You are not allowed to use that feature</td>
+            <td>Distinct 403 vs 401 is important; shows the permission gate separate from authentication</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Login with no write permission</td>
+            <td>Authenticate with AppServer_Api but without write access; attempt to create/update a Person</td>
+            <td class="expected error">"Microsoft Entra ID groups: Write permission denied for value 'Alias'."</td>
+            <td>Column-level permission enforcement; each column that lacks write permission generates its own error</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Login with proper permissions</td>
+            <td>Full permissions; perform GET list, GET by UID, POST create, PUT update</td>
+            <td class="expected">All operations succeed; data visible and writable as expected</td>
+            <td>Compare super_user vs identity account results: super_user sees XMarkedForDeletion=1 entries; standard identity does not</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>super_user sees all records including soft-deleted (XMarkedForDeletion=1); standard identity accounts do not &mdash; this is by design and worth demonstrating</li>
+          <li>Column-level permissions are set per-column in OIM Designer under Application Roles &mdash; if write fails, check each column individually</li>
+          <li>The AppServer_Api permission itself must be assigned before any other OOTB API tests will work</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- API-9 -->
+    <div class="exercise-card" id="api9">
+      <div class="exercise-header">
+        <span class="exercise-id">API-9</span>
+        <span class="exercise-title">Custom AppID Endpoint</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create an endpoint registered under a custom AppID (<code>apisamples</code>) instead of the default Portal AppID. This isolates the feature surface and demonstrates how to scope APIs to specific application contexts.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>New AppID <code>apisamples</code> created and configured in the plugin</li>
+        <li><span class="step-dot"></span>Endpoint registered under this custom AppID, not the default portal AppID</li>
+        <li><span class="step-dot"></span>Endpoint returns desired columns of entities from a target table</li>
+        <li><span class="step-dot"></span>Authentication required</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Step 1: Create the <code>apisamples</code> AppID in plugin initialization (alongside or separate from the portal AppID)</li>
+        <li><span class="step-dot"></span>Step 2: Create the endpoint class implementing <code>IApiProviderFor</code> for the new AppID, returning the target columns</li>
+      </ul>
+
+      <div class="sub-label">Test Cases</div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>GET without login</td>
+            <td>Unauthenticated GET request to the apisamples endpoint</td>
+            <td class="expected error">"Your session has expired. Reload this page and log in again."</td>
+            <td>Custom AppID endpoints still enforce authentication unless AllowUnauthenticated() is added</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Login then GET</td>
+            <td>Authenticated GET request to the apisamples endpoint</td>
+            <td class="expected">Desired columns of entities from the target table returned</td>
+            <td>Verify the correct AppID URL prefix is used in Postman &mdash; using the portal URL prefix will 404</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Custom AppID isolates this endpoint's URL space from the default portal AppID &mdash; calls to the portal URL prefix will not reach this endpoint</li>
+          <li>If the endpoint returns 404 when authenticated, verify the AppID in the URL matches exactly what was registered in the plugin</li>
+          <li>Multiple AppIDs can coexist in a single plugin DLL &mdash; each has its own SessionConfig and URL prefix</li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /exercises -->
+
+  <!-- MENTOR TIPS SUMMARY -->
+  <div class="content-section" id="mentor-tips">
+    <h2><span class="section-icon">03</span> Mentor Tips &amp; Key Concepts</h2>
+
+    <div class="callout callout-important">
+      <div class="callout-title">DLL Naming Rule</div>
+      The API Server only loads DLLs whose filename matches <code>*.CompositionApi.Server.Plugin.dll</code>. Any deviation (wrong suffix, wrong casing on Windows) silently prevents loading &mdash; no error is shown in the portal.
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Authentication Toggle</div>
+      <code>.AllowUnauthenticated()</code> is the single line that controls whether a session is required. Removing it enforces login. Its presence or absence determines the behaviour of tests 1 and 4 in API-3 through API-9.
+    </div>
+
+    <div class="callout callout-note">
+      <div class="callout-title">Permission Testing Protocol</div>
+      Always test with both a privileged account (Test,A with CCC_Api01) and an unprivileged account (Test,B without CCC_Api01). Permission enforcement is only proven by showing access is both granted AND denied correctly.
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">OOTB API Visibility Difference</div>
+      Super_user accounts see records with XMarkedForDeletion=1 (soft-deleted entities). Standard identity accounts do not. When comparing results between account types, this is expected behaviour.
+    </div>
+
+    <div class="callout callout-note">
+      <div class="callout-title">Custom AppID Scope</div>
+      A custom AppID (e.g., <code>apisamples</code>) creates an isolated URL namespace. Endpoints under this AppID are not reachable via the default portal URL prefix. This is useful for separating admin-facing APIs from user-facing portal features.
+    </div>
+  </div>
+
+  <footer style="margin-top:3rem;padding:1.25rem 2rem;background:#F5EFF8;border-top:2px solid #EDE8F0;font-size:0.78rem;color:#6B6B6B;text-align:center;">INTRAGEN<span style="color:#F0A800">.</span> Academy &mdash; Mentoring Documentation &mdash; &copy; Intragen International. This document remains strictly private and confidential.</footer>
+
+</main>
+</body>
+</html>

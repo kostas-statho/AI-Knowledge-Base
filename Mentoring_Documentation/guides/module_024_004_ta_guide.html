@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 024_004 - Test Assist Mentor Guide</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; display: flex; min-height: 100vh; background: #f4f6f9; color: #222; }
+
+  /* Sidebar */
+  #sidebar {
+    width: 270px; min-width: 270px; background: #1a1a2e; color: #cdd6f4;
+    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+    overflow-y: auto; padding-bottom: 24px;
+  }
+  #sidebar .sidebar-header {
+    background: #e94560; color: #fff; padding: 22px 18px 16px;
+    font-size: 0.82rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  #sidebar .sidebar-header .module-id { font-size: 1.1rem; margin-bottom: 4px; }
+  #sidebar .sidebar-header .module-title { font-size: 0.78rem; font-weight: 400; opacity: 0.9; }
+  #sidebar nav { padding: 12px 0; }
+  #sidebar nav a {
+    display: block; padding: 9px 20px; color: #a0aec0; text-decoration: none;
+    font-size: 0.83rem; border-left: 3px solid transparent; transition: all 0.2s;
+  }
+  #sidebar nav a:hover, #sidebar nav a.active {
+    color: #fff; background: rgba(233,69,96,0.13); border-left-color: #e94560;
+  }
+  #sidebar nav .nav-section {
+    padding: 10px 20px 4px; font-size: 0.68rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #e94560; font-weight: 700; margin-top: 6px;
+  }
+
+  /* Main content */
+  #main { flex: 1; padding: 36px 40px; overflow-y: auto; max-width: 1100px; }
+  h1 { font-size: 1.7rem; color: #1a1a2e; margin-bottom: 6px; }
+  .page-subtitle { color: #666; font-size: 0.95rem; margin-bottom: 28px; }
+  .badge {
+    display: inline-block; background: #e94560; color: #fff;
+    font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 12px;
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px;
+  }
+
+  /* Prerequisites box */
+  .prereq-box {
+    background: #1a1a2e; color: #cdd6f4; border-radius: 10px;
+    padding: 22px 26px; margin-bottom: 32px;
+  }
+  .prereq-box h2 { color: #e94560; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+  .prereq-list { list-style: none; padding: 0; }
+  .prereq-list li { padding: 6px 0 6px 22px; position: relative; font-size: 0.88rem; line-height: 1.6; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .prereq-list li:last-child { border-bottom: none; }
+  .prereq-list li::before { content: ""; position: absolute; left: 0; top: 14px; width: 8px; height: 8px; background: #e94560; border-radius: 50%; }
+  .prereq-list strong { color: #fff; }
+  .prereq-list code { background: rgba(233,69,96,0.2); color: #f8a5b3; padding: 1px 6px; border-radius: 4px; font-size: 0.84rem; }
+  .prereq-list .warning { color: #ffd166; font-size: 0.82rem; }
+
+  /* Exercise card */
+  .exercise-card {
+    background: #fff; border-radius: 10px; box-shadow: 0 2px 12px rgba(26,26,46,0.09);
+    margin-bottom: 32px; overflow: hidden; border-top: 4px solid #e94560;
+  }
+  .exercise-card .card-header {
+    background: #f8f9fc; padding: 16px 24px; display: flex; align-items: center; gap: 14px;
+    border-bottom: 1px solid #eee;
+  }
+  .exercise-card .card-header .ex-id {
+    background: #e94560; color: #fff; font-weight: 700; font-size: 0.78rem;
+    padding: 4px 12px; border-radius: 20px; white-space: nowrap;
+  }
+  .exercise-card .card-header h2 { font-size: 1.05rem; color: #1a1a2e; }
+  .card-body { padding: 22px 24px; }
+
+  .section-label {
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    color: #e94560; margin-bottom: 8px; margin-top: 18px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .requirements-box {
+    background: #f4f6f9; border-left: 4px solid #e94560; border-radius: 0 6px 6px 0;
+    padding: 12px 16px; font-size: 0.88rem; line-height: 1.7; color: #333;
+  }
+
+  .steps-list { list-style: none; padding: 0; counter-reset: steps; }
+  .steps-list li {
+    counter-increment: steps; padding: 8px 12px 8px 44px; position: relative;
+    font-size: 0.88rem; line-height: 1.65; border-bottom: 1px solid #f0f0f0;
+  }
+  .steps-list li:last-child { border-bottom: none; }
+  .steps-list li::before {
+    content: counter(steps); position: absolute; left: 10px; top: 8px;
+    background: #1a1a2e; color: #fff; width: 22px; height: 22px; border-radius: 50%;
+    font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+  .steps-list code { background: #f0f1f5; color: #c0392b; padding: 1px 5px; border-radius: 3px; font-size: 0.84rem; }
+
+  /* Sub-steps */
+  .sub-steps { list-style: none; padding: 6px 0 2px 18px; margin-top: 4px; }
+  .sub-steps li { padding: 3px 0; font-size: 0.85rem; color: #555; }
+  .sub-steps li::before { content: "—"; margin-right: 6px; color: #e94560; }
+  .sub-steps code { background: #f0f1f5; color: #c0392b; padding: 1px 5px; border-radius: 3px; font-size: 0.82rem; }
+
+  /* Verification box */
+  .verification-box {
+    background: #f0fff4; border-left: 4px solid #38a169; border-radius: 0 6px 6px 0;
+    padding: 10px 14px; font-size: 0.86rem; line-height: 1.65; color: #276749; margin-top: 8px;
+  }
+  .verification-box strong { color: #22543d; }
+
+  /* Hint box */
+  .hint-box {
+    background: #fffbea; border-left: 4px solid #d97706; border-radius: 0 6px 6px 0;
+    padding: 10px 14px; font-size: 0.86rem; line-height: 1.65; color: #92400e; margin-top: 8px;
+  }
+  .hint-box strong { color: #78350f; }
+  .hint-box code { background: #fef3c7; color: #92400e; padding: 1px 5px; border-radius: 3px; font-size: 0.82rem; }
+
+  /* Gherkin flow */
+  .flow-box {
+    background: #1a1a2e; color: #cdd6f4; border-radius: 8px;
+    padding: 18px 22px; margin-top: 8px;
+  }
+  .flow-box h3 { color: #e94560; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; }
+  .flow-steps { list-style: none; padding: 0; counter-reset: flow; }
+  .flow-steps li {
+    counter-increment: flow; padding: 7px 12px 7px 38px; position: relative;
+    font-size: 0.86rem; line-height: 1.6; border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .flow-steps li:last-child { border-bottom: none; }
+  .flow-steps li::before {
+    content: counter(flow); position: absolute; left: 8px; top: 8px;
+    background: #e94560; color: #fff; width: 20px; height: 20px; border-radius: 50%;
+    font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+  .flow-steps code { background: rgba(233,69,96,0.2); color: #f8a5b3; padding: 1px 6px; border-radius: 4px; font-size: 0.82rem; }
+
+  /* Test table */
+  .test-table-wrap { overflow-x: auto; margin-top: 8px; }
+  table.test-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  table.test-table thead tr { background: #1a1a2e; color: #fff; }
+  table.test-table thead th { padding: 10px 12px; text-align: left; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.04em; }
+  table.test-table tbody tr:nth-child(odd) { background: #f8f9fc; }
+  table.test-table tbody tr:nth-child(even) { background: #fff; }
+  table.test-table tbody td { padding: 9px 12px; vertical-align: top; line-height: 1.5; border-bottom: 1px solid #eee; }
+  table.test-table .num-col { text-align: center; font-weight: 700; color: #e94560; width: 36px; }
+
+  /* Mentor tips box */
+  .mentor-box {
+    background: #fff8f9; border: 1.5px solid #e94560; border-radius: 8px;
+    padding: 16px 20px; margin-top: 10px;
+  }
+  .mentor-box .mentor-title {
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+    color: #e94560; margin-bottom: 10px;
+  }
+  .mentor-box ul { padding-left: 18px; font-size: 0.86rem; line-height: 1.8; color: #444; }
+  .mentor-box li { margin-bottom: 4px; }
+  .mentor-box code { background: #f0f1f5; color: #c0392b; padding: 1px 5px; border-radius: 3px; font-size: 0.82rem; }
+
+  .no-test-note { font-style: italic; color: #888; font-size: 0.85rem; padding: 8px 0; }
+
+  @media (max-width: 800px) {
+    body { flex-direction: column; }
+    #sidebar { width: 100%; min-width: unset; height: auto; position: static; }
+    #main { padding: 20px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <div class="module-id">024_004</div>
+    <div class="module-title">Test Assist<br>PowerShell + Pester 4.x + Gherkin BDD</div>
+  </div>
+  <nav>
+    <div class="nav-section">Overview</div>
+    <a href="#prerequisites">Prerequisites</a>
+    <div class="nav-section">Exercises</div>
+    <a href="#ta01">TA_01 — Install Test Assist</a>
+    <a href="#ta02">TA_02 — Configure Setup.ps1</a>
+    <a href="#ta03">TA_03 — Run Self-Tests</a>
+    <a href="#ta04">TA_04 — Create Stub Files</a>
+    <a href="#ta05">TA_05 — Template Unit Test</a>
+    <a href="#ta06">TA_06 — Script Unit Test</a>
+    <a href="#ta07">TA_07 — Gherkin Execution Flow</a>
+    <a href="#ta08">TA_08 — Create Feature File</a>
+    <a href="#ta09">TA_09 — Custom Gherkin Assertion</a>
+    <div class="nav-section">Reference</div>
+    <a href="#mentor-tips">Mentor Tips</a>
+  </nav>
+</aside>
+
+<main id="main">
+  <div class="badge">Mentor Guide</div>
+  <h1>Module 024_004 — Test Assist</h1>
+  <p class="page-subtitle">Advanced track: PowerShell test automation using Pester 4.x and Gherkin BDD with OIM integration</p>
+
+  <!-- Prerequisites -->
+  <div class="prereq-box" id="prerequisites">
+    <h2>Prerequisites</h2>
+    <ul class="prereq-list">
+      <li>
+        <strong>Pester version 4.x ONLY</strong> — NOT version 5.x.
+        <span class="warning">Breaking API change: Invoke-Gherkin was removed in Pester v5 and does not exist there. If v5 is installed, it must be downgraded or v4 installed side-by-side.</span>
+      </li>
+      <li>
+        <strong>Deployment Manager</strong> configured and working — Test Assist depends on the DM module for DB connectivity.
+      </li>
+      <li>
+        <strong>PowerShell 7</strong> — required for TestAssist compatibility.
+      </li>
+      <li>
+        <strong>VS Code extensions:</strong>
+        <code>alexkrechik.cucumberautocomplete</code> (Gherkin syntax highlighting and step autocomplete)
+        and <code>ms-vscode.powershell</code> (PowerShell language support and test runner).
+      </li>
+    </ul>
+  </div>
+
+  <!-- TA_01 -->
+  <div class="exercise-card" id="ta01">
+    <div class="card-header">
+      <span class="ex-id">TA_01</span>
+      <h2>Install Test Assist and Prerequisites</h2>
+    </div>
+    <div class="card-body">
+      <div class="section-label">Requirements</div>
+      <div class="requirements-box">
+        Unzip and install TestAssist 1.2.2 with all required dependencies: Pester 4.x, Selenium (version 3.0.1),
+        and NameIT. The installation must result in a working DM DB connection verified through Console Mode.
+      </div>
+
+      <div class="section-label">Solution Steps</div>
+      <ol class="steps-list">
+        <li>Unzip <strong>TestAssist-1.2.2</strong> to <code>C:\Users\OneIM\Desktop\TestAssist</code>.</li>
+        <li>Install Pester version 4.x — specifically the latest 4.x release (4.10.1). Do NOT install version 5.</li>
+        <li>Install Selenium — open <code>TestAssist\utility\Install-Selenium.ps1</code> and modify the path: change all occurrences of <code>Selenium/2.0.0/</code> to <code>Selenium/3.0.1/</code> before running the script.</li>
+        <li>Install the <strong>NameIT</strong> module.</li>
+      </ol>
+
+      <div class="section-label">Hint</div>
+      <div class="hint-box">
+        <strong>Important:</strong> Avoid spaces in the folder path for the TestAssist installation — some internal scripts fail silently with spaces in paths.
+        <code>Import-Module</code> is required each session before using TestAssist commands.
+        Test DB connectivity using Console Mode before proceeding to TA_02.
+      </div>
+
+      <div class="section-label">Verification</div>
+      <div class="verification-box">
+        <strong>Pass criteria:</strong> Pester version confirmed as 4.x (run <code>Get-Module Pester -ListAvailable</code>);
+        Selenium and NameIT modules are importable; DM connection works in Console Mode.
+      </div>
+
+      <div class="section-label">Mentor Tips / Troubleshooting</div>
+      <div class="mentor-box">
+        <div class="mentor-title">Mentor Notes</div>
+        <ul>
+          <li>Pester 4 vs 5 is a BREAKING change — <code>Invoke-Gherkin</code> exists only in v4. If the trainee has v5 installed, they must either downgrade (<code>Uninstall-Module Pester -AllVersions</code> then install v4) or install v4 side-by-side using <code>Install-Module Pester -RequiredVersion 4.10.1 -Force -SkipPublisherCheck</code>.</li>
+          <li>The Selenium path change in <code>Install-Selenium.ps1</code> is easy to miss — confirm the file was edited before running it.</li>
+          <li>DM connection must work before any further exercises — all test APIs run as a continuous DM session.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TA_02 -->
+  <div class="exercise-card" id="ta02">
+    <div class="card-header">
+      <span class="ex-id">TA_02</span>
+      <h2>Configure Setup.ps1 and Encrypt Secrets</h2>
+    </div>
+    <div class="card-body">
+      <div class="section-label">Requirements</div>
+      <div class="requirements-box">
+        Configure the TestAssist module connection to the OIM database. The connection string must be
+        encrypted using "password" as the key for this training exercise. Setup.ps1 must load without
+        errors and DB connectivity must be confirmed.
+      </div>
+
+      <div class="section-label">Solution Steps</div>
+      <ol class="steps-list">
+        <li>Encrypt the connection string used in DM, using <strong>"password"</strong> as the encryption key.</li>
+        <li>Replace the plaintext connection string with the encrypted value in <code>C:\Users\OneIM\Desktop\Deployment\Config\Example\projectConfig</code>.</li>
+        <li>Create a Decryption Key entry for the key <strong>"password"</strong> so TestAssist can decrypt the connection string at runtime.</li>
+        <li>Configure <code>TestAssist\Setup.ps1</code> with the correct paths and settings for this environment.</li>
+        <li>Reload the module with <code>-Force</code> flag and verify DB connectivity.</li>
+      </ol>
+
+      <div class="section-label">Hint</div>
+      <div class="hint-box">
+        <strong>Note:</strong> <code>Setup.ps1</code> is loaded when importing the TA module. Know how to force-reload it after making changes:
+        <code>Import-Module TestAssist -Force</code>. Once connected, all TestAssist API calls run as a continuous session similar to DM Console Mode.
+        <strong>Training note:</strong> "password" as the encryption key is for training only — production environments must use secure key management.
+      </div>
+
+      <div class="section-label">Verification</div>
+      <div class="verification-box">
+        <strong>Pass criteria:</strong> Module imports without errors; DB connection is confirmed (no connection refused or authentication errors).
+      </div>
+
+      <div class="section-label">Mentor Tips / Troubleshooting</div>
+      <div class="mentor-box">
+        <div class="mentor-title">Mentor Notes</div>
+        <ul>
+          <li>"password" encryption key is for training only — reinforce that production environments must use proper secret management.</li>
+          <li>Always use <code>Import-Module TestAssist -Force</code> after any change to Setup.ps1 — the module caches its state and changes do not take effect without the force reload.</li>
+          <li>If connection fails after configuration, check the encrypted value was pasted into the correct field in projectConfig without any extra whitespace.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TA_03 -->
+  <div class="exercise-card" id="ta03">
+    <div class="card-header">
+      <span class="ex-id">TA_03</span>
+      <h2>Run Self-Tests</h2>
+    </div>
+    <div class="card-body">
+      <div class="section-label">Requirements</div>
+      <div class="requirements-box">
+        Run the TestAssist built-in self-test suite to verify the installation and DB connection are
+        working correctly before writing any custom tests.
+      </div>
+
+      <div class="section-label">Solution Steps</div>
+      <ol class="steps-list">
+        <li>Open the folder <code>C:\Intragen\TestAssist\test</code> in VS Code.</li>
+        <li>Run the self-test suite (typically via <code>Invoke-Pester</code> or through the VS Code Pester test runner).</li>
+      </ol>
+
+      <div class="section-label">Verification</div>
+      <div class="verification-box">
+        <strong>Pass criteria:</strong> All self-tests pass with zero failures. Any failure at this stage indicates an installation or configuration issue that must be resolved before proceeding.
+      </div>
+
+      <div class="section-label">Mentor Tips / Troubleshooting</div>
+      <div class="mentor-box">
+        <div class="mentor-title">Mentor Notes</div>
+        <ul>
+          <li>Self-test failures at this stage almost always indicate a DB connection or module import problem — revisit TA_02 before investigating further.</li>
+          <li>VS Code's Pester extension provides a test explorer view that makes it easy to run and see individual test results.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TA_04 -->
+  <div class="exercise-card" id="ta04">
+    <div class="card-header">
+      <span class="ex-id">TA_04</span>
+      <h2>Create Test Stub Files</h2>
+    </div>
+    <div class="card-body">
+      <div class="section-label">Requirements</div>
+      <div class="requirements-box">
+        Use the TestAssist utility cmdlets to auto-generate stub test files for custom OIM objects:
+        Processes, Scripts, and Templates. The stubs are scaffolding files tied to the specific
+        OIM instance's custom objects — they will not pass tests until completed in later exercises.
+      </div>
+
+      <div class="section-label">Solution Steps</div>
+      <ol class="steps-list">
+        <li>Run <code>C:\Intragen\TestAssist\utility\Write-ProcessTestStubs.ps1</code> and create process stub tests.</li>
+        <li>Run <code>Write-ScriptTestStubs.ps1</code> and create script stub tests.</li>
+        <li>Run <code>Write-TemplateTestStubs.ps1</code> and create template stub tests.</li>
+      </ol>
+
+      <div class="section-label">Hint</div>
+      <div class="hint-box">
+        <strong>Note:</strong> Stubs are scaffolding only — they will not pass until the test logic is written in later exercises (TA_05, TA_06).
+        The utility cmdlets introspect the OIM Designer DB to find custom objects, so a working DM connection from TA_02 is a hard prerequisite.
+      </div>
+
+      <div class="section-label">Verification</div>
+      <div class="verification-box">
+        <strong>Pass criteria:</strong> Stub files are created and their names match the custom objects present in the OIM instance (Processes, Scripts, Templates).
+      </div>
+
+      <div class="section-label">Mentor Tips / Troubleshooting</div>
+      <div class="mentor-box">
+        <div class="mentor-title">Mentor Notes</div>
+        <ul>
+          <li>Utility cmdlets read directly from the OIM Designer DB — the DM connection from TA_02 must be working first. If stubs generate with no content, the DB query returned zero results (check filters/scope).</li>
+          <li>Stub files won't pass until the test logic is written — this is expected behavior, not a bug.</li>
+          <li>Confirm stub file names match the actual custom objects in the trainee's OIM instance — they will differ between environments.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TA_05 -->
+  <div class="exercise-card" id="ta05">
+    <div class="card-header">
+      <span class="ex-id">TA_05</span>
+      <h2>Write a Template Unit Test</h2>
+    </div>
+    <div class="card-body">
+      <div class="section-label">Requirements</div>
+      <div class="requirements-box">
+        Convert a generated template stub into a working Pester unit test for the
+        <code>Extended_Person_Remarks</code> template. The test must run cleanly with
+        <code>Invoke-Pester</code> and produce a visible pass or fail result.
+      </div>
+
+      <div class="section-label">Solution Steps</div>
+      <ol class="steps-list">
+        <li>Run <code>Write-TemplateTestStubs.ps1</code> and create the stub test file.</li>
+        <li>Modify the stub to create the completed test file <code>Extended_Person_Remarks_TemplateStub.tests.ps1</code> with meaningful test assertions.</li>
+        <li>Run the test with <code>Invoke-Pester</code> (or via VS Code test runner).</li>
+      </ol>
+
+      <div class="section-label">Hint</div>
+      <div class="hint-box">
+        VS Code can quickly run individual Pester test cases using the test runner in the sidebar — use this during development to get fast feedback on each assertion.
+      </div>
+
+      <div class="section-label">Verification</div>
+      <div class="verification-box">
+        <strong>Pass criteria:</strong> <code>Invoke-Pester</code> runs without errors; test result (pass or fail) is clearly shown in the output with the test name visible.
+      </div>
+
+      <div class="section-label">Mentor Tips / Troubleshooting</div>
+      <div class="mentor-box">
+        <div class="mentor-title">Mentor Notes</div>
+        <ul>
+          <li>Pester 4.x syntax uses <code>It "description" { ... }</code> blocks inside <code>Describe</code> — make sure trainees are not accidentally using Pester 5 syntax which looks slightly different.</li>
+          <li>Template tests typically use <code>Invoke-OIMTemplate</code> or equivalent TestAssist cmdlets — refer to the /lib examples in the TestAssist directory for patterns.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TA_06 -->
+  <div class="exercise-card" id="ta06">
+    <div class="card-header">
+      <span class="ex-id">TA_06</span>
+      <h2>Write a Script Unit Test</h2>
+    </div>
+    <div class="card-body">
+      <div class="section-label">Requirements</div>
+      <div class="requirements-box">
+        Convert a generated script stub into a working Pester unit test. The completed test file
+        <code>TA_06_ScriptStubsFinal.tests.ps1</code> must run with <code>Invoke-Pester</code>
+        and show pass/fail details. The test must properly account for SQL transaction behavior.
+      </div>
+
+      <div class="section-label">Solution Steps</div>
+      <ol class="steps-list">
+        <li>Run <code>Write-ScriptTestStubs</code> and create the stub test file.</li>
+        <li>Modify the stub to create the completed test file <code>TA_06_ScriptStubsFinal.tests.ps1</code>.</li>
+        <li>Run the test with <code>Invoke-Pester</code>.</li>
+      </ol>
+
+      <div class="section-label">Hint</div>
+      <div class="hint-box">
+        <strong>Think carefully about SQL transactions and rollback.</strong> OIM scripts that modify data run inside a transaction context — if a test causes a DB write, consider whether the test should roll back that change to keep the database clean for subsequent runs.
+        TestAssist may provide transaction wrapping utilities — check the /lib directory for patterns.
+      </div>
+
+      <div class="section-label">Verification</div>
+      <div class="verification-box">
+        <strong>Pass criteria:</strong> <code>Invoke-Pester</code> runs; individual test pass/fail status and details are shown in the output.
+      </div>
+
+      <div class="section-label">Mentor Tips / Troubleshooting</div>
+      <div class="mentor-box">
+        <div class="mentor-title">Mentor Notes</div>
+        <ul>
+          <li>SQL transaction behavior is the key nuance here — script tests that write to the DB may leave dirty data if not wrapped in a rollback. Guide trainees to understand the difference between test isolation (rollback) and integration testing (commit).</li>
+          <li>If a test passes on the first run but fails on subsequent runs, it is likely leaving persistent data that violates a uniqueness constraint on re-run.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TA_07 -->
+  <div class="exercise-card" id="ta07">
+    <div class="card-header">
+      <span class="ex-id">TA_07</span>
+      <h2>Gherkin Execution Flow</h2>
+    </div>
+    <div class="card-body">
+      <div class="section-label">Requirements</div>
+      <div class="requirements-box">
+        Understand and be able to explain the complete Gherkin execution pipeline in TestAssist —
+        from a <code>.feature</code> file through step matching to PowerShell execution and result
+        collection. No formal test table; the goal is conceptual mastery of the flow.
+      </div>
+
+      <div class="section-label">Solution Steps — Execution Flow</div>
+      <div class="flow-box">
+        <h3>Gherkin Execution Pipeline</h3>
+        <ol class="flow-steps">
+          <li>Pester reads the <code>.feature</code> file</li>
+          <li>TestAssist parses the Gherkin syntax (Given/When/Then steps)</li>
+          <li>For each step, TestAssist finds a matching regular expression in the corresponding <code>.steps.ps1</code> files</li>
+          <li>Parameters are extracted from the step text using regex capture groups</li>
+          <li>The PowerShell code block in the matching step definition is executed with the extracted parameter values</li>
+          <li>Test results (pass/fail) are collected for each step</li>
+          <li>Teardown logic runs if defined (e.g., cleanup steps)</li>
+        </ol>
+      </div>
+
+      <div class="section-label">Concrete Example</div>
+      <div class="requirements-box">
+        In the <code>gherkin</code> directory: example <code>.feature</code> files.<br>
+        In the <code>lib</code> directory (Glue Code): matching <code>.steps.ps1</code> files.<br><br>
+        <strong>Example trace:</strong> <code>webtest.feature</code> line 5 captures <code>Namespace="webtest"</code>, <code>Key="webuser"</code>.
+        Line 6 identifies a step, which matches with <code>lib/common-person_attr.steps.ps1</code> line 65.
+        The matched code block executes: <code>$person = Resolve-StepTestData</code>.
+      </div>
+
+      <div class="section-label">Supported Languages</div>
+      <div class="hint-box">
+        Gherkin supports multiple languages — <code>.feature</code> files and <code>.steps.ps1</code> files
+        can be translated so tests are written in the business stakeholder's language.
+        Be familiar with regular expressions for parameter matching — the regex in a step definition is the bridge
+        between human-readable Gherkin text and executable PowerShell code.
+      </div>
+
+      <div class="section-label">Test Cases</div>
+      <p class="no-test-note">No formal test table for TA_07. The mentor should ask the trainee to verbally trace through the execution flow using a provided example feature file, identifying: which .steps.ps1 matches, which regex captures which parameter, and what PowerShell executes.</p>
+
+      <div class="section-label">Mentor Tips / Troubleshooting</div>
+      <div class="mentor-box">
+        <div class="mentor-title">Mentor Notes</div>
+        <ul>
+          <li>The regex in <code>.steps.ps1</code> is the bridge between business-readable Gherkin text and PowerShell code — capture groups extract parameters that become PowerShell variables in the code block.</li>
+          <li>Ask the trainee to trace a step manually: "Given this Gherkin line, find the regex that matches it, identify the capture groups, and show what value each variable receives."</li>
+          <li>Confirm the trainee understands that Pester 4's <code>Invoke-Gherkin</code> is the entry point for feature files — not <code>Invoke-Pester</code> alone.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TA_08 -->
+  <div class="exercise-card" id="ta08">
+    <div class="card-header">
+      <span class="ex-id">TA_08</span>
+      <h2>Create a Gherkin Feature File</h2>
+    </div>
+    <div class="card-body">
+      <div class="section-label">Requirements</div>
+      <div class="requirements-box">
+        Create a complete Gherkin feature test from scratch: both a <code>.feature</code> file
+        and its companion <code>.steps.ps1</code> file. The feature must execute successfully
+        with <code>Invoke-Gherkin</code> and produce visible test output.
+      </div>
+
+      <div class="section-label">Solution Steps</div>
+      <ol class="steps-list">
+        <li>Create <code>TA_08_personTemplate.feature</code> with at least one scenario and meaningful Given/When/Then steps for a Person template test.</li>
+        <li>Create the companion <code>TA_08_personTemplate.steps.ps1</code> in the <strong>same directory</strong> as the feature file, with regex step definitions matching all steps in the feature file.</li>
+        <li>Run the feature file with <code>Invoke-Gherkin</code>.</li>
+      </ol>
+
+      <div class="section-label">Hint</div>
+      <div class="hint-box">
+        The <code>.steps.ps1</code> file <strong>must</strong> be in the same directory as the <code>.feature</code> file — placing it elsewhere is the most common mistake.
+        Setting logging to <code>DEBUG</code> in <code>Setup.ps1</code> shows step matching details in the output, which is invaluable for troubleshooting step registration failures.
+      </div>
+
+      <div class="section-label">Test Cases</div>
+      <div class="test-table-wrap">
+        <table class="test-table">
+          <thead>
+            <tr>
+              <th class="num-col">#</th>
+              <th>Test Scenario</th>
+              <th>Test Steps</th>
+              <th>Expected Results</th>
+              <th>Mentor Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="num-col">1</td>
+              <td>Invoke Gherkin feature</td>
+              <td>Run the TA_08 feature file using <code>Invoke-Gherkin</code> from VS Code or PowerShell</td>
+              <td>Feature executes without "step not found" errors; test output shows pass/fail result for each scenario</td>
+              <td>If steps are "not found", the <code>.steps.ps1</code> is in the wrong directory or the regex does not match the step text. Enable DEBUG logging to see matching attempts.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-label">Mentor Tips / Troubleshooting</div>
+      <div class="mentor-box">
+        <div class="mentor-title">Mentor Notes</div>
+        <ul>
+          <li>The <code>.steps.ps1</code> MUST be in the same directory as the <code>.feature</code> file — wrong location is the most common mistake in TA_08 and TA_09.</li>
+          <li>Setting <code>DEBUG</code> logging in <code>Setup.ps1</code> shows step matching details — essential for diagnosing "step not found" errors.</li>
+          <li>Refer trainees to the <code>/lib</code> examples in the TestAssist directory for working step definition patterns to model their own from.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TA_09 -->
+  <div class="exercise-card" id="ta09">
+    <div class="card-header">
+      <span class="ex-id">TA_09</span>
+      <h2>Custom Gherkin Assertion with Parameters</h2>
+    </div>
+    <div class="card-body">
+      <div class="section-label">Requirements</div>
+      <div class="requirements-box">
+        Extend the TA_08 approach by adding parameterized Gherkin steps. Create a feature file and
+        steps file where step definitions use regex capture groups to extract parameter values
+        from the Gherkin text and pass them as variables to the PowerShell assertion code.
+      </div>
+
+      <div class="section-label">Solution Steps</div>
+      <ol class="steps-list">
+        <li>Create <code>TA_09_personTemplate_parms.feature</code> with scenarios that use parameterized Gherkin steps (e.g., values passed directly in the step text like "Given a Person with department &lt;name&gt;").</li>
+        <li>Create the companion <code>TA_09_personTemplate_parms.steps.ps1</code> in the <strong>same directory</strong> with regex capture groups that extract the parameter values and use them in the PowerShell assertion.</li>
+        <li>Run both scenarios and verify parameter values are correctly captured and used.</li>
+      </ol>
+
+      <div class="section-label">Hint</div>
+      <div class="hint-box">
+        Start with a simple assertion (no parameters) first, confirm it passes, then add parameterization.
+        Understand how parameters work by studying the examples in the <code>/lib</code> directory before writing your own.
+        Regex capture groups use <code>(...)</code> syntax — each group becomes a parameter in the PowerShell step definition's <code>param()</code> block.
+      </div>
+
+      <div class="section-label">Test Cases</div>
+      <div class="test-table-wrap">
+        <table class="test-table">
+          <thead>
+            <tr>
+              <th class="num-col">#</th>
+              <th>Test Scenario</th>
+              <th>Test Steps</th>
+              <th>Expected Results</th>
+              <th>Mentor Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="num-col">1</td>
+              <td>Feature without parameters</td>
+              <td>Run a simple Gherkin step with no capture groups — hardcoded values only</td>
+              <td>Step matches and the assertion passes with no parameter extraction errors</td>
+              <td>Confirm this baseline works before adding parameterization — it isolates regex matching from parameter handling issues.</td>
+            </tr>
+            <tr>
+              <td class="num-col">2</td>
+              <td>Feature with parameters</td>
+              <td>Run a Gherkin step where a value (e.g., a name or number) is embedded in the step text and extracted by the regex capture group</td>
+              <td>The parameter value is captured correctly from the step text and used in the assertion; the test passes with the correct value</td>
+              <td>Ask the trainee to log the captured parameter value to the console to confirm it matches what was written in the feature file. This makes the capture group mechanics visible.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-label">Mentor Tips / Troubleshooting</div>
+      <div class="mentor-box">
+        <div class="mentor-title">Mentor Notes</div>
+        <ul>
+          <li>Same file-location rule as TA_08: the <code>.steps.ps1</code> MUST be in the same directory as the <code>.feature</code> file.</li>
+          <li>If a parameterized step is "not found", the regex likely does not match the exact phrasing in the feature file. Use DEBUG logging to see what text TestAssist is trying to match.</li>
+          <li>The most instructive debugging step: ask the trainee to copy the step text from the <code>.feature</code> file and test the regex against it in isolation using PowerShell's <code>-match</code> operator before relying on TestAssist to match it.</li>
+          <li>Regex capture groups in step definitions use standard PowerShell <code>[regex]</code> syntax — <code>$matches[1]</code>, <code>$matches[2]</code>, etc., correspond to the first and second capture groups.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Mentor Tips -->
+  <div class="exercise-card" id="mentor-tips" style="border-top-color: #1a1a2e;">
+    <div class="card-header" style="background:#1a1a2e;">
+      <span class="ex-id" style="background:#fff; color:#1a1a2e;">REF</span>
+      <h2 style="color:#fff;">Module-Wide Mentor Tips &amp; Troubleshooting</h2>
+    </div>
+    <div class="card-body">
+      <div class="mentor-box" style="border-color: #1a1a2e;">
+        <div class="mentor-title" style="color: #1a1a2e;">Key Reminders Across All Exercises</div>
+        <ul>
+          <li><strong>TA_01:</strong> Pester 4 vs 5 is a BREAKING change — <code>Invoke-Gherkin</code> exists only in v4. If the trainee has v5 installed, they must downgrade or install v4 side-by-side. This is the single most common blocker in this module.</li>
+          <li><strong>TA_02:</strong> "password" encryption key is for training only — production must use secure key management. Always force-reload after <code>Setup.ps1</code> changes: <code>Import-Module TestAssist -Force</code>.</li>
+          <li><strong>TA_04:</strong> Utility cmdlets read from the OIM Designer DB — DM connection must be working first. Stubs won't pass until the test logic is written; this is expected.</li>
+          <li><strong>TA_07:</strong> The regex in <code>.steps.ps1</code> is the bridge between business-readable Gherkin text and PowerShell code — capture groups extract parameters. Mastery of this is prerequisite for TA_08 and TA_09.</li>
+          <li><strong>TA_08/09:</strong> The <code>.steps.ps1</code> file MUST be in the same directory as the <code>.feature</code> file — wrong location is the most common mistake. Enable <code>DEBUG</code> logging in <code>Setup.ps1</code> to see step matching details when troubleshooting.</li>
+          <li><strong>General:</strong> Avoid spaces in all folder paths across the TestAssist setup. <code>Import-Module</code> is required at the start of each session. Test DB connection first — most errors trace back to a broken DM connection.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

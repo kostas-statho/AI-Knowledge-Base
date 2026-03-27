@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 010 — Connectors (CNR) | Mentor Guide</title>
+<style>
+:root{--navy:#1B2A4A;--blue:#2E86C1;--green:#27AE60;--orange:#E67E22;--red:#E74C3C;--bg:#F5F7FA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;font-size:15px;line-height:1.6;background:var(--bg);color:#2C3E50}
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sidebar{background:var(--navy);color:#fff;padding:0;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.logo{padding:1rem 1rem .5rem;font-size:.8rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid rgba(255,255,255,.1)}
+.module-title{padding:.75rem 1rem;font-size:.85rem;font-weight:700;color:#90CAF9;border-bottom:1px solid rgba(255,255,255,.1)}
+.nav-label{padding:.75rem 1rem .25rem;font-size:.7rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em}
+.sidebar a{display:block;padding:.4rem 1rem;color:rgba(255,255,255,.75);text-decoration:none;font-size:.85rem;border-left:3px solid transparent}
+.sidebar a:hover{background:rgba(255,255,255,.08);border-left-color:var(--blue);color:#fff}
+main{padding:2rem;max-width:1080px}
+.module-header{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);color:#fff;padding:2rem 2rem 1.5rem;border-radius:12px;margin-bottom:2rem;position:relative;overflow:hidden}
+.module-header::before{content:'';position:absolute;right:-20px;top:-20px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.05)}
+.mod-num{display:inline-block;font-size:2.5rem;font-weight:900;opacity:.25;float:right;line-height:1}
+.module-header h1{font-size:1.6rem;margin-bottom:.4rem}
+.module-header p{opacity:.85;font-size:.9rem}
+.badge{display:inline-block;padding:.2rem .7rem;border-radius:999px;font-size:.72rem;font-weight:700;text-transform:uppercase}
+.beginner{background:#d4edda;color:#155724}
+.intermediate{background:#fff3cd;color:#856404}
+.advanced{background:#f8d7da;color:#721c24}
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:2rem}
+.info-card{background:#fff;border-left:4px solid var(--blue);padding:1.1rem 1.2rem;border-radius:0 8px 8px 0;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.info-card h3{color:var(--navy);font-size:.9rem;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.05em}
+.info-card ul{padding-left:1.2rem}
+.info-card li{font-size:.9rem;margin-bottom:.25rem}
+section{margin-bottom:2.5rem}
+section>h2{color:var(--navy);font-size:1.15rem;border-bottom:2px solid var(--blue);padding-bottom:.4rem;margin-bottom:1.2rem}
+.exercise-card{background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.07);padding:1.4rem;margin-bottom:1.4rem;border-left:4px solid var(--blue)}
+.exercise-card.ad-track{border-left-color:var(--green)}
+.ex-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.ex-num{background:var(--navy);color:#fff;min-width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0}
+.ex-num.ad{background:var(--green)}
+.ex-header h3{color:var(--navy);font-size:1rem;margin:0}
+.section-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin:.9rem 0 .3rem}
+.callout{padding:.85rem 1rem;border-radius:0 8px 8px 0;margin:.8rem 0;font-size:.9rem}
+.callout-mentor{border-left:4px solid var(--blue);background:#EBF5FB}
+.callout-tip{border-left:4px solid var(--green);background:#EAFAF1}
+.callout-warn{border-left:4px solid var(--orange);background:#FEF9E7}
+.callout-error{border-left:4px solid var(--red);background:#FDEDEC}
+.callout b{display:block;margin-bottom:.2rem;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+.steps{padding-left:1.4rem;margin:.4rem 0}
+.steps li{margin-bottom:.4rem;font-size:.9rem}
+pre{background:#1E1E1E;color:#D4D4D4;padding:1rem;border-radius:8px;overflow-x:auto;font-size:.8rem;margin:.8rem 0;font-family:'Courier New',monospace}
+code{background:#eef2ff;padding:.1rem .3rem;border-radius:3px;font-family:'Courier New',monospace;font-size:.82rem}
+table{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.88rem}
+thead tr{background:var(--navy);color:#fff}
+th,td{padding:.6rem .9rem;border:1px solid #dee2e6;text-align:left}
+tbody tr:nth-child(even){background:#F8F9FA}
+footer{text-align:center;padding:2rem 1rem;color:#aaa;font-size:.8rem;border-top:1px solid #eee;margin-top:2rem}
+.pass{color:#155724;font-weight:700}
+.fail{color:#721c24;font-weight:700}
+.track-header{background:var(--navy);color:#fff;padding:.5rem 1rem;border-radius:8px;margin:1.5rem 0 1rem;font-size:.85rem;font-weight:700;letter-spacing:.05em}
+.track-header.ad{background:var(--green)}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="logo">OIM Mentor Guides</div>
+    <div class="module-title">Module 010 — CNR</div>
+    <div class="nav-label">CSV / OIM Track</div>
+    <a href="#cnr1">CNR-1: CSV Connector</a>
+    <a href="#cnr2">CNR-2: OIM-to-OIM ESet</a>
+    <a href="#cnr3">CNR-3: IT Shop from CSV</a>
+    <a href="#cnr4">CNR-4: Custom Script Connector</a>
+    <div class="nav-label">AD Track</div>
+    <a href="#cnrad1">CNR_AD-1: Read-Only Sync</a>
+    <a href="#cnrad2">CNR_AD-2: Bidirectional Mapping</a>
+    <a href="#cnrad3">CNR_AD-3: Single Object Operation</a>
+    <div class="nav-label">Reference</div>
+    <a href="#tips">Mentor Tips</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+  </nav>
+
+  <main>
+    <div class="module-header">
+      <span class="mod-num">010</span>
+      <div style="margin-bottom:.6rem">
+        <span class="badge intermediate">Intermediate</span>
+        &nbsp;<span style="font-size:.8rem;opacity:.75">7 Exercises &nbsp;|&nbsp; ~3 Days</span>
+      </div>
+      <h1>Connectors (CNR)</h1>
+      <p>Two separate connector tracks: (1) Generic/CSV connectors using OIM-to-OIM and CSV sync projects; (2) Active Directory connector for real AD sync. Covers read-only sync, bidirectional mapping, custom scripts, and outstanding object handling.</p>
+    </div>
+
+    <div class="overview-grid">
+      <div class="info-card">
+        <h3>Key Concepts</h3>
+        <ul>
+          <li>Sync Project, CSV Connector, OIM-to-OIM Connector</li>
+          <li>Object Type, Mapping, Workflow (sync direction)</li>
+          <li>Provisioning, Outstanding Objects</li>
+          <li>Single Object Operation (push on demand)</li>
+          <li>Startup Configurations</li>
+          <li>Deletion sync patterns (markForDeletion)</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Two Tracks</h3>
+        <ul>
+          <li><strong>CSV/OIM Track (CNR-1 to CNR-4):</strong> Staging tables, ESet creation from CSV, IT Shop products via CSV, custom script connectors</li>
+          <li><strong>AD Track (CNR_AD-1 to CNR_AD-3):</strong> Read-only initial sync, bidirectional mapping, single object operation for AD group provisioning</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="track-header">CSV / OIM Connector Track</div>
+
+    <!-- CNR-1 -->
+    <section id="cnr1">
+      <h2>CNR-1: CSV Connector — Read Data into CCCStaging Table</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">1</div>
+          <h3>CSV Connector — Read Data into CCCStaging</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">The foundational connector exercise. Reads data from a CSV file into a custom staging table in the OIM database. All subsequent CNR exercises build on this staging table.</p>
+
+        <div class="callout callout-warn">
+          <b>Before You Start — Table First</b>
+          Create the <code>CCCStaging</code> table FIRST — either via SQL or schema extension — before opening Sync Editor. The table must exist in the OIM database before the connector can discover and map to it. A common trainee mistake is opening Sync Editor first and not finding the table in the schema list.
+        </div>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 — Create CCCStaging Table:</strong> Create the staging table via schema extension (preferred in OIM) or directly via SQL. Define all necessary columns to match the CSV file structure — column names, data types, and key fields.</li>
+          <li><strong>Step 2 — Create CSV Connector with CSV System:</strong> In Sync Editor, create a new Sync Project using the "CSV Connector" type. Create and configure a new "CSV System" pointing to your source CSV file. Configure the file path, delimiter, and encoding.</li>
+          <li><strong>Step 3 — Setup OneIM Manager Connection:</strong> Configure the OIM side of the connection — connection string, credentials, and the target OIM database.</li>
+          <li><strong>Step 4 — Setup Target System:</strong> Configure the target system schema to reflect the CSV file structure and the CCCStaging table columns. Update the schema so OIM discovers the CCCStaging table.</li>
+          <li><strong>Step 5 — Create a Base Object:</strong> Define the Base Object to scope which records from the CSV file the sync will process. Configure any filter conditions if needed.</li>
+          <li><strong>Step 6 — Create Mapping:</strong> Map CSV columns to CCCStaging table columns. Pay close attention to key properties and matching rules — these determine how records are matched between source and target.</li>
+          <li><strong>Step 7 — Create Workflow with Step:</strong> Create a sync workflow with the appropriate direction step (CSV source → OIM CCCStaging target) to populate the staging table on each run.</li>
+        </ol>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Run Sync</td>
+              <td>Execute the CSV sync project</td>
+              <td>Data from the CSV file is populated into the CCCStaging table — verify row count matches CSV</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CNR-2 -->
+    <section id="cnr2">
+      <h2>CNR-2: OIM-to-OIM Connector — Create ESet from CSV</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">2</div>
+          <h3>OIM-to-OIM Connector — Create ESet from CSV (Multi-Sync-Project)</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">The most complex exercise in this module. A multi-sync-project architecture: the CSV sync project populates the staging table (CNR-1), then a second OIM-to-OIM sync project creates ESet objects from that staging data. A third deletion sync project handles cleanup of removed records.</p>
+
+        <div class="callout callout-warn">
+          <b>Complexity Warning — Three Sync Projects</b>
+          This exercise involves three separate Sync Projects working together in sequence. Draw the complete data flow diagram with trainees BEFORE starting any configuration. Running the projects out of order will produce incorrect results.
+        </div>
+
+        <div style="background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:1rem;margin:.8rem 0;font-size:.85rem;text-align:center;color:var(--navy)">
+          <strong>Data Flow</strong><br/>
+          <span style="display:inline-block;padding:.2rem .6rem;background:#eef2ff;border-radius:4px;margin:.3rem">CSV File</span>
+          <span style="color:var(--blue);font-weight:700;margin:0 .3rem">--&gt;</span>
+          <span style="display:inline-block;padding:.2rem .6rem;background:#eef2ff;border-radius:4px;margin:.3rem">CSV Sync Project (CNR-1)</span>
+          <span style="color:var(--blue);font-weight:700;margin:0 .3rem">--&gt;</span>
+          <span style="display:inline-block;padding:.2rem .6rem;background:#eef2ff;border-radius:4px;margin:.3rem">CCCStaging Table</span>
+          <span style="color:var(--blue);font-weight:700;margin:0 .3rem">--&gt;</span>
+          <span style="display:inline-block;padding:.2rem .6rem;background:#eef2ff;border-radius:4px;margin:.3rem">OIM Connector Sync Project</span>
+          <span style="color:var(--blue);font-weight:700;margin:0 .3rem">--&gt;</span>
+          <span style="display:inline-block;padding:.2rem .6rem;background:#eef2ff;border-radius:4px;margin:.3rem">ESet Objects in OIM</span>
+          <br/><br/>
+          <span style="display:inline-block;padding:.2rem .6rem;background:#FDEDEC;border-radius:4px;margin:.3rem;color:var(--red)">Deletion Sync Project (3rd)</span>
+          <span style="color:var(--red);font-weight:700;margin:0 .3rem">--&gt;</span>
+          <span style="display:inline-block;padding:.2rem .6rem;background:#FDEDEC;border-radius:4px;margin:.3rem;color:var(--red)">markForDeletion + cleanup of PersonHasEset</span>
+        </div>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 — Create Sync Project "CCC_CreateSR":</strong> Create a new Sync Project using the One Identity Manager connector type. Name it <code>CCC_CreateSR</code>.</li>
+          <li><strong>Step 2 — Setup Connections &amp; Update Schema:</strong> Configure both the OneIM Manager connection (source — the CCCStaging table) and the Target System connection (destination — the ESet object type). Run schema update to discover all available tables and columns.</li>
+          <li><strong>Step 3 — Create Base Object:</strong> Define the Base Object scoping which records from the CCCStaging table will drive ESet creation.</li>
+          <li><strong>Step 4 — Create Mapping:</strong> Map CCCStaging fields to ESet properties. Configure the key/match property to determine how staging records are matched to existing ESet objects.</li>
+          <li><strong>Step 5 — Create Workflow:</strong> Create the provisioning workflow with the correct direction step (CCCStaging → ESet, OIM-to-OIM).</li>
+          <li><strong>Step 6 — Create Startup Configurations:</strong> Configure Startup Configurations for scheduled or on-demand execution of the sync.</li>
+          <li><strong>Step 7 — Create Deletion Sync Project:</strong> Create a separate third sync project for deletion handling. Configure two filtered schemas within it:
+            <ul style="padding-left:1.2rem;margin-top:.3rem">
+              <li><strong>PersonHasEset_Active:</strong> All identities assigned to active ESets that were created from the CSV staging data</li>
+              <li><strong>PersonHasESet_Filtered_Outstanding:</strong> All identities assigned to ESets from CSV that are currently <code>markedForDeletion</code></li>
+            </ul>
+          </li>
+          <li><strong>Step 8 — Configure Deletion Workflows:</strong> Two workflows in the deletion sync project:
+            <ul style="padding-left:1.2rem;margin-top:.3rem">
+              <li><strong>"Create ESet" workflow:</strong> Configured to set <code>markForDeletion = true</code> on ESets that no longer have a corresponding record in the CCCStaging table</li>
+              <li><strong>"Delete_Removed_Eset" workflow:</strong> Configured to delete <code>PersonHasEset</code> rows belonging to ESets that are <code>markedForDeletion</code>, then delete the ESet itself</li>
+            </ul>
+          </li>
+        </ol>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Run Sync</td>
+              <td>Execute the OIM connector sync project (after CNR-1 CSV sync has run)</td>
+              <td>ESet objects are created from staging data and appear in the ESet table</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Update CSV, run both syncs in sequence</td>
+              <td>Modify CSV data (add/remove entries); run CSV Sync first; then run OIM Table Sync</td>
+              <td>Both the CCCStaging table and ESet table are updated; ESets no longer in CSV are marked <code>markedForDeletion</code></td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Run Sync with markedForDeletion ESets assigned to identities</td>
+              <td>Run the Table Sync when ESets exist in <code>markedForDeletion</code> state with active identity assignments</td>
+              <td>PersonHasEset assignment rows are deleted; ESets are then fully deleted from the system</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CNR-3 -->
+    <section id="cnr3">
+      <h2>CNR-3: Products in IT Shop from CSV</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">3</div>
+          <h3>Products in IT Shop from CSV</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">Sync IT Shop products (Service Items / AccProducts) directly from a CSV file, including a deletion sync to clean up products that are removed from the CSV source.</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 — Create Mappings:</strong> In Sync Editor, create mappings from the CSV columns to the IT Shop product fields (Service Item / AccProduct properties — name, description, shelf assignment, etc.).</li>
+          <li><strong>Step 2 — Create Workflows for Population:</strong> Create the sync workflow so that after running the sync, products are populated in the IT Shop. Verify after running that products appear correctly on the configured IT Shop shelf and are requestable.</li>
+          <li><strong>Step 3 — Create Deletion Mapping and Workflow:</strong> Create the deletion-direction mapping and corresponding workflow named <code>Delete_Sync</code> (or equivalent). After running this deletion sync, products that were removed from the CSV file are no longer available in the IT Shop — they are deactivated or removed from the shelf.</li>
+        </ol>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note — Run Order Matters</b>
+          The deletion sync must be run AFTER the main CSV sync. The main sync first updates the staging/target state, then the deletion sync identifies products that no longer exist in CSV and removes them. Running deletion sync first will delete everything.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Run Sync</td>
+              <td>Execute the CSV sync project</td>
+              <td>Products are populated and visible in the IT Shop on the configured shelf</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Remove products from CSV, run delete sync</td>
+              <td>Delete entries from the CSV file; run CSV Sync to update staging; run AccProdSync (deletion workflow)</td>
+              <td>Products corresponding to the deleted CSV rows are no longer available in the IT Shop</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CNR-4 -->
+    <section id="cnr4">
+      <h2>CNR-4: Custom Script Connector — Disable Missing ESets</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">4</div>
+          <h3>Custom Script Connector — Disable Missing ESets</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">Instead of deleting ESets that are missing from the staging table, use a custom script connector to disable them. Introduces writing custom connector logic that runs within the sync cycle.</p>
+
+        <div class="callout callout-mentor">
+          <b>Mentor — When to Use Custom Script vs. Standard Mapping</b>
+          Standard sync mappings handle INSERT, UPDATE, DELETE in straightforward ways. Sometimes you need custom logic: disabling instead of deleting, complex multi-table transformations, or conditional operations. The Custom Script connector allows VB.NET/C# code to execute during the sync cycle. Discuss with trainees when each approach is appropriate.
+        </div>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Create Custom Script via Designer:</strong> Write and register the custom script in OIM Designer. The script must contain logic to: query for ESets that do not have a corresponding record in the CCCStaging table, and set the disabled/inactive flag on those ESets.</li>
+          <li><strong>Restart Services &amp; Update Schema:</strong> After registering the custom script in Designer, restart the relevant OIM services (Job Service / Application Server). Then run a schema update in Sync Editor to make the new custom script available as a connector option.</li>
+          <li><strong>Configure Workflow Step:</strong> In the sync workflow, add and configure a step that invokes the custom script to perform the disable operation on the identified ESets.</li>
+        </ol>
+
+        <div class="callout callout-tip">
+          <b>Service Restart Reminder</b>
+          Registering a new script in OIM Designer requires a service restart before the Sync Editor schema update will discover it. Trainees frequently forget the restart step and wonder why the script is not visible in Sync Editor.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Run Sync</td>
+              <td>Execute the sync project with the custom script step configured</td>
+              <td>ESets that are missing from the CCCStaging table are disabled (not deleted) in OIM</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="track-header ad">Active Directory Connector Track</div>
+
+    <!-- CNR_AD-1 -->
+    <section id="cnrad1">
+      <h2>CNR_AD-1: Active Directory — Read-Only Initial Sync</h2>
+      <div class="exercise-card ad-track">
+        <div class="ex-header">
+          <div class="ex-num ad">AD1</div>
+          <h3>Active Directory — Read-Only Initial Sync</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">The first step in AD integration is always a read-only sync to verify the schema and data mapping before enabling any writes. This exercise establishes the "verify read-only first" production pattern.</p>
+
+        <div class="callout callout-warn">
+          <b>Never Start With Write Access</b>
+          Always configure the first AD sync project as Read_Only. Verify the schema and data mapping thoroughly before enabling write access. One misconfigured write mapping can corrupt AD user objects in a real environment.
+        </div>
+
+        <div class="section-label">Requirements and Solution</div>
+        <ol class="steps">
+          <li>Verify the AD Forest used for this exercise exists and is accessible.</li>
+          <li>Create new AD Users in the Active Directory environment. Set the Description field on these users to <code>Managed_by_OneIM</code> — this allows easy identification of test users during sync verification.</li>
+          <li>In OIM Sync Editor, create a new Sync Project using the AD Connector type. Set the connection mode to <strong>Read_Only</strong>.</li>
+          <li>Configure the AD schema — map the relevant AD attributes (sAMAccountName, displayName, mail, description, etc.) to the corresponding OIM ADS Account fields.</li>
+          <li>Run the initial sync to import AD objects into the OIM database. Verify the AD users appear as ADS Account objects in OIM Manager.</li>
+        </ol>
+
+        <div class="callout callout-tip">
+          <b>Verification Step</b>
+          After the sync completes, open OIM Manager and navigate to Active Directory accounts. Confirm the test users created with <code>Managed_by_OneIM</code> description are visible. Also confirm that NO changes were made to AD (read-only means zero writes).
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Run Initial Sync</td>
+              <td>Execute the read-only AD sync project</td>
+              <td>AD data is synced into the OIM database — AD user objects appear as ADS Accounts in OIM. No changes written to AD.</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CNR_AD-2 -->
+    <section id="cnrad2">
+      <h2>CNR_AD-2: Active Directory — Bidirectional Mapping</h2>
+      <div class="exercise-card ad-track">
+        <div class="ex-header">
+          <div class="ex-num ad">AD2</div>
+          <h3>Active Directory — Bidirectional Mapping</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">Extends the read-only sync project to support write operations. Enables OIM-initiated changes to attributes to be provisioned out to Active Directory in real time via the sync cycle.</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Configure Write Access:</strong> Update the AD Sync Project connection from Read_Only mode to a connection that allows write operations. Configure the service account credentials with the necessary AD permissions to write user attributes.</li>
+          <li><strong>Create Mapping:</strong> Create the attribute mapping between OIM Person/ADS Account fields and AD user attributes. Define directionality — which fields are authoritative (OIM writes to AD) and which are read from AD. Common fields: displayName, telephoneNumber, department, title.</li>
+          <li><strong>Create Provision Workflow:</strong> Create a provisioning workflow with the direction step set to OIM → AD. This workflow handles writing changes initiated in OIM out to the AD target system when the sync runs.</li>
+        </ol>
+
+        <div class="callout callout-mentor">
+          <b>Mentor — Directionality Is Critical</b>
+          Each mapped attribute has a direction: READ (AD is authoritative), WRITE (OIM is authoritative), or BOTH. Getting this wrong causes sync conflicts. For example, if "department" is mapped as BOTH, OIM and AD may overwrite each other. Discuss the concept of system of record with trainees — which system owns each field?
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Update AD User via OneIM</td>
+              <td>Modify a user attribute (e.g. telephone number or title) in OIM Manager; run the sync</td>
+              <td>The attribute change is provisioned to the corresponding Active Directory user object — verify in ADUC or ADSI Edit</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CNR_AD-3 -->
+    <section id="cnrad3">
+      <h2>CNR_AD-3: Active Directory — Single Object Operation for Groups</h2>
+      <div class="exercise-card ad-track">
+        <div class="ex-header">
+          <div class="ex-num ad">AD3</div>
+          <h3>Active Directory — Single Object Operation for Groups</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">Implements real-time "push on demand" provisioning for AD group membership. A change to group membership in OIM immediately triggers a targeted sync of only that group object to AD — no waiting for the scheduled full sync cycle.</p>
+
+        <div class="callout callout-tip">
+          <b>Why Single Object Operations?</b>
+          Full sync cycles run on a schedule — minutes to hours. For AD group membership changes (especially security group changes), waiting for the next scheduled sync is often unacceptable. A Single Object Operation provisions the specific changed object to AD immediately when the change occurs in OIM.
+        </div>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 — Create Single Object Operation via Designer:</strong> In OIM Designer, define a Single Object Operation for the ADS Group object type. This configuration enables on-demand, per-object AD synchronization independent of the scheduled full sync cycle.</li>
+          <li><strong>Step 2 — Copy and Modify "ADS_ADSGroup_Update" Process:</strong>
+            <ul style="padding-left:1.2rem;margin-top:.3rem">
+              <li>Locate the out-of-the-box process <code>ADS_ADSGroup_Update</code> in OIM Designer</li>
+              <li>Copy it to a new custom process (do NOT modify the original)</li>
+              <li>Deactivate the original out-of-the-box process, leaving only the copy active</li>
+              <li>In the copied process, modify ONLY the PreScript to add any required custom logic. Leave all other process steps unchanged.</li>
+            </ul>
+          </li>
+        </ol>
+
+        <div class="callout callout-warn">
+          <b>Copy First — Never Edit OOB Directly</b>
+          Never modify the original out-of-the-box process directly. Always copy it, then modify the copy, then deactivate the original. This preserves the ability to restore original behavior if needed and prevents breakage during OIM version upgrades.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Update AD group assignments</td>
+              <td>Assign or remove an AD group membership for an AD account in OIM Manager; save the change</td>
+              <td>After saving, the custom process is triggered immediately and the group membership change is provisioned to Active Directory in real time — no manual sync needed</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Mentor Tips -->
+    <section id="tips">
+      <h2>Mentor Tips</h2>
+
+      <div class="callout callout-mentor" style="margin-bottom:.8rem">
+        <b>CNR-1 — Table Must Exist Before Sync Editor</b>
+        Always create the CCCStaging table BEFORE opening Sync Editor. The table must exist in the OIM database for the connector schema discovery to find it. Trainees commonly try to create the table after creating the Sync Project and then can't find the table in the schema.
+      </div>
+
+      <div class="callout callout-mentor" style="margin-bottom:.8rem">
+        <b>CNR-2 — Draw the Data Flow First</b>
+        This is the most complex exercise in the module. Three separate Sync Projects must work together. Spend time drawing the complete data flow on a whiteboard before any configuration begins: CSV → CSV Sync → CCCStaging → OIM Sync → ESet objects. The deletion project is a third parallel path. Trainees who skip the diagram consistently configure the projects in the wrong order.
+      </div>
+
+      <div class="callout callout-mentor" style="margin-bottom:.8rem">
+        <b>CNR_AD-1 — Read-Only Is Non-Negotiable</b>
+        Read_Only mode as a first step is the production standard for AD connectors. Never start with a read-write connector in any environment. Verify the schema and data mapping with read-only before enabling writes. Stress this to trainees as a professional practice, not just an exercise requirement.
+      </div>
+
+      <div class="callout callout-mentor">
+        <b>CNR_AD-3 — Single Object Operations Are Production-Critical</b>
+        Single Object Operations enable "push on demand" provisioning. A change in OIM immediately pushes to AD without waiting for the scheduled sync. This is the standard production pattern for Group membership changes because security group membership often has immediate business impact — waiting hours for the nightly sync is not acceptable.
+      </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section id="troubleshooting">
+      <h2>Troubleshooting Reference</h2>
+      <table>
+        <thead>
+          <tr><th>Problem</th><th>Likely Cause</th><th>Solution</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CSV Sync runs but CCCStaging table stays empty</td>
+            <td>Base Object filter too restrictive, or wrong CSV delimiter configured</td>
+            <td>Check CSV file format and delimiter setting in the connector; verify the Base Object filter does not exclude all records; test with no filter first</td>
+          </tr>
+          <tr>
+            <td>ESet not created after Sync</td>
+            <td>Mapping not configured correctly — key properties or provisioning workflow direction wrong</td>
+            <td>Review mapping in Sync Editor; verify the provisioning workflow direction is correct (OIM→ESet); check the key property match configuration</td>
+          </tr>
+          <tr>
+            <td>Outstanding objects not being deleted</td>
+            <td>Deletion Sync Project not configured or not run after the main sync</td>
+            <td>Run the deletion sync project separately after the main sync; verify the <code>markForDeletion</code> workflow step is configured and both projects are activated</td>
+          </tr>
+          <tr>
+            <td>AD Sync fails with authentication error</td>
+            <td>Service account credentials wrong, account locked, or insufficient AD permissions</td>
+            <td>Check AD connector connection parameters; verify service account credentials and ensure the account is not locked in AD; confirm the account has required AD permissions</td>
+          </tr>
+          <tr>
+            <td>Single Object Operation not triggering after group change</td>
+            <td>Process not activated, or PreScript condition evaluates to false</td>
+            <td>Verify the custom process is activated in Designer; review the PreScript logic; temporarily simplify or remove the PreScript condition to isolate the issue</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>Module 010 — Connectors (CNR) | OIM Mentor Guide | Generated 2026-03-27</footer>
+  </main>
+</div>
+</body>
+</html>

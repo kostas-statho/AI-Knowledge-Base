@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 024_003 - DataExplorer+ Mentor Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #7B2D8B;
+    --purple-dark: #5C1F6B;
+    --teal: #007B77;
+    --golden: #F0A800;
+    --body-bg: #FAF8F5;
+    --code-bg: #1E1E1E;
+    --border: #DDD;
+    --text: #2C2C2C;
+    --muted: #6B6B6B;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    background: #F0EDE8;
+    color: var(--text);
+  }
+
+  /* Sidebar */
+  #sidebar {
+    background: var(--purple);
+    color: #fff;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 1.25rem 1rem 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-module-title {
+    color: var(--golden);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.75rem 1rem 0.25rem;
+  }
+
+  #sidebar nav a {
+    display: block;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.83rem;
+    border-left: 3px solid transparent;
+    padding: 0.4rem 1rem;
+    transition: all 0.2s;
+  }
+  #sidebar nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-left-color: var(--teal);
+    color: #fff;
+  }
+
+  .nav-section {
+    padding: 0.75rem 1rem 0.25rem;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.45);
+    font-weight: 700;
+    margin-top: 0.4rem;
+  }
+
+  /* Main */
+  #main {
+    padding: 2.25rem 2.5rem;
+    overflow-y: auto;
+    max-width: 1100px;
+    background: var(--body-bg);
+  }
+
+  /* Module header */
+  .module-header {
+    background: linear-gradient(135deg, #5C1F6B, #7B2D8B);
+    color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .module-header .deco-circle {
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .module-header .watermark {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+  .module-header h1 {
+    font-size: 1.6rem;
+    margin-bottom: 0.35rem;
+    color: #fff;
+  }
+  .module-header .page-subtitle {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.93rem;
+    margin-bottom: 0;
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.6rem;
+  }
+
+  /* Exercise card */
+  .exercise-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--teal);
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .exercise-card .card-heading {
+    color: var(--purple-dark);
+    font-size: 1.1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #EDE8F0;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .ex-id {
+    background: var(--purple);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    letter-spacing: 0.03em;
+  }
+
+  .section-label {
+    background: var(--purple-dark);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.5rem 0.9rem;
+    margin: 1.5rem 0 1rem;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .requirements-box {
+    background: #F5EFF8;
+    border-left: 4px solid var(--purple);
+    border-radius: 0 6px 6px 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #333;
+  }
+
+  /* Steps */
+  .steps-list { list-style: none; padding: 0; counter-reset: steps; }
+  .steps-list > li {
+    counter-increment: steps;
+    padding: 0.5rem 0.75rem 0.5rem 2.75rem;
+    position: relative;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .steps-list > li:last-child { border-bottom: none; }
+  .steps-list > li::before {
+    content: counter(steps);
+    position: absolute;
+    left: 0.625rem;
+    top: 0.5rem;
+    background: var(--purple-dark);
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .steps-list code { background: #EDE8F0; color: #8B2080; padding: 1px 5px; border-radius: 3px; font-size: 0.82rem; font-family: Consolas, monospace; }
+
+  /* Sub-steps */
+  .sub-steps { list-style: none; padding: 6px 0 2px 18px; margin-top: 4px; }
+  .sub-steps li { padding: 3px 0; font-size: 0.85rem; color: #555; }
+  .sub-steps li::before { content: "\2014"; margin-right: 6px; color: var(--teal); }
+  .sub-steps code { background: #EDE8F0; color: #8B2080; padding: 1px 5px; border-radius: 3px; font-size: 0.82rem; font-family: Consolas, monospace; }
+
+  /* Tables */
+  .test-table-wrap { overflow-x: auto; margin-top: 0.5rem; }
+  table.test-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  table.test-table thead th {
+    background: var(--purple-dark);
+    color: #fff;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-align: left;
+  }
+  table.test-table tbody td {
+    padding: 0.5rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  table.test-table tbody tr:nth-child(even) td { background: #F8F5FB; }
+  table.test-table .num-col { text-align: center; font-weight: 700; color: var(--purple); width: 36px; }
+
+  /* Mentor box */
+  .mentor-box {
+    background: #F5EFF8;
+    border-left: 4px solid var(--purple);
+    border-radius: 0 6px 6px 0;
+    padding: 1rem 1.25rem;
+    margin-top: 0.625rem;
+  }
+  .mentor-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 3px;
+    color: var(--purple-dark);
+  }
+  .mentor-box ul { padding-left: 1.125rem; font-size: 0.86rem; line-height: 1.8; color: #444; }
+  .mentor-box li { margin-bottom: 4px; }
+  .mentor-box code { background: #EDE8F0; color: #8B2080; padding: 1px 5px; border-radius: 3px; font-size: 0.82rem; font-family: Consolas, monospace; }
+
+  /* Callouts */
+  .callout {
+    padding: 0.75rem 1rem;
+    border-radius: 0 6px 6px 0;
+    margin-top: 0.625rem;
+    font-size: 0.86rem;
+    line-height: 1.65;
+  }
+  .callout.tip    { background: #F0FDF4; border-left: 4px solid #22C55E; }
+  .callout.warn   { background: #FFF8E1; border-left: 4px solid #F59E0B; }
+  .callout.important { background: #F5EFF8; border-left: 4px solid var(--purple); }
+  .callout.note   { background: #E8F4FF; border-left: 4px solid #2D6DB5; }
+  .callout strong.label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  /* Info callout */
+  .info-callout {
+    background: #E8F4FF;
+    border-left: 4px solid #2D6DB5;
+    border-radius: 0 6px 6px 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.86rem;
+    line-height: 1.65;
+    color: #2c4a80;
+    margin-top: 0.625rem;
+  }
+  .info-callout strong { color: #1a3560; }
+
+  /* Inline code & code blocks */
+  code { background: #EDE8F0; color: #8B2080; font-family: Consolas, monospace; font-size: 0.82rem; padding: 1px 5px; border-radius: 3px; }
+  .code-block {
+    background: #1E1E1E;
+    color: #D4D4D4;
+    font-family: 'Cascadia Code', Consolas, monospace;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    padding: 1rem 1.1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 0.75rem 0;
+  }
+
+  h3 { color: var(--purple); }
+  h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; }
+
+  /* Badges */
+  .badge-advanced { background: #f8d7da; color: #721c24; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+
+  @media (max-width: 800px) {
+    body { grid-template-columns: 1fr; }
+    #sidebar { position: static; height: auto; }
+    #main { padding: 1.25rem 0.875rem; }
+  }
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div class="sidebar-logo">INTRAGEN<span style="color:#F0A800">.</span></div>
+  <div class="sidebar-module-title">024_003 &mdash; DataExplorer+<br>C# endpoints + OIM config + SQL + Schema</div>
+  <nav>
+    <div class="nav-section">Exercises</div>
+    <a href="#de01">DE_01 &mdash; Permissions &amp; Access</a>
+    <a href="#de02">DE_02 &mdash; Line Manager Attestations SQL</a>
+    <a href="#de03">DE_03 &mdash; Accept/Reject Endpoints</a>
+    <a href="#de04">DE_04 &mdash; Business Role Membership</a>
+    <a href="#de05">DE_05 &mdash; Bulk Remove Roles Button</a>
+    <a href="#de06">DE_06 &mdash; Recommendations Table</a>
+    <div class="nav-section">Reference</div>
+    <a href="#mentor-tips">Mentor Tips</a>
+  </nav>
+</aside>
+
+<main id="main">
+
+  <div class="module-header">
+    <div class="deco-circle"></div>
+    <div class="watermark">INTRAGEN<span style="color:#F0A800">.</span></div>
+    <span class="badge">Mentor Guide</span>
+    <h1>Module 024_003 &mdash; DataExplorer+</h1>
+    <p class="page-subtitle">Advanced track: C# API endpoints + OIM configuration + SQL predefined queries + Schema extension</p>
+  </div>
+
+  <!-- DE_01 -->
+  <div class="exercise-card" id="de01">
+    <div class="card-heading">
+      <span class="ex-id">DE_01</span>
+      Permissions &amp; Access Setup
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Configure the complete permission structure required to make DataExplorer+ visible and usable
+      for the correct identities. This involves a Permissions Group, an AERole, Configuration Parameters,
+      a Predefined SQL, and a Program Function &mdash; all must be present and correctly linked.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Create a <strong>Permissions Group</strong> and an <strong>AERole</strong> for DataExplorer+ access.</li>
+      <li>Create all required <strong>Configuration Parameters</strong> in OIM Designer.</li>
+      <li>Create a <strong>Predefined SQL</strong> (BaseData &rarr; Advanced &rarr; Predefined SQL) and assign it to the Permission Group.</li>
+      <li>Create a <strong>Program Function</strong> and assign it to the Permission Group.</li>
+      <li>Login with a properly configured user in ITShop and verify DataExplorer+ is accessible.</li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th class="num-col">#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num-col">1</td>
+            <td>Login with invalid Person (no access)</td>
+            <td>Login to ITShop as a Person who has NOT been assigned the DataExplorer+ permission group</td>
+            <td>DataExplorer+ is NOT available in the portal</td>
+            <td>Use a clearly separate test identity with no DataExplorer+ group membership to confirm the negative case.</td>
+          </tr>
+          <tr>
+            <td class="num-col">2</td>
+            <td>Login with valid Person</td>
+            <td>Login to ITShop as a Person who has been assigned the DataExplorer+ permission group via AERole</td>
+            <td>DataExplorer+ is available and functional in the portal</td>
+            <td>Both the Program Function AND the Predefined SQL must be assigned &mdash; missing either makes the feature invisible.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>DataExplorer+ requires <strong>both</strong> a Program Function AND a Predefined SQL assigned to the permission group. Missing either one results in the feature being invisible &mdash; a common setup mistake.</li>
+        <li>Permission Group assignment propagates via the AERole. Confirm the test identity has the AERole assigned and that OIM has synchronized the role membership.</li>
+        <li>Configuration Parameters must match the expected key names exactly &mdash; the portal reads these at runtime to determine which Predefined SQL to invoke.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- DE_02 -->
+  <div class="exercise-card" id="de02">
+    <div class="card-heading">
+      <span class="ex-id">DE_02</span>
+      Predefined SQL for Line Manager Attestations
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Create and configure two Predefined SQL queries that power the Line Manager Attestations view in
+      DataExplorer+. Both queries must be assigned to the Permission Group and linked via Configuration
+      Parameters so the portal can discover and invoke them by name.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Create the two Predefined SQL queries and assign them to the Permission Group:
+        <ul class="sub-steps">
+          <li><code>CCC_DE_LineManagerAttestations_Sub_MainData</code></li>
+          <li><code>CCC_DE_LineManagerAttestations_Sub_BusinessRoles</code></li>
+        </ul>
+      </li>
+      <li>Create the required Configuration Parameters so the portal resolves these queries by their exact names at runtime.</li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th class="num-col">#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num-col">1</td>
+            <td>Identity without valid attestation</td>
+            <td>Login as a Person who has no pending or active attestation cases</td>
+            <td>No matching data &mdash; attestation view is empty</td>
+            <td>Confirm the SQL is running and returning zero rows (not throwing an error), which is the correct empty-state.</td>
+          </tr>
+          <tr>
+            <td class="num-col">2</td>
+            <td>Identity with valid attestation</td>
+            <td>Login as a Person who has pending attestation cases assigned to them as Line Manager</td>
+            <td>Attestation cases are displayed in DataExplorer+</td>
+            <td>Predefined SQL names are config-driven and link to specific UI views by name &mdash; a mismatch in Config Parameters means data won't load even if the SQL is correct.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>The Predefined SQL names in OIM must match exactly what the Configuration Parameters reference. A single character difference = no data loaded, no error shown.</li>
+        <li>Test both queries individually in OIM Designer (BaseData &rarr; Advanced &rarr; Predefined SQL) to confirm they return data for the expected context before integrating them.</li>
+        <li>If attestations exist in the system but aren't showing, check the WHERE clause scope in the SQL &mdash; it must filter by the current user's UID as Line Manager.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- DE_03 -->
+  <div class="exercise-card" id="de03">
+    <div class="card-heading">
+      <span class="ex-id">DE_03</span>
+      Attestation Accept / Reject API Endpoints
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Create two C# API endpoints &mdash; one to accept and one to reject an attestation case.
+      Both endpoints must validate that a reason is provided; if no reason is given, they must return
+      an appropriate error message. Build and deploy the <code>*.CompositionApi.Server.Plugin.dll</code>.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Create the required Configuration Parameters for the accept/reject endpoints.</li>
+      <li>Create both endpoints (accept and reject), implement reason validation, build the solution, and load the <code>*.CompositionApi.Server.Plugin.dll</code>.</li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th class="num-col">#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num-col">1</td>
+            <td>Check "No Reason" functionality</td>
+            <td>Attempt to accept or reject an attestation without providing a reason in the reason field</td>
+            <td>Error message: "No reason to be granted"</td>
+            <td>The validation must run server-side in the C# endpoint, not just client-side in Angular &mdash; test by posting directly to the endpoint if needed.</td>
+          </tr>
+          <tr>
+            <td class="num-col">2</td>
+            <td>Check "Reason" functionality</td>
+            <td>Provide a valid reason text and submit an accept decision</td>
+            <td>Attestation is accepted and the case status updates correctly in OIM</td>
+            <td>Verify the AttestationCase record in Designer to confirm the decision was persisted with the correct reason value.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>Each new feature follows the same pattern: new Config Parameters + new endpoint class + rebuild DLL + redeploy. This is the same DLL deployment pattern as module 017.</li>
+        <li>After each DLL update, always recycle the IIS application pool for the API Server.</li>
+        <li>The reason string is typically posted in the request body &mdash; ensure the C# request model matches the Angular payload structure.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- DE_04 -->
+  <div class="exercise-card" id="de04">
+    <div class="card-heading">
+      <span class="ex-id">DE_04</span>
+      Business Role Membership Management
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Allow the Line Manager to manage Business Role memberships from the DataExplorer+ side-sheet.
+      Only directly assigned and ITShop-requested roles may be removable &mdash; dynamic and system-assigned
+      roles must not show remove buttons. After an attestation is approved, remove buttons must
+      disappear for that attestation's roles.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Create the required Configuration Parameters for Business Role membership management.</li>
+      <li>Reconfigure the two existing Predefined SQL queries to include membership source/type data needed to determine removability.</li>
+      <li>Create and load the two required endpoints; build and deploy <code>*.CompositionApi.Server.Plugin.dll</code>.</li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th class="num-col">#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num-col">1</td>
+            <td>Only direct and requested roles removable</td>
+            <td>Assign a Business Role via Dynamic rule; assign another via ITShop request; assign another directly. Open the side-sheet and attempt to remove all three.</td>
+            <td>Only the directly assigned and ITShop-requested Business Roles show remove buttons. The dynamic role does not.</td>
+            <td>The membership source data comes from the reconfigured Predefined SQL &mdash; verify the SQL correctly identifies assignment origin. Dynamic memberships typically have a specific flag or source value in OIM.</td>
+          </tr>
+          <tr>
+            <td class="num-col">2</td>
+            <td>Buttons gone after attestation approved</td>
+            <td>Approve an attestation case; then open the DataExplorer+ side-sheet for that identity and re-assign a role to test the current state</td>
+            <td>After attestation approval, no remove buttons are visible for roles covered by that attestation</td>
+            <td>This is a state-dependent behavior &mdash; the endpoint must check the attestation approval status before returning the removability flag. Confirm the AttestationCase status is "Approved" in OIM Designer.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>The Predefined SQL reconfiguration in step 2 is the key data change &mdash; without the correct source/type fields, the endpoint cannot make the correct removability decision.</li>
+        <li>Test both assignment types independently before testing the side-sheet to confirm each type is correctly categorized in the SQL output.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- DE_05 -->
+  <div class="exercise-card" id="de05">
+    <div class="card-heading">
+      <span class="ex-id">DE_05</span>
+      Bulk Remove Business Roles Button
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Add a "Bulk Remove" button to the DataExplorer+ side-sheet that removes all removable Business Roles
+      at once. The button must only appear when at least one removable role exists; it must disappear
+      after all roles are removed.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Create the required Configuration Parameters for the bulk remove feature.</li>
+      <li>Create and load the two required endpoints; build and deploy <code>*.CompositionApi.Server.Plugin.dll</code>.</li>
+      <li>Create the two required Predefined SQL queries to identify removable roles for the bulk operation.</li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th class="num-col">#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num-col">1</td>
+            <td>Button visible when removable roles exist</td>
+            <td>Assign at least one directly-assigned removable Business Role to a test identity, then open the DataExplorer+ side-sheet</td>
+            <td>The "Bulk Remove" button is visible and, when clicked, removes all removable roles correctly</td>
+            <td>Verify the roles are actually deleted in OIM Designer after the bulk remove &mdash; confirm no partial-remove state.</td>
+          </tr>
+          <tr>
+            <td class="num-col">2</td>
+            <td>Button NOT visible when no removable roles</td>
+            <td>After performing bulk remove (or when the identity has no directly-assigned roles), open the side-sheet again</td>
+            <td>The "Bulk Remove" button is NOT visible</td>
+            <td>The button visibility is driven by whether the Predefined SQL returns any removable rows &mdash; if it returns zero rows, the Angular component hides the button.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>Button visibility is data-driven from the Predefined SQL &mdash; ensure the SQL returns an empty result set (not an error) when no removable roles exist.</li>
+        <li>The bulk remove endpoint should use a loop calling the same delete logic as DE_04's individual remove endpoint to avoid code duplication.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- DE_06 -->
+  <div class="exercise-card" id="de06">
+    <div class="card-heading">
+      <span class="ex-id">DE_06</span>
+      CCC_DE_Recommendations Table + Import/Remove Scripts
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Create a custom schema table <code>CCC_DE_Recommendations</code> to store attestation recommendations.
+      Use Data Importer scripts triggered by Process steps on the AttestationCase table to populate and
+      clean up recommendations. Integrate color indicators (green for direct roles only) and update the
+      existing Line Manager Attestations SQL.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Create the <code>CCC_DE_Recommendations</code> table using the One Identity schema extension tool. The <code>CCC_</code> prefix is required for custom tables.</li>
+      <li>Create Import and Remove Scripts via Data Importer; remove any logging statements and hardcoded parameters from the generated scripts to keep them clean and environment-independent.</li>
+      <li>Create a Process on the AttestationCase table:
+        <ul class="sub-steps">
+          <li>Create a new Event on AttestationCase; use the <code>ORDERGRANTED</code> event for the import trigger and the <code>DENY</code> event for the remove trigger.</li>
+          <li>Add an "Import" Process Step linked to the import script.</li>
+          <li>Add a "Remove" Process Step linked to the remove script.</li>
+        </ul>
+      </li>
+      <li>Modify <code>CCC_DE_LineManagerAttestations_Sub_BusinessRoles</code> to join with the new <code>CCC_DE_Recommendations</code> table and include the color indicator column.</li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th class="num-col">#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num-col">1</td>
+            <td>Recommendations populated properly</td>
+            <td>Run an attestation cycle and open the DataExplorer+ view for a Line Manager identity with pending cases</td>
+            <td>Recommendations are populated and visible in the DataExplorer+ side-sheet</td>
+            <td>Check the CCC_DE_Recommendations table directly in OIM Designer after the Process step fires to confirm data was inserted by the import script.</td>
+          </tr>
+          <tr>
+            <td class="num-col">2</td>
+            <td>Green indicator only on direct roles</td>
+            <td>Review the DataExplorer+ side-sheet for an identity that has both direct and inherited/dynamic Business Roles</td>
+            <td>The green recommendation color indicator appears only for directly assigned roles</td>
+            <td>The color is derived from the SQL join with CCC_DE_Recommendations &mdash; verify the SQL WHERE clause correctly filters by assignment type.</td>
+          </tr>
+          <tr>
+            <td class="num-col">3</td>
+            <td>Recommendations removed on close</td>
+            <td>Close / reject the attestation case (DENY event) and then check the CCC_DE_Recommendations table</td>
+            <td>Recommendation records for that attestation are removed from the table</td>
+            <td>The DENY event is critical for cleanup &mdash; if the remove script does not fire, the table accumulates stale data. Verify the Process step event binding is DENY, not just ORDERGRANTED.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>The schema extension tool creates the custom table &mdash; the <code>CCC_</code> prefix is required by OIM naming conventions for custom objects.</li>
+        <li>Data Importer scripts are triggered by Process steps on AttestationCase using the <code>ORDERGRANTED</code> event (import) and <code>DENY</code> event (cleanup). The DENY event is critical &mdash; without it, stale recommendation data accumulates.</li>
+        <li>After modifying the <code>CCC_DE_LineManagerAttestations_Sub_BusinessRoles</code> SQL, test it in Designer before relying on it in the portal to confirm the JOIN returns expected rows.</li>
+        <li>Remove hardcoded parameters from generated Data Importer scripts &mdash; they break when moved between environments (dev, UAT, prod).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Global Mentor Tips -->
+  <div class="exercise-card" id="mentor-tips" style="border-left-color:var(--purple-dark);">
+    <div class="card-heading" style="background:var(--purple-dark);color:#fff;margin:-1.5rem -1.5rem 1rem;padding:1rem 1.5rem;border-radius:0 8px 0 0;">
+      <span class="ex-id" style="background:rgba(255,255,255,0.25);color:#fff;">REF</span>
+      Module-Wide Mentor Tips &amp; Troubleshooting
+    </div>
+    <div class="mentor-box">
+      <strong class="mentor-title">Key Reminders Across All Exercises</strong>
+      <ul>
+        <li><strong>DE_01:</strong> DataExplorer+ requires both a Program Function AND a Predefined SQL assigned to the permission group &mdash; missing either makes the feature invisible with no error.</li>
+        <li><strong>DE_02:</strong> Predefined SQL names are config-driven &mdash; they link to specific UI views by exact name in Configuration Parameters. A single character mismatch causes silent failure.</li>
+        <li><strong>DE_03/04/05:</strong> Each new feature requires new Config Parameters + rebuild DLL + redeploy. Same DLL deployment pattern as module 017 &mdash; always recycle the IIS application pool after each deploy.</li>
+        <li><strong>DE_06:</strong> The schema extension tool creates the custom table (CCC_ prefix required). Data Importer scripts are triggered by Process steps on AttestationCase using ORDERGRANTED and DENY events. The DENY event is critical for cleanup &mdash; never omit it.</li>
+        <li><strong>General:</strong> All DB calls in C# endpoints must use <code>.ConfigureAwait(false)</code>; use <code>$"..."</code> interpolation (not <code>string.Format</code>) for strings with <code>\n</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+</main>
+
+<footer style="margin-top:3rem;padding:1.25rem 2rem;background:#F5EFF8;border-top:2px solid #EDE8F0;font-size:0.78rem;color:#6B6B6B;text-align:center;grid-column:1/-1;">
+  INTRAGEN<span style="color:#F0A800">.</span> Academy &mdash; Mentoring Documentation &mdash; &copy; Intragen International. This document remains strictly private and confidential.
+</footer>
+
+</body>
+</html>
