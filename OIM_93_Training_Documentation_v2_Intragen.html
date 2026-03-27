@@ -82,7 +82,7 @@ tr:nth-child(even) td{background:rgba(0,0,0,.02);}
   <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
   <div class="title-badge">One Identity Manager 9.3<br>Training Documentation v2</div>
   <div class="cover-subtitle">Complete Developer &amp; Administrator Reference</div>
-  <div class="cover-version">Updated March 2026</div>
+  <div class="cover-version">Updated March 2026 | OIM 9.3.0 build 278876 | .NET 8.0</div>
   <div class="circle-blue"></div>
   <div class="circle-peach"></div>
   <div class="circle-yellow"></div>
@@ -284,7 +284,7 @@ tr:nth-child(even) td{background:rgba(0,0,0,.02);}
     <tr><td><code>JobQueue</code></td><td>Pending process chains waiting for a Job Server to pick them up</td><td><code>UID_Job</code>, <code>TaskName</code>, <code>Queue</code>, <code>ErrorMessages</code>, <code>Ready2EXE</code></td></tr>
     <tr><td><code>ComplianceRule</code></td><td>SoD / compliance policy definition</td><td><code>UID_ComplianceRule</code>, <code>Ident_ComplianceRule</code>, <code>RuleType</code>, <code>IsCalculationStopped</code></td></tr>
     <tr><td><code>ComplianceViolation</code></td><td>Active SoD violations (person + rule + conflicting entitlements)</td><td><code>UID_ComplianceViolation</code>, <code>UID_Person</code>, <code>UID_ComplianceRule</code>, <code>IsException</code></td></tr>
-    <tr><td><code>QBMCEFDefinitions</code></td><td>CEF audit log message templates (9.3 new)</td><td><code>UID_QBMCEFDefinitions</code>, <code>UID_DialogTable</code>, <code>UID_DialogColumn</code>, <code>OperationType</code>, <code>EventClassID</code>, <code>ActivityName</code>, <code>LogSeverity</code>, <code>MessageString</code>, <code>Param01</code>–<code>Param05</code></td></tr>
+    <tr><td><code>QBMCEFDefinitions</code></td><td>CEF audit log message templates (9.3 new)</td><td><code>UID_QBMCEFDefinitions</code>, <code>UID_DialogTable</code>, <code>UID_DialogColumn</code>, <code>EventClassID</code>, <code>ActivityName</code>, <code>LogSeverity</code>, <code>MessageString</code>, <code>Param01</code>–<code>Param05</code>, <code>OperationType</code>, <code>IsInActive</code>, <code>LastRun</code>, <code>WhereClause</code>, <code>XDateInserted</code>, <code>XDateUpdated</code>, <code>XUserInserted</code>, <code>XUserUpdated</code>, <code>XTouched</code>, <code>XObjectKey</code>, <code>XMarkedForDeletion</code> (confirmed from live DB 2026-03-27)</td></tr>
   </table>
 
   <div class="page-footer">
@@ -313,10 +313,10 @@ tr:nth-child(even) td{background:rgba(0,0,0,.02);}
     <table>
       <tr><th>Bit</th><th>Hex</th><th>Meaning</th><th>How to remove</th></tr>
       <tr><td>1</td><td>0x01</td><td>Direct assignment (manually assigned in Designer / API)</td><td><code>MarkForDeletion()</code> + commit</td></tr>
-      <tr><td>2</td><td>0x02</td><td>Inherited from parent role in hierarchy</td><td>Remove membership from parent</td></tr>
-      <tr><td>4</td><td>0x04</td><td>Dynamically assigned (rule-based)</td><td>Change rule or identity attributes</td></tr>
-      <tr><td>8</td><td>0x08</td><td>Requested via IT Shop (PersonWantsOrg)</td><td>Call <code>Unsubscribe</code> on <code>PersonWantsOrg</code></td></tr>
-      <tr><td>16</td><td>0x10</td><td>Module-specific — meaning varies by module (not confirmed as "Compliance exception" in official docs)</td><td>Consult the relevant module's guide</td></tr>
+      <tr><td>2</td><td>0x02</td><td>Inherited from parent role in hierarchy (community-confirmed)</td><td>Remove membership from parent</td></tr>
+      <tr><td>4</td><td>0x04</td><td>Dynamically assigned (rule-based) (community-confirmed)</td><td>Change rule or identity attributes</td></tr>
+      <tr><td>8</td><td>0x08</td><td>Requested via IT Shop (PersonWantsOrg) (community-confirmed)</td><td>Call <code>Unsubscribe</code> on <code>PersonWantsOrg</code></td></tr>
+      <tr><td>16</td><td>0x10</td><td>FromGroup — assigned via group/federation membership (source: <code>AAD_FGIBitPatternXOrigin</code> SQL function)</td><td>Remove from the source group/federation</td></tr>
     </table>
     <div class="callout callout-warn"><strong>Important</strong> Never delete an XOrigin=8 assignment directly. Always unsubscribe through <code>PersonWantsOrg</code>. Direct deletion leaves the IT Shop request in an inconsistent state.</div>
   </div>
@@ -534,22 +534,18 @@ End If</div>
       <span class="state-box" style="background:rgba(239,68,68,.1);border-color:#ef4444;">Dismissed</span>
     </div>
     <table>
-      <tr><th>OrderState</th><th>Meaning</th></tr>
-      <tr><td><code>Waiting</code></td><td>Cart submitted; pre-approval checks or prerequisite steps running</td></tr>
-      <tr><td><code>Pending</code></td><td>Awaiting approval decision(s)</td></tr>
-      <tr><td><code>Assigned</code></td><td>Fully approved and provisioned — access is live</td></tr>
-      <tr><td><code>Unsubscribed</code></td><td>User or admin called Unsubscribe; provisioning removal queued</td></tr>
-      <tr><td><code>Aborted</code></td><td>Request was aborted (approval denied or timed out)</td></tr>
-      <tr><td><code>Dismissed</code></td><td>Request dismissed without action</td></tr>
+      <tr><th>OrderState</th><th>Meaning</th><th>Live DB count (2026-03-27)</th></tr>
+      <tr><td><code>Unsubscribed</code></td><td>Request withdrawn or cancelled</td><td>156 (most common)</td></tr>
+      <tr><td><code>Aborted</code></td><td>Request aborted/failed processing</td><td>92</td></tr>
+      <tr><td><code>Assigned</code></td><td>Successfully provisioned — access is live</td><td>14</td></tr>
+      <tr><td><code>Dismissed</code></td><td>Request dismissed without action</td><td>10</td></tr>
+      <tr><td><code>Waiting</code></td><td>Awaiting prerequisite or pre-approval check</td><td>2</td></tr>
+      <tr><td><code>Pending</code></td><td>Awaiting approval decision(s)</td><td>—</td></tr>
     </table>
+    <div class="callout callout-warn"><strong>Warning</strong> <code>OrderState</code> is <code>nvarchar(16)</code>. Not all <code>QERWorkingMethod</code>/<code>OrderState</code> combinations are valid — OIM validates the pair at runtime.</div>
 
     <span class="label-teal">SHOPPINGCARTORDER.CHECKSTATUS</span>
-    <table>
-      <tr><th>Value</th><th>Meaning</th></tr>
-      <tr><td>0</td><td>No issues — cart checks have not flagged any problems</td></tr>
-      <tr><td>1</td><td>Error — one or more <code>ICartCheckProvider</code> checks failed</td></tr>
-      <tr><td>2</td><td>Pending — <code>ICartCheckProvider</code> check is queued or in progress</td></tr>
-    </table>
+    <p>Integer enum: <code>0</code> = Unchecked/OK, <code>2</code> = Error/Pending. Values inferred from DB distribution (0: 1 row, 2: 239 rows). For exact label mapping, verify with: <code>SELECT DISTINCT CheckStatus FROM ShoppingCartOrder</code>.</p>
 
     <span class="label-teal">UNSUBSCRIBE PATTERN (C#)</span>
 <div class="code-block">// Find the active PersonWantsOrg row for this assignment
@@ -693,7 +689,10 @@ builder.AddMethod(Method.Define("webportalplus/admin/action")
     <tr><th>Table / View</th><th>Purpose</th></tr>
     <tr><td><code>AttestationCase</code></td><td>One row per access right under review; holds decision state</td></tr>
     <tr><td><code>AttestationPolicy</code></td><td>Defines scope (what is attested), workflow, recertification interval</td></tr>
-    <tr><td><code>ATT_VAttestationDecisionPerson</code></td><td>View listing eligible approvers for each open case — always check this before making a decision</td></tr>
+    <tr><td><code>ATT_VAttestationDecisionPerson</code></td><td>View listing eligible approvers for each open case — always check this before making a decision (confirmed EXISTS in DB)</td></tr>
+    <tr><td><code>ATT_VAttDecisionPerson_DO</code></td><td>Variant: decision-only eligible approvers</td></tr>
+    <tr><td><code>ATT_VAttDecisionPerson_DOS</code></td><td>Variant: decision-only approvers with supervisor context</td></tr>
+    <tr><td><code>ATT_VAttDecisionPerson_I</code></td><td>Variant: indirect eligible approvers</td></tr>
   </table>
 
   <h3>AttestationPolicy Configuration (9.3)</h3>
@@ -821,7 +820,7 @@ foreach (var v in violations)
       <tr><th>Item</th><th>Detail</th></tr>
       <tr><td>Target framework</td><td><code>net8.0</code></td></tr>
       <tr><td>Required references</td><td><code>QBM.CompositionApi.dll</code>, <code>QER.CompositionApi.dll</code>, <code>VI.DB.dll</code>, <code>VI.Base.dll</code> — from the OIM install dir. Do <strong>NOT</strong> reference <code>QBM.CompositionApi.Server.dll</code> in your plugin project.</td></tr>
-      <tr><td>DLL naming</td><td>Must match <code>*.CompositionApi.Server.Plugin.dll</code> or <code>*.CompositionApi.dll</code> — the API Server only loads files matching these patterns.</td></tr>
+      <tr><td>DLL naming</td><td>All standard OIM modules use <code>*.CompositionApi.Server.PlugIn.dll</code> (capital I). Exception: our custom <code>BulkActions93.CompositionApi.Server.Plugin.dll</code> uses lowercase i. The API Server loads files matching either pattern.</td></tr>
       <tr><td>Assembly attribute</td><td>Add <code>[assembly: QBM.CompositionApi.PlugIns.Module("YourModuleName")]</code> in <code>AssemblyInfo.cs</code></td></tr>
       <tr><td>Deployment</td><td>Copy to the API Server's plugin directory (or use Software Loader with <code>bin\</code> prefix so files land in the correct sub-directory)</td></tr>
     </table>
@@ -868,6 +867,8 @@ public class MyEndpoint : IApiProviderFor&lt;PortalApiProject&gt;, IApiProvider
             }));
     }
 }</div>
+
+  <div class="callout callout-note"><strong>Local Debugging Tip</strong> Run <code>imxclient.exe run-apiserver -B /baseurl</code> to start the API server locally on <code>http://localhost:8182</code> for rapid endpoint testing without a full IIS deployment.</div>
 
   <div class="page-footer">
     <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International. All documents remain strictly private and confidential.</span>
@@ -1338,6 +1339,35 @@ public class SoDCartCheck : ICartCheckProvider
                { typeof(ICartCheck), new[] { typeof(CartItemError) } }
            };
 }</div>
+
+    <span class="label-teal">ICARTCHECK — TWO-PHASE PATTERN</span>
+    <p><code>ICartCheck</code> implementations follow a two-phase pattern: setup then async execution.</p>
+<div class="code-block">public interface ICartCheck
+{
+    // Phase 1: set up what needs to be checked (called synchronously during cart assembly)
+    void CheckAsync(ICartItemCheckContext context, CancellationToken ct);
+
+    // Phase 2: execute the checks asynchronously
+    Task ProcessAsync(CancellationToken ct);
+}</div>
+
+    <span class="label-teal">ICARTITEMCHECK PROPERTIES</span>
+    <table>
+      <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+      <tr><td><code>Id</code></td><td>string</td><td>Unique identifier for this check type</td></tr>
+      <tr><td><code>Status</code></td><td>CheckStatus enum</td><td>Result status of the check</td></tr>
+      <tr><td><code>Title</code></td><td>multi-lang key</td><td>Display title for the check result</td></tr>
+      <tr><td><code>ResultText</code></td><td>multi-lang key (optional)</td><td>Detailed result message</td></tr>
+      <tr><td><code>Detail</code></td><td>object (optional)</td><td>Additional data, serialised to JSON for the client</td></tr>
+    </table>
+
+    <span class="label-teal">ICARTITEMCHECKRESULT FLAGS</span>
+    <table>
+      <tr><th>Property</th><th>Type</th><th>Effect</th></tr>
+      <tr><td><code>HasWarnings</code></td><td>bool</td><td>Warnings are shown to the user but do <strong>not</strong> block cart submission</td></tr>
+      <tr><td><code>HasErrors</code></td><td>bool</td><td>Errors are shown and <strong>prevent</strong> cart submission</td></tr>
+      <tr><td><code>CanCommitSilently</code></td><td>bool</td><td>When true the cart may be submitted without explicit user acknowledgement</td></tr>
+    </table>
   </div>
 
   <div class="subsection-box">
@@ -1616,10 +1646,51 @@ if (objectkey.StartsWith("&lt;Key&gt;&lt;T&gt;PersonInOrg&lt;/T&gt;", StringComp
   <div class="subsection-box">
     <div class="subsection-title">ISQLFORMATTER — SAFE QUERY BUILDING</div>
     <div class="callout callout-warn"><strong>Important</strong> SQL Injection Risk: Raw <code>String.Format("Column = '{0}'", userInput)</code> in VB.NET Where clauses is vulnerable. Use <code>ISqlFormatter</code> for all dynamic conditions.</div>
-<div class="code-block">' Get the formatter from the session
-Dim f As ISqlFormatter = Session.SqlFormatter
 
-' Single comparison (type-safe, parameterised internally)
+    <span class="label-teal">ISQLFORMATTER METHODS</span>
+    <table>
+      <tr><th>Method</th><th>Signature</th><th>Purpose</th></tr>
+      <tr><td><code>Comparison</code></td><td>(col, value, ValType, [CompareOperator], [FormatterOptions])</td><td>Safe column comparison</td></tr>
+      <tr><td><code>UidComparison</code></td><td>(col, uid, [CompareOperator])</td><td>UID-specific comparison (correct escaping)</td></tr>
+      <tr><td><code>InClause</code></td><td>(col, ValType, IEnumerable)</td><td>Safe IN clause</td></tr>
+      <tr><td><code>AndRelation</code></td><td>(clause1, clause2)</td><td>AND combinator</td></tr>
+      <tr><td><code>OrRelation</code></td><td>(clause1, clause2)</td><td>OR combinator</td></tr>
+    </table>
+
+    <span class="label-teal">VALTYPE ENUM</span>
+    <p><code>String</code>, <code>Bool</code>, <code>Int</code>, <code>Date</code></p>
+
+    <span class="label-teal">COMPAREOPERATOR ENUM</span>
+    <table>
+      <tr><th>Value</th><th>SQL Equivalent</th></tr>
+      <tr><td><code>Equal</code></td><td><code>=</code> (default when omitted)</td></tr>
+      <tr><td><code>NotEqual</code></td><td><code>&lt;&gt;</code></td></tr>
+      <tr><td><code>LowerThan</code></td><td><code>&lt;</code></td></tr>
+      <tr><td><code>GreaterThan</code></td><td><code>&gt;</code></td></tr>
+      <tr><td><code>LowerThanOrEqual</code></td><td><code>&lt;=</code></td></tr>
+      <tr><td><code>GreaterThanOrEqual</code></td><td><code>&gt;=</code></td></tr>
+      <tr><td><code>Like</code></td><td><code>LIKE '%value%'</code></td></tr>
+      <tr><td><code>BitsNotSet</code></td><td>Bitwise: <code>(col &amp; val) = 0</code></td></tr>
+    </table>
+
+    <div class="callout callout-warn"><strong>Performance</strong> Using <code>FormatterOptions.None</code> for UID comparisons causes performance issues (KB 4248787) — always use <code>UidComparison()</code> for UIDs instead of <code>Comparison()</code> with <code>ValType.String</code>.</div>
+
+<div class="code-block">Dim f As ISqlFormatter = Session.SqlFormatter
+' String comparison
+Dim w1 As String = f.Comparison("CentralAccount", account, ValType.String)
+' Bool comparison
+Dim w2 As String = f.Comparison("IsInActive", True, ValType.Bool)
+' Not equal with CompareOperator
+Dim w3 As String = f.Comparison("PersonnelNumber", "", ValType.String, CompareOperator.NotEqual)
+' UID comparison (preferred for UIDs)
+Dim w4 As String = f.UidComparison("UID_Person", uid)
+' IN clause
+Dim w5 As String = f.InClause("UID_Person", ValType.String, uidList)
+' Combined
+Dim where As String = f.AndRelation(w1, f.Comparison("IsInActive", False, ValType.Bool))</div>
+
+    <span class="label-teal">SINGLE COMPARISON (EXISTING PATTERNS)</span>
+<div class="code-block">' Single comparison (type-safe, parameterised internally)
 Dim cond As String = f.Comparison("CentralAccount", centralAccount, ValType.String, CompareOperator.Equal)
 
 ' LIKE pattern
@@ -1633,19 +1704,6 @@ Dim ored As String = f.OrRelation(cond1, cond2)
 
 ' Use in a query
 Dim q As IQuery = Query.From("Person").Where(cond).Select("CentralAccount")</div>
-
-    <span class="label-teal">COMPAREOPERATOR ENUM</span>
-    <table>
-      <tr><th>Value</th><th>SQL Equivalent</th></tr>
-      <tr><td><code>Equal</code></td><td><code>=</code></td></tr>
-      <tr><td><code>NotEqual</code></td><td><code>&lt;&gt;</code></td></tr>
-      <tr><td><code>LowerThan</code></td><td><code>&lt;</code></td></tr>
-      <tr><td><code>GreaterThan</code></td><td><code>&gt;</code></td></tr>
-      <tr><td><code>LowerThanOrEqual</code></td><td><code>&lt;=</code></td></tr>
-      <tr><td><code>GreaterThanOrEqual</code></td><td><code>&gt;=</code></td></tr>
-      <tr><td><code>Like</code></td><td><code>LIKE '%value%'</code></td></tr>
-      <tr><td><code>BitsNotSet</code></td><td>Bitwise: <code>(col &amp; val) = 0</code></td></tr>
-    </table>
   </div>
 
   <div class="subsection-box">
