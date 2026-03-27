@@ -1,0 +1,326 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMS  -  Permissions  -  Intragen Academy Presentation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+:root {
+  --purple:      #7B2D8B;
+  --purple-dark: #5C1F6B;
+  --teal:        #007B77;
+  --golden:      #F0A800;
+  --bg:          #F0EDE8;
+  --white:       #FFFFFF;
+  --text:        #2C2C2C;
+  --muted:       #6B6B6B;
+  --border:      #DDD;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #222;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+/* ── Slide container ── */
+#presentation { width: 100%; max-width: 960px; position: relative; }
+.slide {
+  display: none;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: var(--white);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  position: relative;
+  flex-direction: column;
+}
+.slide.active { display: flex; }
+/* ── Slide types ── */
+.slide-title {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+  color: #fff;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 0 6% 7%;
+}
+.slide-content { padding: 5% 6%; gap: 1.2rem; }
+.slide-accent  { background: var(--teal); color: #fff; padding: 5% 6%; }
+.slide-light   { background: var(--bg); padding: 5% 6%; }
+/* ── Title slide elements ── */
+.slide-title .logo {
+  position: absolute;
+  top: 5%; right: 5%;
+  font-size: clamp(0.7rem, 1.5vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.logo-dot { color: var(--golden); }
+.slide-title .circle-1 {
+  position: absolute;
+  width: 40%; aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  top: -10%; right: -5%;
+}
+.slide-title .circle-2 {
+  position: absolute;
+  width: 30%; aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(240,168,0,0.12);
+  bottom: -8%; left: 40%;
+}
+.slide-title .module-code {
+  font-size: clamp(0.65rem, 1.2vw, 0.85rem);
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 0.75rem;
+}
+.slide-title h1 {
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 0.6rem;
+}
+.slide-title .subtitle {
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  opacity: 0.75;
+  font-weight: 300;
+}
+.level-badge {
+  display: inline-block;
+  padding: 0.2rem 0.8rem;
+  border-radius: 999px;
+  font-size: clamp(0.6rem, 1vw, 0.75rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 1rem;
+}
+.beginner    { background: #d4edda; color: #155724; }
+.intermediate{ background: #fff3cd; color: #856404; }
+.advanced    { background: #f8d7da; color: #721c24; }
+/* ── Content slide elements ── */
+.slide-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--purple);
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+.slide-header .dot {
+  width: clamp(10px, 1.5vw, 14px);
+  height: clamp(10px, 1.5vw, 14px);
+  border-radius: 50%;
+  background: var(--golden);
+  flex-shrink: 0;
+}
+.slide-header h2 {
+  font-size: clamp(0.9rem, 2vw, 1.3rem);
+  color: var(--purple-dark);
+  font-weight: 700;
+}
+.slide-logo {
+  position: absolute;
+  bottom: 3%; right: 4%;
+  font-size: clamp(0.55rem, 1vw, 0.7rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* ── Lists ── */
+ul.slide-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+ul.slide-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: clamp(0.72rem, 1.4vw, 0.92rem);
+  line-height: 1.45;
+  color: var(--text);
+}
+ul.slide-list li::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+  margin-top: 0.45rem;
+  flex-shrink: 0;
+}
+/* ── Exercises grid ── */
+.exercises-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.5rem;
+  flex: 1;
+}
+.ex-chip {
+  background: #F5EFF8;
+  border: 1px solid #EDE8F0;
+  border-left: 3px solid var(--teal);
+  border-radius: 4px;
+  padding: 0.4rem 0.6rem;
+  font-size: clamp(0.62rem, 1.1vw, 0.78rem);
+  color: var(--text);
+}
+.ex-chip .ex-id { color: var(--purple-dark); font-weight: 700; display: block; margin-bottom: 1px; }
+/* ── Mistakes / tips cards ── */
+.tip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; flex: 1; }
+.tip-card { background: #fff; border-radius: 6px; padding: 0.75rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.tip-card.warn { border-left: 3px solid #F59E0B; }
+.tip-card.good { border-left: 3px solid #22C55E; }
+.tip-card .tip-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem; }
+.tip-card.warn .tip-label { color: #D97706; }
+.tip-card.good .tip-label { color: #16A34A; }
+.tip-card p { font-size: clamp(0.65rem, 1.2vw, 0.82rem); line-height: 1.4; color: var(--text); }
+/* ── Accent slide ── */
+.slide-accent .slide-header h2 { color: #fff; }
+.slide-accent .slide-header { border-bottom-color: rgba(255,255,255,0.3); }
+.slide-accent ul.slide-list li { color: #fff; }
+.slide-accent ul.slide-list li::before { background: var(--golden); }
+.slide-accent .slide-logo { color: rgba(255,255,255,0.5); }
+/* ── Nav controls ── */
+#nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+}
+#nav button {
+  background: var(--purple);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+#nav button:hover  { background: var(--purple-dark); }
+#nav button:disabled { background: #555; cursor: default; }
+#counter { color: #aaa; font-size: 0.85rem; font-family: inherit; min-width: 80px; text-align: center; }
+#progress {
+  width: 100%;
+  max-width: 960px;
+  height: 3px;
+  background: #444;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+}
+#progress-bar { height: 100%; background: var(--golden); border-radius: 3px; transition: width 0.3s; }
+</style>
+</head>
+<body>
+<div id="progress"><div id="progress-bar" style="width:16.66%"></div></div>
+<div id="presentation">
+<div class="slide slide-title active" id="slide-1">
+  <div class="logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="circle-1"></div>
+  <div class="circle-2"></div>
+  <div class="module-code">Module 012 &mdash; Intragen Academy</div>
+  <h1>PMS  -  Permissions</h1>
+  <div class="subtitle">Mentor Introduction &amp; Exercise Guide</div>
+  <span class="level-badge intermediate">Intermediate</span>
+</div>
+<div class="slide slide-content" id="slide-2">
+  <div class="slide-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="slide-header"><div class="dot"></div><h2>What You Will Learn</h2></div>
+  <ul class="slide-list">
+    <li>Role-Based Permission Groups</li>
+        <li>View/Edit conditions on portal objects</li>
+        <li>Inheritance chain</li>
+        <li>Block inheritance pattern</li>
+        <li>XOrigin bitmask in permission context</li>
+  </ul>
+</div>
+<div class="slide slide-light" id="slide-3">
+  <div class="slide-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="slide-header"><div class="dot"></div><h2>Prerequisites</h2></div>
+  <ul class="slide-list">
+    <li>BAS completed</li>
+        <li>Understanding of AERole and Permission Groups</li>
+        <li>Role model understanding</li>
+  </ul>
+</div>
+<div class="slide slide-content" id="slide-4">
+  <div class="slide-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="slide-header"><div class="dot"></div><h2>Exercises Overview (5 exercises)</h2></div>
+  <div class="exercises-grid">
+    <div class='ex-chip'><span class='ex-id'>PMS-1</span>Create a Permission Group</div>
+    <div class='ex-chip'><span class='ex-id'>PMS-2</span>Assign view-only permissions</div>
+    <div class='ex-chip'><span class='ex-id'>PMS-3</span>Assign edit permissions with conditions</div>
+    <div class='ex-chip'><span class='ex-id'>PMS-4</span>Role inheritance setup</div>
+    <div class='ex-chip'><span class='ex-id'>PMS-5</span>Block inheritance</div>
+  </div>
+</div>
+<div class="slide slide-content" id="slide-5">
+  <div class="slide-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="slide-header"><div class="dot"></div><h2>Mentor Tips &amp; Common Mistakes</h2></div>
+  <div class="tip-grid">
+    <div class='tip-card warn'><div class='tip-label'>Common Mistake</div><p>Assigning permission group to wrong AERole level</p></div>
+    <div class='tip-card warn'><div class='tip-label'>Common Mistake</div><p>View condition syntax error = column invisible to everyone</p></div>
+    <div class='tip-card warn'><div class='tip-label'>Common Mistake</div><p>Forgetting to compile after permission changes</p></div>
+    <div class='tip-card good'><div class='tip-label'>Mentor Tip</div><p>Permission Groups apply to portal columns, not DB-level access</p></div>
+    <div class='tip-card good'><div class='tip-label'>Mentor Tip</div><p>View condition: $IsNull(UID_Person)=false$  -  only show if populated</p></div>
+    <div class='tip-card good'><div class='tip-label'>Mentor Tip</div><p>Block inheritance: use sparingly  -  it cuts off ALL parent permissions, not just specific ones</p></div>
+  </div>
+</div>
+<div class="slide slide-accent" id="slide-6">
+  <div class="slide-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="slide-header"><div class="dot"></div><h2>Ready to Begin</h2></div>
+  <ul class="slide-list" style="margin-top:1rem;">
+    <li>Open the Mentor Guide for detailed exercise steps and test tables</li>
+    <li>Ensure all prerequisites are met before starting</li>
+    <li>Run through exercises in order  -  later exercises build on earlier ones</li>
+    <li>Use the troubleshooting table in the guide for common issues</li>
+    <li>Questions? Refer to the Intragen Academy documentation portal</li>
+  </ul>
+  <div style="margin-top:auto;padding-top:1rem;font-size:0.7rem;opacity:0.6;border-top:1px solid rgba(255,255,255,0.2);">
+    INTRAGEN<span class="logo-dot">.</span> Academy &mdash; &copy; Intragen International. Strictly private and confidential.
+  </div>
+</div>
+</div>
+<div id="nav">
+  <button id="btn-prev" disabled>&larr; Prev</button>
+  <span id="counter">1 / 6</span>
+  <button id="btn-next">Next &rarr;</button>
+</div>
+<script>
+const slides = document.querySelectorAll('.slide');
+const bar    = document.getElementById('progress-bar');
+const ctr    = document.getElementById('counter');
+const prev   = document.getElementById('btn-prev');
+const next   = document.getElementById('btn-next');
+let cur = 0;
+function show(n) {
+  slides[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(n, slides.length - 1));
+  slides[cur].classList.add('active');
+  bar.style.width = ((cur + 1) / slides.length * 100) + '%';
+  ctr.textContent = (cur + 1) + ' / ' + slides.length;
+  prev.disabled = cur === 0;
+  next.disabled = cur === slides.length - 1;
+}
+prev.addEventListener('click', () => show(cur - 1));
+next.addEventListener('click', () => show(cur + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(cur + 1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(cur - 1);
+});
+show(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,982 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 024_001 &#8212; Deployment Manager | Intragen OIM Academy | Intragen Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"><style>
+:root {
+  --purple:      #7B2D8B;
+  --purple-dark: #5C1F6B;
+  --teal:        #007B77;
+  --golden:      #F0A800;
+  /* Legacy variable overrides â€” keeps existing HTML class references working */
+  --navy:  #7B2D8B;
+  --blue:  #007B77;
+  --green: #27AE60;
+  --orange:#E67E22;
+  --red:   #E74C3C;
+  --bg:    #F0EDE8;
+  /* New tokens */
+  --body-bg:  #FAF8F5;
+  --code-bg:  #1E1E1E;
+  --border:   #DDD;
+  --text:     #2C2C2C;
+  --muted:    #6B6B6B;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+}
+/* â”€â”€ Layout â”€â”€ */
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+/* â”€â”€ Sidebar â”€â”€ */
+.sidebar {
+  background: var(--purple);
+  color: #fff;
+  width: 260px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.logo, .intragen-logo {
+  padding: 1.25rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+}
+.logo-dot { color: var(--golden); }
+.module-title, .module-title-sidebar {
+  padding: 0.6rem 1rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--golden);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.nav-label, .nav-section-label, .module-label {
+  padding: 0.75rem 1rem 0.2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+.sidebar a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.82rem;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a:hover {
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--teal);
+  color: #fff;
+}
+/* â”€â”€ Main â”€â”€ */
+main { padding: 2rem; max-width: 1080px; }
+/* â”€â”€ Module header â”€â”€ */
+.module-header {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+  color: #fff;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.module-header::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.module-header .intragen-watermark {
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.mod-num { display: inline-block; font-size: 2.5rem; font-weight: 900; opacity: 0.2; float: right; line-height: 1; }
+.module-header h1 { font-size: 1.55rem; margin-bottom: 0.4rem; }
+.module-header p  { opacity: 0.85; font-size: 0.9rem; }
+/* â”€â”€ Badges â”€â”€ */
+.badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.beginner    { background: #d4edda; color: #155724; }
+.intermediate{ background: #fff3cd; color: #856404; }
+.advanced    { background: #f8d7da; color: #721c24; }
+/* â”€â”€ Overview grid â”€â”€ */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+.info-card {
+  background: #fff;
+  border-left: 4px solid var(--teal);
+  padding: 1.1rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.info-card h3 { color: var(--purple-dark); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.info-card ul { padding-left: 1.2rem; }
+.info-card li { font-size: 0.9rem; margin-bottom: 0.25rem; }
+/* â”€â”€ Sections â”€â”€ */
+section { margin-bottom: 2.5rem; }
+section > h2 {
+  color: var(--purple-dark);
+  font-size: 1.15rem;
+  border-bottom: 2px solid var(--teal);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+.section-banner {
+  background: var(--purple-dark);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 1.25rem;
+  border-radius: 3px;
+}
+/* â”€â”€ Exercise cards â”€â”€ */
+.exercise-card {
+  background: #fff;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  padding: 1.4rem;
+  margin-bottom: 1.4rem;
+  border-left: 4px solid var(--teal);
+}
+.ex-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.ex-num {
+  background: var(--purple-dark);
+  color: #fff;
+  min-width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+}
+.ex-header h3 { color: var(--purple-dark); font-size: 1rem; margin: 0; }
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  margin: 0.9rem 0 0.3rem;
+}
+/* â”€â”€ Callouts â”€â”€ */
+.callout {
+  padding: 0.85rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 0.8rem 0;
+  font-size: 0.9rem;
+}
+.callout b, .callout strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.callout-mentor, .callout-note  { border-left: 4px solid #2D6DB5; background: #E8F4FF; }
+.callout-tip                    { border-left: 4px solid #22C55E; background: #F0FDF4; }
+.callout-warn                   { border-left: 4px solid #F59E0B; background: #FFF8E1; }
+.callout-error, .callout-important { border-left: 4px solid var(--purple); background: #F5EFF8; }
+/* â”€â”€ Steps / Lists â”€â”€ */
+.steps { padding-left: 1.4rem; margin: 0.4rem 0; }
+.steps li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+li::marker { color: var(--purple); }
+/* â”€â”€ Code â”€â”€ */
+pre, .code-block {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  padding: 1rem 1.1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0.8rem 0;
+  font-family: 'Cascadia Code','Fira Code', Consolas, 'Courier New', monospace;
+  white-space: pre;
+}
+code {
+  background: #EDE8F0;
+  color: #8B2080;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+  font-size: 0.82rem;
+}
+pre code { background: none; color: inherit; padding: 0; }
+/* â”€â”€ Tables â”€â”€ */
+table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; }
+thead tr, th { background: var(--purple-dark); color: #fff; }
+th { padding: 0.55rem 0.9rem; text-align: left; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.4px; }
+td { padding: 0.55rem 0.9rem; border: 1px solid var(--border); vertical-align: top; }
+tbody tr:nth-child(even), tr:nth-child(even) td { background: #F8F5FB; }
+td.pass { color: #155724; font-weight: 600; }
+td.fail { color: #721c24; font-weight: 600; }
+/* â”€â”€ Footer â”€â”€ */
+footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  border-top: 2px solid #EDE8F0;
+  margin-top: 2rem;
+  background: #F5EFF8;
+}
+.footer-dot { color: var(--golden); }
+h3 { color: var(--purple); }
+h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════ -->
+<aside>
+  <div class="sidebar-header">
+    <div class="academy-name">Intragen OIM Academy</div>
+    <div class="module-title">Module 024_001</div>
+    <div class="module-code">PSM &amp; DM</div>
+  </div>
+
+  <div class="sidebar-section">PSM &mdash; PowerShell</div>
+  <nav>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#psm01" class="nav-sub">PSM-01: Console Queries</a>
+    <a href="#psm02" class="nav-sub">PSM-02: Automation Script</a>
+    <a href="#psm03" class="nav-sub">PSM-03: Config-Driven Deactivation</a>
+  </nav>
+
+  <div class="sidebar-section">DM &mdash; Deployment Manager</div>
+  <nav>
+    <a href="#dm01" class="nav-sub">DM-01: Install DM</a>
+    <a href="#dm02" class="nav-sub">DM-02: Folder Structure</a>
+    <a href="#dm03" class="nav-sub">DM-03: Initial Config</a>
+    <a href="#dm04" class="nav-sub">DM-04: Dry Execution</a>
+    <a href="#dm05" class="nav-sub">DM-05: Config Params CSV</a>
+    <a href="#dm06" class="nav-sub">DM-06: XML Task</a>
+    <a href="#dm07" class="nav-sub">DM-07: XML Template + CSV</a>
+    <a href="#dm08" class="nav-sub">DM-08: Push Template (Overwrite)</a>
+    <a href="#dm09" class="nav-sub">DM-09: Config Param Enablement</a>
+    <a href="#dm10" class="nav-sub">DM-10: Schedule Disablement</a>
+    <a href="#dm11" class="nav-sub">DM-11: Template Modify</a>
+    <a href="#mentor-tips">Mentor Tips</a>
+  </nav>
+
+  <div class="sidebar-meta">
+    <div class="meta-row">
+      <span class="meta-label">PSM</span>
+      <span>3 exercises</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">DM</span>
+      <span>11 exercises</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Level</span>
+      <span>Advanced</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Tools</span>
+      <span>PS7 + DM</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════ -->
+<main>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header" id="overview">
+    <div class="breadcrumb">Intragen OIM Academy &rsaquo; Mentor Guides &rsaquo; Module 024_001</div>
+    <h1>Module 024_001 &mdash; <span>Deployment Manager</span></h1>
+    <p class="subtitle">Two related sub-topics: PowerShell OIM Console Mode (PSM) for direct DB interaction via scripts, and Deployment Manager (DM) for automated, repeatable deployment of OIM customizations from structured task folders.</p>
+    <div class="badge-row">
+      <span class="badge badge-advanced">Advanced</span>
+      <span class="badge badge-psm">PSM &mdash; 3 Exercises</span>
+      <span class="badge badge-dm">DM &mdash; 11 Exercises</span>
+      <span class="badge badge-info">PowerShell 7</span>
+    </div>
+  </div>
+
+  <!-- INFO GRID -->
+  <div class="info-grid">
+    <div class="info-card psm">
+      <div class="ic-label">PSM Exercises</div>
+      <div class="ic-value">3</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">DM Exercises</div>
+      <div class="ic-value">11</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Level</div>
+      <div class="ic-value">Advanced</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Shell</div>
+      <div class="ic-value">PowerShell 7</div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW SECTION -->
+  <div class="content-section">
+    <h2><span class="section-icon">01</span> Module Overview</h2>
+
+    <div class="topic-grid">
+      <div class="topic-card psm">
+        <h4>PSM &mdash; PowerShell + OIM Console Mode</h4>
+        <p>Direct OIM database interaction using the OIM PowerShell module in Console Mode. Queries, updates, and automation scripts run against a live OIM session. Changes are immediate and permanent.</p>
+        <ul class="ex-list">
+          <li>PSM-01: Console Mode basic queries</li>
+          <li>PSM-02: Create .ps1 automation file</li>
+          <li>PSM-03: Config-controlled identity deactivation</li>
+        </ul>
+      </div>
+      <div class="topic-card dm">
+        <h4>DM &mdash; Deployment Manager</h4>
+        <p>Automated deployment of OIM customizations from version-controlled task folders. Each task is a structured combination of XML definitions, CSV data, and templates. Supports dry runs, selective execution, and compile orchestration.</p>
+        <ul class="ex-list">
+          <li>DM-01 through DM-03: Install and configure</li>
+          <li>DM-04 through DM-07: Core deployment patterns</li>
+          <li>DM-08 through DM-11: Advanced tasks</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">PSM Console Mode Warning</div>
+      PSM Console Mode establishes a live OIM database session. Changes made via <code>PutAsync</code> / <code>CommitAsync</code> are applied immediately with no built-in undo. Always run PSM exercises against a dev or lab OIM instance, never production.
+    </div>
+  </div>
+
+  <!-- PSM EXERCISES -->
+  <div class="content-section">
+    <h2><span class="section-icon psm-icon">PSM</span> PSM &mdash; PowerShell Console Mode</h2>
+
+    <!-- PSM-01 -->
+    <div class="exercise-card psm" id="psm01">
+      <div class="exercise-header">
+        <span class="exercise-id psm">PSM-01</span>
+        <span class="exercise-title">Console Mode Basic Queries</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Connect to OIM in Console Mode and perform basic identity queries using the OIM PowerShell session object. Learn to find multiple records, find a single record, query via the Query object, and update a property.
+      </div>
+
+      <div class="sub-label psm">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot psm"></span>OIM PowerShell module available and importable</li>
+        <li><span class="step-dot psm"></span>Console Mode session established against the lab OIM instance</li>
+        <li><span class="step-dot psm"></span>Queries use WHERE clause (mandatory; full table scan is prohibited)</li>
+      </ul>
+
+      <div class="sub-label psm">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num psm">1</span>Run OIM session in Console Mode</li>
+        <li><span class="step-num psm">2</span>Find all Persons using a WHERE clause filter</li>
+        <li><span class="step-num psm">3</span>Find a single Person record by specific criteria</li>
+        <li><span class="step-num psm">4</span>Retrieve a record via the <code>Query</code> object pattern</li>
+        <li><span class="step-num psm">5</span>Update a property on a retrieved entity and commit</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        Each step returns the expected records in the console output. The property update is confirmed by re-querying the entity and checking the updated value.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>WHERE clause is not optional &mdash; querying without a filter can return the entire Person table and cause performance issues</li>
+          <li>If the session drops during a long query, it means the OIM Connection Timeout was reached; use a more specific filter</li>
+          <li>Show the difference between <code>GetAsync</code> (returns a collection) and loading a specific entity by UID &mdash; trainees often mix these up</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PSM-02 -->
+    <div class="exercise-card psm" id="psm02">
+      <div class="exercise-header">
+        <span class="exercise-id psm">PSM-02</span>
+        <span class="exercise-title">Create a .ps1 OIM Automation File</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Move Console Mode commands into a reusable <code>.ps1</code> script file. Establishes the pattern for all subsequent PSM automation: import module &rarr; connect &rarr; query/update &rarr; commit &rarr; disconnect.
+      </div>
+
+      <div class="sub-label psm">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot psm"></span>Script file structured with module import, session setup, logic, and cleanup</li>
+        <li><span class="step-dot psm"></span>Script executes without errors from PowerShell 7</li>
+        <li><span class="step-dot psm"></span>Output is visible in the console when the script runs</li>
+      </ul>
+
+      <div class="sub-label psm">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num psm">1</span>Create a <code>.ps1</code> file with the OIM automation script structure, encapsulating the PSM-01 logic in a runnable file</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        Script runs to completion from the PowerShell 7 terminal without errors. Output matches what was produced interactively in PSM-01.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>If the module fails to import, check the <code>$env:PSModulePath</code> includes the OIM module directory</li>
+          <li>Execution policy may block the script on first run; <code>Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass</code> in PS7 for the lab session</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PSM-03 -->
+    <div class="exercise-card psm" id="psm03">
+      <div class="exercise-header">
+        <span class="exercise-id psm">PSM-03</span>
+        <span class="exercise-title">Config Parameter Controlled Identity Deactivation</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create a config parameter in OIM that controls which Primary Department triggers identity deactivation. Build a PowerShell script that reads this config parameter and deactivates matching identities. Verify that changing the config re-enables those identities.
+      </div>
+
+      <div class="sub-label psm">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot psm"></span>Config parameter created in OIM Designer under a custom path</li>
+        <li><span class="step-dot psm"></span>Script reads the config parameter value at runtime (not hardcoded)</li>
+        <li><span class="step-dot psm"></span>Script deactivates all identities whose Primary Department matches the config value</li>
+        <li><span class="step-dot psm"></span>Changing the config parameter value causes the script to re-enable previously deactivated identities</li>
+      </ul>
+
+      <div class="sub-label psm">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num psm">1</span>Create a config parameter in OIM Designer (e.g., <code>Custom\PSM\DeactivateDept</code>) with a test department value</li>
+        <li><span class="step-num psm">2</span>Write the <code>.ps1</code> script that reads the config parameter, queries Person by Primary Department, and sets IsInActive accordingly</li>
+        <li><span class="step-num psm">3</span>Verify one or more identities with the matching Primary Department exist in the lab</li>
+        <li><span class="step-num psm">4</span>Execute the script and confirm target identities are deactivated</li>
+        <li><span class="step-num psm">5</span>Change the config parameter value to a non-existent department; re-execute; verify previously deactivated identities are re-enabled</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        After Step 4: target identity is deactivated (IsInActive = 1) in OIM Manager. After Step 5: the same identity is re-enabled (IsInActive = 0).
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Config parameter path must be created in OIM Designer before the script can read it; if the path doesn't exist, <code>GetConfigParmAsync</code> returns null or throws</li>
+          <li>Ensure the test identity actually has the target Primary Department set &mdash; check in OIM Manager before running the script</li>
+          <li>Deactivation sets <code>IsInActive = 1</code>; re-enabling sets it back to <code>0</code>; confirm the exact column name used in the target OIM version</li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /PSM exercises -->
+
+  <!-- DM EXERCISES -->
+  <div class="content-section">
+    <h2><span class="section-icon">DM</span> DM &mdash; Deployment Manager</h2>
+
+    <!-- DM-01 -->
+    <div class="exercise-card" id="dm01">
+      <div class="exercise-header">
+        <span class="exercise-id">DM-01</span>
+        <span class="exercise-title">Install Deployment Manager + Prerequisites</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Install PowerShell 7.5.4, extract the Deployment Manager installation folder, and unblock all DLLs so the module can be imported without security errors.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>PowerShell 7.5.4 installed</li>
+        <li><span class="step-dot"></span>DM installation folder extracted</li>
+        <li><span class="step-dot"></span>All DLLs in the installation folder unblocked using <code>Unblock-File</code></li>
+        <li><span class="step-dot"></span>DM module imports without errors after unblocking</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Extract the DM installation folder to a known location</li>
+        <li><span class="step-num">2</span>Install PowerShell 7.5.4 (download from Microsoft)</li>
+        <li><span class="step-num">3</span>Run in PS7 to unblock all DLLs:</li>
+      </ol>
+      <pre>Get-ChildItem "installation folder" -Recurse | Unblock-File</pre>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        DM module loads successfully in PS7 after the Unblock-File step. Run <code>Import-Module</code> on the DM module path &mdash; no security or signature errors.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>If DLLs are not unblocked, Windows marks them as downloaded from the internet and PS blocks loading &mdash; Unblock-File is the fix</li>
+          <li>The unblock command must be run as Administrator or with sufficient rights to modify the file Zone.Identifier alternate data stream</li>
+          <li>PS7 must be used, not Windows PowerShell 5 &mdash; the DM module targets PS7 APIs</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DM-02 -->
+    <div class="exercise-card" id="dm02">
+      <div class="exercise-header">
+        <span class="exercise-id">DM-02</span>
+        <span class="exercise-title">Set Up Deployment Folder Structure</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create the standardised Deployment folder structure that all subsequent DM exercises will use. Extract the workshop materials into the correct location.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Deployment root folder created</li>
+        <li><span class="step-dot"></span>Workshop content extracted to <span class="filepath">C:\Users\OneIM\Desktop\Deployment</span></li>
+        <li><span class="step-dot"></span>Folder structure matches expected layout (Tasks, Common, Logs subdirectories present)</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Create the <code>Deployment</code> folder at <span class="filepath">C:\Users\OneIM\Desktop\Deployment</span></li>
+        <li><span class="step-num">2</span>Extract the workshop ZIP to that folder and verify the subdirectory layout</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        Folder structure at <span class="filepath">C:\Users\OneIM\Desktop\Deployment</span> matches the expected layout with Tasks, Common, Logs, and other required subdirectories present.
+      </div>
+    </div>
+
+    <!-- DM-03 -->
+    <div class="exercise-card" id="dm03">
+      <div class="exercise-header">
+        <span class="exercise-id">DM-03</span>
+        <span class="exercise-title">Initial Configuration</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Configure the Deployment Manager connection and project settings. Verify the configuration is valid with a dry run that produces no errors.
+      </div>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Edit <code>masterProjectConfig.xml</code> with the correct OIM server, database, and authentication settings</li>
+        <li><span class="step-num">2</span>Verify <code>projectConfig.xml</code> per-project overrides are correct for the lab environment</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        Configuration is valid: no errors on the first dry run. DM module connects to OIM successfully and reports the expected task list.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li><code>masterProjectConfig.xml</code> holds global settings; <code>projectConfig.xml</code> is a per-project override &mdash; changes in projectConfig take precedence</li>
+          <li>Connection errors here are usually due to incorrect server name or credentials in masterProjectConfig &mdash; verify against OIM Manager connection settings</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DM-04 -->
+    <div class="exercise-card" id="dm04">
+      <div class="exercise-header">
+        <span class="exercise-id">DM-04</span>
+        <span class="exercise-title">Dry Execution</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Run a controlled first deployment using PS7 and the DM module. Use the dry run (preview) capability to review planned actions before confirming execution. Check the deployment log to verify results.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>DM module imported in PS7</li>
+        <li><span class="step-dot"></span>Dry run (without <code>-NoExecute</code>) shows planned actions and asks for confirmation</li>
+        <li><span class="step-dot"></span>After confirmation, changes are applied to OIM</li>
+        <li><span class="step-dot"></span>Log file reviewed at the specified path</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Start PowerShell 7</li>
+        <li><span class="step-num">2</span><code>Import-Module</code> the DM module; verify via <code>Get-Command</code> that DM commands are available</li>
+        <li><span class="step-num">3</span>Run the DM deployment command (dry execution) &mdash; DM will show planned actions and ask for confirmation before applying</li>
+        <li><span class="step-num">4</span>Confirm at the prompt; DM executes the deployment</li>
+        <li><span class="step-num">5</span>Check the deployment log at:</li>
+      </ol>
+      <pre>C:\Users\OneIM\Desktop\Deployment\Logs\Example\Deployment.log</pre>
+
+      <div class="callout callout-critical">
+        <div class="callout-title">Critical &mdash; Never Use -NoExecute</div>
+        <strong>Do NOT use <code>-NoExecute</code></strong> as a "safe" mode. The <code>-NoExecute</code> flag marks all changes as already done without actually applying them to OIM &mdash; this corrupts the deployment state. The DM already asks for confirmation before executing; that confirmation prompt IS the dry run preview. Always use it without <code>-NoExecute</code>.
+      </div>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        <code>Deployment.log</code> shows the actions taken. Confirm the expected changes are visible in OIM (OIM Manager or OIM Designer) after execution.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>If a trainee accidentally uses <code>-NoExecute</code>, they must reset the deployment state markers before re-running; mentor should guide through this recovery</li>
+          <li>The confirmation prompt before execution is the intended safety mechanism &mdash; read the planned action list carefully before confirming</li>
+          <li>Log files are essential for diagnosing failed deployments &mdash; teach trainees to check the log before asking for help</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DM-05 -->
+    <div class="exercise-card" id="dm05">
+      <div class="exercise-header">
+        <span class="exercise-id">DM-05</span>
+        <span class="exercise-title">Deploy Config Parameters via CSV</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Add a new OIM config parameter by editing the standard CSV file and running a DM deployment. Verify the new parameter appears in OIM Designer.
+      </div>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Edit <span class="filepath">100-ConfigParams_Custom.csv</span> &mdash; add a new row for the desired config parameter (path, value, description)</li>
+        <li><span class="step-num">2</span>Run the DM deployment</li>
+        <li><span class="step-num">3</span>Open OIM Designer and verify the new config parameter is present at the specified path</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        New config parameter is visible in OIM Designer at the exact path specified in the CSV. Value matches what was entered in the CSV row.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>CSV column names in the file must exactly match what the DM template expects &mdash; a column name mismatch causes a silent skip or error</li>
+          <li>Config parameter paths use backslash notation: <code>Custom\Category\ParameterName</code></li>
+          <li>If the parameter doesn't appear in Designer, check the Deployment.log for errors and verify the CSV path format</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DM-06 -->
+    <div class="exercise-card" id="dm06">
+      <div class="exercise-header">
+        <span class="exercise-id">DM-06</span>
+        <span class="exercise-title">Create and Execute an XML Task</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create a custom XML task file in the Tasks folder and execute only that task using DM's selective task execution. Verify the resulting object in OIM.
+      </div>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Create the XML task file at:<br>
+          <span class="filepath">C:\Users\OneIM\Desktop\Deployment\Tasks\10-CustomObjects</span>
+        </li>
+        <li><span class="step-num">2</span>Execute only this specific task using DM's task filter option</li>
+        <li><span class="step-num">3</span>Verify the object was created in OIM (check OIM Manager or Designer)</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        The OIM object defined in the XML task exists after deployment. Its properties match the XML definition exactly.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Selective task execution is important for large deployments &mdash; running only one task folder reduces noise and makes troubleshooting easier</li>
+          <li>XML task file naming convention matters &mdash; the numeric prefix (e.g., <code>10-</code>) controls execution order within the folder</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DM-07 -->
+    <div class="exercise-card" id="dm07">
+      <div class="exercise-header">
+        <span class="exercise-id">DM-07</span>
+        <span class="exercise-title">Create XML Template with CSV Data</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Separate the object structure (XML template) from the data (CSV file). The template defines how objects are created; the CSV provides the values. This pattern allows one template to create many objects from a data file.
+      </div>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Create the XML template file at:<br>
+          <span class="filepath">C:\Users\OneIM\Desktop\Deployment\Common\Template</span>
+        </li>
+        <li><span class="step-num">2</span>Create the CSV data file at:<br>
+          <span class="filepath">C:\Users\OneIM\Desktop\Deployment\Tasks\10-CustomObjects</span>
+        </li>
+        <li><span class="step-num">3</span>Deploy and verify the objects in OIM</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        Each row in the CSV produces a corresponding object in OIM. All field values match the CSV data applied via the template.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Template placeholders must use the same variable names as the CSV column headers &mdash; a mismatch produces empty values, not an error</li>
+          <li>Always check the output count: if the CSV has 3 rows, expect 3 created objects</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DM-08 -->
+    <div class="exercise-card" id="dm08">
+      <div class="exercise-header">
+        <span class="exercise-id">DM-08</span>
+        <span class="exercise-title">Push Template with Overwrite</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Deploy a VB template to OIM with the overwrite flag (<code>-o</code> suffix in filename). Without this flag, existing templates are silently skipped. With it, the existing template is replaced. Compile and test after deployment.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Template file named with <code>-o</code> suffix before the extension: e.g., <code>030-ColumnTemplate_Person-CustomProperty10-o.vb</code></li>
+        <li><span class="step-dot"></span>Existing template with the same target must already exist in OIM for this test to demonstrate the overwrite behaviour</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Create the template file with the <code>-o</code> suffix in the filename: <span class="filepath">030-ColumnTemplate_Person-CustomProperty10-o.vb</span></li>
+        <li><span class="step-num">2</span>Run the DM deployment to push the template</li>
+        <li><span class="step-num">3</span>Compile the OIM database and test the template behaviour</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        The existing template content in OIM is replaced by the new content after deployment. Without the <code>-o</code> suffix, the template is silently skipped &mdash; demonstrate this contrast.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>The <code>-o</code> suffix is embedded in the filename, not a runtime flag &mdash; it is read by DM during file processing</li>
+          <li>Without <code>-o</code>, DM detects that a template with that target already exists and silently skips it &mdash; no warning is logged; it simply doesn't update</li>
+          <li>This is a very common source of confusion: "I deployed but nothing changed" &mdash; always check for the <code>-o</code> suffix</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DM-09 -->
+    <div class="exercise-card" id="dm09">
+      <div class="exercise-header">
+        <span class="exercise-id">DM-09</span>
+        <span class="exercise-title">Deploy Config Parameter Enablement</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Enable specific OIM config parameters using a template + CSV pattern with a <code>taskConfig.xml</code> that orchestrates post-folder compilation via <code>CompileDatabaseOnSuccess.ps1</code>.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Template file, reference CSV, empty trigger file, and taskConfig.xml all created correctly</li>
+        <li><span class="step-dot"></span>taskConfig.xml sets <code>aftercontainer</code> to run <code>CompileDatabaseOnSuccess.ps1</code></li>
+        <li><span class="step-dot"></span>taskConfig.xml sets <code>noCompile = True</code> to prevent per-file compile</li>
+        <li><span class="step-dot"></span>OIM DB compile runs after the entire folder completes (not per file)</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Create <code>Template_ConfigParmsEnablement.xml</code> at:<br>
+          <span class="filepath">...\Deployment\Common\Template</span>
+        </li>
+        <li><span class="step-num">2</span>Create <code>ConfigParmsEnablement.csv</code> at:<br>
+          <span class="filepath">...\Deployment\Common\Reference</span>
+        </li>
+        <li><span class="step-num">3</span>Create an empty file <code>300-ConfigParmsEnablement.csv.ref</code> at:<br>
+          <span class="filepath">...\Deployment\Tasks\30-EnableActions</span>
+        </li>
+        <li><span class="step-num">4</span>Create <code>taskConfig.xml</code> at <span class="filepath">...\Tasks\30-EnableActions</span> with these settings:</li>
+      </ol>
+
+      <table class="config-table">
+        <thead>
+          <tr><th>Setting Key</th><th>Value</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>intragen.deployment.aftercontainer</td>
+            <td>CompileDatabaseOnSuccess.ps1</td>
+            <td>Triggers DB compile after all files in the folder complete successfully</td>
+          </tr>
+          <tr>
+            <td>intragen.deployment.transport.noCompile</td>
+            <td>True</td>
+            <td>Prevents individual per-file compiles (which would be extremely slow)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ol class="numbered-steps" style="margin-top:0.5rem;">
+        <li><span class="step-num">5</span>Deploy and verify Config Parameters are enabled in OIM Designer</li>
+      </ol>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">OIM Compile Downtime</div>
+        The DB compile triggered by <code>CompileDatabaseOnSuccess.ps1</code> (aftercontainer) takes time. OIM will NOT be accessible via the web portal or OIM Manager during compilation. Plan for this downtime window when scheduling this deployment.
+      </div>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        Config Parameters listed in the CSV are now Enabled in OIM Designer. DB compile completed successfully (no errors in the compile log).
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li><code>aftercontainer</code> fires once after ALL files in the folder succeed &mdash; if any file fails, the compile does not run</li>
+          <li><code>noCompile = True</code> is critical performance protection &mdash; without it, OIM compiles after every single transport file, which can take many minutes per file</li>
+          <li>The empty <code>.csv.ref</code> file in the Tasks folder is the trigger that tells DM to process this CSV against the template &mdash; without it, nothing happens</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DM-10 -->
+    <div class="exercise-card" id="dm10">
+      <div class="exercise-header">
+        <span class="exercise-id">DM-10</span>
+        <span class="exercise-title">Deploy Schedule Disablement</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Disable specific OIM schedules using the same template + CSV + taskConfig.xml pattern established in DM-09. After deployment, confirm target schedules show as disabled in OIM Designer.
+      </div>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Create <code>Template_DialogScheduleDisablement.xml</code> at:<br>
+          <span class="filepath">...\Deployment\Common\Template</span>
+        </li>
+        <li><span class="step-num">2</span>Create <code>DialogScheduleDisablement.csv</code> at:<br>
+          <span class="filepath">...\Deployment\Common\Reference</span>
+        </li>
+        <li><span class="step-num">3</span>Create an empty trigger file <code>000-DialogScheduleDisablement.csv</code> at:<br>
+          <span class="filepath">...\Deployment\Tasks\40-DisableSchedules</span>
+        </li>
+        <li><span class="step-num">4</span>Create <code>taskConfig.xml</code> at <span class="filepath">...\Tasks\40-DisableSchedules</span> (same structure as DM-09 taskConfig where applicable)</li>
+        <li><span class="step-num">5</span>Deploy and verify target schedules are disabled in OIM Designer</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        Each schedule listed in the CSV is now marked as Disabled in OIM Designer. Active schedules not in the CSV remain unchanged.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Verify the schedule names in the CSV exactly match the schedule names in OIM (including casing) &mdash; a mismatch results in a silent skip</li>
+          <li>The numeric prefix <code>000-</code> ensures this task runs before any other files in the <code>40-DisableSchedules</code> folder</li>
+          <li>After deployment, spot-check one schedule in OIM Designer to confirm the disabled flag was applied</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DM-11 -->
+    <div class="exercise-card" id="dm11">
+      <div class="exercise-header">
+        <span class="exercise-id">DM-11</span>
+        <span class="exercise-title">Template Modify Task</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create a new task folder for template modifications, execute only that folder, and configure it with the compile option disabled for faster iteration.
+      </div>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Create the directory:<br>
+          <span class="filepath">C:\Users\OneIM\Desktop\Deployment\Tasks\50-TemplateModify</span>
+        </li>
+        <li><span class="step-num">2</span>Run the DM deployment targeting only this task folder</li>
+        <li><span class="step-num">3</span>Disable the compile option for this task via <code>taskConfig.xml</code> or the appropriate setting</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        Template modifications are applied to OIM as defined. The compile step is skipped as configured (no post-deployment compile runs for this task folder).
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Disabling compile in DM-11 is intentional &mdash; this folder is for rapid iterative template changes; compile can be run manually when ready</li>
+          <li>Selective folder execution (targeting only <code>50-TemplateModify</code>) prevents accidentally re-running earlier tasks from DM-04 through DM-10</li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /DM exercises -->
+
+  <!-- MENTOR TIPS SUMMARY -->
+  <div class="content-section" id="mentor-tips">
+    <h2><span class="section-icon">03</span> Mentor Tips &amp; Key Concepts</h2>
+
+    <div class="callout callout-critical">
+      <div class="callout-title">DM-04 Critical &mdash; Never Use -NoExecute</div>
+      <code>-NoExecute</code> marks all tasks as DONE without applying any changes to OIM. This corrupts the deployment state &mdash; subsequent runs will see those tasks as already completed and skip them. Recovery requires manually resetting the state file. The DM already shows a confirmation prompt; that IS the safe preview mechanism.
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">DM-08 &mdash; Overwrite Suffix Is Silent Without -o</div>
+      Without the <code>-o</code> suffix in the template filename, DM silently skips any template that already exists in OIM. No error, no warning, no log entry. The <code>-o</code> suffix in the filename is the only way to force a replace. This catches many trainees who wonder why their changes didn't apply.
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">DM-09 &mdash; aftercontainer vs Per-File Compile</div>
+      <code>aftercontainer</code> fires <code>CompileDatabaseOnSuccess.ps1</code> once after the entire folder completes. <code>noCompile = True</code> prevents a compile after each individual transport file. Always use both together for folders that contain multiple transport files &mdash; per-file compile would make a 20-file folder take 20x as long.
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">PSM &mdash; Live Database, No Undo</div>
+      PSM Console Mode is a live OIM database session. Every <code>CommitAsync</code> writes permanently to the OIM database. There is no undo button. Always use a dev/lab OIM instance, never production. Establish this expectation before PSM-01 begins.
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Config File Hierarchy</div>
+      <code>masterProjectConfig.xml</code> holds global settings for all projects. <code>projectConfig.xml</code> is a per-project override &mdash; values here take precedence over master. When something behaves unexpectedly, check projectConfig for overrides before modifying master.
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>Intragen OIM Academy &mdash; Module 024_001 &mdash; Deployment Manager</span>
+    <span>Last updated: 2026-03-27</span>
+  </div>
+
+</main>
+<footer>
+  INTRAGEN<span class="footer-dot">.</span> Academy &mdash; Mentoring Documentation &mdash;
+  &copy; Intragen International. This document remains strictly private and confidential.
+</footer>
+</body>
+</html>

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Module 007 — PRO — Mentor Guide | Intragen Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple: #7B2D8B;
+  --purple-dark: #5C1F6B;
+  --teal: #007B77;
+  --golden: #F0A800;
+  --body-bg: #FAF8F5;
+  --code-bg: #1E1E1E;
+  --border: #DDD;
+  --text: #2C2C2C;
+  --muted: #6B6B6B;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.6; background: #F0EDE8; color: var(--text); }
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  background: var(--purple);
+  color: #fff;
+  width: 260px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.intragen-logo {
+  padding: 1.25rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+.logo-dot { color: var(--golden); }
+.module-label {
+  padding: 0.75rem 1rem 0.25rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.45);
+}
+.module-title-sidebar {
+  padding: 0.5rem 1rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--golden);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.nav-section-label {
+  padding: 0.75rem 1rem 0.2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+.sidebar a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.82rem;
+  border-left: 3px solid transparent;
+}
+.sidebar a:hover {
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--teal);
+  color: #fff;
+}
+
+/* Main */
+main { padding: 2rem; max-width: 1080px; }
+
+/* Module Header */
+.module-header {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+  color: #fff;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.module-header::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.module-header .intragen-watermark {
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+.module-header .intragen-watermark .dot { color: var(--golden); }
+.module-header h1 { font-size: 1.6rem; margin-bottom: 0.4rem; font-weight: 700; }
+.module-header p { opacity: 0.85; font-size: 0.9rem; }
+
+/* Badges */
+.badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.beginner { background: #d4edda; color: #155724; }
+.intermediate { background: #fff3cd; color: #856404; }
+.advanced { background: #f8d7da; color: #721c24; }
+
+/* Overview grid */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+.info-card {
+  background: #fff;
+  border-left: 4px solid var(--teal);
+  padding: 1.1rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.info-card h3 { color: var(--purple-dark); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.info-card ul { padding-left: 1.2rem; }
+.info-card li { font-size: 0.9rem; margin-bottom: 0.25rem; }
+
+/* Sections */
+section { margin-bottom: 2.5rem; }
+
+/* Section Banner */
+.section-banner {
+  background: var(--purple-dark);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.55rem 0.9rem;
+  margin-bottom: 1.25rem;
+  border-radius: 3px;
+}
+
+/* Section sub-label */
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--purple);
+  margin: 0.9rem 0 0.3rem;
+}
+
+/* Exercise Cards */
+.exercise-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--teal);
+  border-radius: 0 8px 8px 0;
+  padding: 1.5rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.exercise-card h2 {
+  color: var(--purple-dark);
+  font-size: 1.15rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #EDE8F0;
+}
+.ex-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.ex-num {
+  background: var(--purple-dark);
+  color: #fff;
+  min-width: 48px;
+  height: 38px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+.ex-header h3 { color: var(--purple-dark); font-size: 1rem; margin: 0; font-weight: 600; }
+
+/* Callouts */
+.callout {
+  padding: 0.85rem 1rem;
+  border-radius: 0 6px 6px 0;
+  margin: 0.75rem 0;
+  font-size: 0.88rem;
+}
+.callout strong, .callout b {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.callout-tip { background: #F0FDF4; border-left: 4px solid #22C55E; }
+.callout-warn { background: #FFF8E1; border-left: 4px solid #F59E0B; }
+.callout-important { background: #F5EFF8; border-left: 4px solid var(--purple); }
+.callout-note { background: #E8F4FF; border-left: 4px solid #2D6DB5; }
+.callout-mentor { background: #F5EFF8; border-left: 4px solid var(--purple); }
+.callout-error { background: #FFF0F0; border-left: 4px solid #DC2626; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1rem; font-size: 0.87rem; }
+th {
+  background: var(--purple-dark);
+  color: #fff;
+  padding: 0.55rem 0.8rem;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:nth-child(even) td { background: #F8F5FB; }
+td.pass { color: #15803D; font-weight: 600; }
+td.fail { color: #B91C1C; font-weight: 600; }
+
+/* Steps */
+.steps { padding-left: 1.4rem; margin: 0.4rem 0; }
+.steps li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+
+/* Code */
+.code-block {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  font-family: 'Cascadia Code','Fira Code', Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  padding: 1rem 1.1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+  white-space: pre;
+}
+pre {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  font-family: 'Cascadia Code','Fira Code', Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  padding: 1rem 1.1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+code {
+  background: #EDE8F0;
+  color: #8B2080;
+  font-family: 'Cascadia Code','Fira Code', Consolas, monospace;
+  font-size: 0.82rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+    <div class="module-label">Module</div>
+    <div class="module-title-sidebar">MODULE 007 &mdash; PRO</div>
+    <nav>
+      <div class="nav-section-label">Navigation</div>
+      <a href="#overview">Overview</a>
+      <div class="nav-section-label">Exercises</div>
+      <a href="#ex1">PRO-1: CustomProcess1 on INSERT</a>
+      <a href="#ex2">PRO-2: Gets Business Role Name</a>
+      <a href="#ex3">PRO-3: Conditional Delete on Deactivation</a>
+      <a href="#ex4">PRO-4: Multi-Delete with Wait Step</a>
+      <a href="#ex5">PRO-5: Auto-Create IT Shop Service Item</a>
+      <a href="#ex6">PRO-6: Complex Cleanup (2 Processes)</a>
+      <div class="nav-section-label">Reference</div>
+      <a href="#troubleshoot">Troubleshooting</a>
+    </nav>
+  </aside>
+  <main>
+    <div class="module-header">
+      <div class="intragen-watermark">INTRAGEN<span class="dot">.</span> Academy</div>
+      <h1>Processes</h1>
+      <p>Code: PRO &nbsp;|&nbsp; <span class="badge intermediate">Intermediate</span> &nbsp;|&nbsp; 6 exercises &nbsp;|&nbsp; ~2 days</p>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section id="overview">
+      <div class="section-banner">Overview</div>
+      <div class="overview-grid">
+        <div class="info-card">
+          <h3>Module Purpose</h3>
+          <ul>
+            <li>OIM processes are event-driven automation chains</li>
+            <li>Progress from a single-step process through conditional triggers</li>
+            <li>Delete operations, wait steps, IT Shop automation</li>
+            <li>Complex multi-table cleanup processes</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Prerequisites</h3>
+          <ul>
+            <li>BAS module complete</li>
+            <li>VB.NET basics (expressions, string methods)</li>
+            <li>OIM Designer access</li>
+            <li>Understanding of Job Queue / DBQueue</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Key Concepts</h3>
+          <ul>
+            <li><strong>Trigger:</strong> Table + Event (INSERT, UPDATE, DELETE)</li>
+            <li><strong>Generating Condition:</strong> VB.NET expression &mdash; should process run?</li>
+            <li><strong>Process Steps:</strong> handlers (SQL, Script, Mail, Connector, etc.)</li>
+            <li><strong>Step Generating Condition:</strong> per-step conditional logic</li>
+            <li><strong>HandleObjectComponent-Delete:</strong> deletes objects matching WhereClause</li>
+            <li><strong>Wait Step:</strong> pauses execution until a condition becomes true</li>
+            <li><strong>EventName:</strong> string &mdash; "INSERT" or "UPDATE" at runtime</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Mentor Guidance</h3>
+          <ul>
+            <li>Distinguish trigger (when) from step handler (what) &mdash; two separate concepts</li>
+            <li>PRO-3 Generating Condition is the standard "changed to true" pattern</li>
+            <li>PRO-4 Frozen state: show Job Queue &rarr; Frozen &rarr; Unfreeze flow</li>
+            <li>PRO-5 EventName.Equals() avoids two separate processes with identical steps</li>
+            <li>PRO-6 <code>$ColumnName$</code> injects current object's column value at runtime</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRO-1 -->
+    <section id="ex1">
+      <div class="section-banner">Exercises</div>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">PRO-1</div>
+          <h3>CustomProcess1 &mdash; Fires on Person INSERT</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Create a process named <strong>CustomProcess1</strong> in Designer / Process Orchestration. The process fires when a new identity (Person) is created and writes a desired value to <code>CustomProperty10</code>.</p>
+
+        <div class="section-label">Solution &mdash; Configuration Steps</div>
+        <ul class="steps">
+          <li>Open Designer &rarr; Process Orchestration &rarr; create new process <code>CustomProcess1</code></li>
+          <li>Set Table = <code>Person</code></li>
+          <li>Set Events = <code>INSERT</code></li>
+          <li>Add new process step named <strong>handle_update</strong>:
+            <ul style="margin-top:.3rem;padding-left:1.2rem">
+              <li>Set ObjectType to get the Person table</li>
+              <li>Configure the WhereClause to target the correct row</li>
+              <li>Rename parameter <code>val_Property10</code> to <code>val_CustomProperty10</code></li>
+              <li>Set the Parameter value to the desired output value</li>
+              <li>Set Server Function = SQL processing server</li>
+              <li>Enable Process History on Process Step properties</li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Create new identity</td><td>Create a new identity in OIM Manager</td><td>Process appears in JobQueue; after processing, CustomProperty10 gets the desired value</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          Emphasise the two distinct layers: (1) the process trigger &mdash; Table=Person, Event=INSERT &mdash; decides WHEN the process fires; (2) the step handler &mdash; SQL action &mdash; decides WHAT it does. These are independently configured and both must be correct for the process to work as intended.
+        </div>
+      </div>
+    </section>
+
+    <!-- PRO-2 -->
+    <section id="ex2">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">PRO-2</div>
+          <h3>Process Gets Business Role Name on INSERT</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Same pattern as PRO-1 &mdash; process fires on Person INSERT &mdash; but instead of a static value, <code>CustomProperty10</code> receives the name of the Business Role associated with the new identity.</p>
+
+        <div class="section-label">Solution</div>
+        <ul class="steps">
+          <li>Follow the same process structure as PRO-1 (Table = Person, Event = INSERT)</li>
+          <li>Modify the step parameter to query the Business Role name associated with the new identity</li>
+          <li>Use a WhereClause or join to retrieve the correct Business Role display name</li>
+        </ul>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Create new identity with an assigned Business Role</td><td>Create new identity in OIM Manager</td><td>Process appears in JobQueue; after processing, CustomProperty10 = the name of the assigned Business Role</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PRO-3 -->
+    <section id="ex3">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">PRO-3</div>
+          <h3>Conditional Delete on Temporary Deactivation</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Process that fires ONLY when an identity is temporarily deactivated. Uses a Generating Condition to check the <code>IsTemporaryDeactivated</code> flag. On trigger, deletes all Business Roles, System Roles, and Resources from the identity.</p>
+
+        <div class="section-label">Solution &mdash; Configuration Steps</div>
+        <ul class="steps">
+          <li>Table = <code>Person</code>, Event = <code>UPDATE</code></li>
+          <li>Set Process Generating Condition:</li>
+        </ul>
+        <pre>{Value = $IsTemporaryDeactivated:Bool$}</pre>
+        <ul class="steps">
+          <li>Create one <strong>HandleObjectComponent-Delete</strong> step for EACH join table:
+            <ul style="margin-top:.3rem;padding-left:1.2rem">
+              <li>Step for <code>PersonHasQERResource</code> &mdash; removes Resource assignments</li>
+              <li>Step for <code>PersonInOrg</code> &mdash; removes Business Role memberships</li>
+              <li>Step for <code>PersonHasEset</code> &mdash; removes System Role assignments</li>
+            </ul>
+          </li>
+          <li>Per step: only the "ObjectType" value changes &mdash; the WhereClause pattern is the same across all three steps</li>
+        </ul>
+
+        <div class="callout callout-tip">
+          <b>Generating Condition &mdash; Standard Pattern</b>
+          <code>{Value = $IsTemporaryDeactivated:Bool$}</code> is the standard pattern for "only run when this boolean field changed to true". This exact syntax appears throughout production OIM environments. Memorise it &mdash; it is used in templates, processes, and approval workflows alike.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Update unrelated fields</td><td>Change Lastname; change Firstname on the identity</td><td>Process does NOT appear in JobQueue &mdash; Generating Condition evaluates to False</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Temporarily disable identity</td><td>Set IsTemporaryDeactivated = True on the identity</td><td>Process fires; Business Roles, System Roles, and Resources are deleted from the identity</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          The Generating Condition is evaluated BEFORE the process is queued. If it returns False, the process never enters the JobQueue at all &mdash; it is not "skipped", it is never created. This is more efficient than creating the process and having a step condition abort it midway.
+        </div>
+      </div>
+    </section>
+
+    <!-- PRO-4 -->
+    <section id="ex4">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">PRO-4</div>
+          <h3>Multi-Delete with Wait Step &mdash; Frozen Process Demo</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Build Process_4 with the same three delete steps as PRO-3, PLUS one Wait step. Demonstrate what happens when the wait condition is never satisfied &mdash; the "Frozen" process state.</p>
+
+        <div class="section-label">Solution</div>
+        <ul class="steps">
+          <li>Copy or rebuild the PRO-3 structure (delete steps: PersonHasQERResource, PersonInOrg, PersonHasEset)</li>
+          <li>Add a Wait Step &mdash; the wait condition checks that a specific dependency no longer exists (e.g., <code>PersonHasEset_NotExists</code> evaluates to True)</li>
+          <li>The wait step is intentionally designed so that indirect assignments prevent its condition from ever becoming True in test scenario #3</li>
+        </ul>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Update unrelated field</td><td>Update Lastname or Firstname on the identity</td><td>Process does NOT run</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Temporarily disable &mdash; directly assigned roles only</td><td>Set IsTemporaryDeactivated = True; identity has only directly assigned Business Roles</td><td>Process runs; Business Roles, System Roles, and Resources are deleted</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Temporarily disable WITH indirectly assigned Business Roles</td><td>Set IsTemporaryDeactivated = True; identity has at least one Business Role via indirect (inherited) assignment</td><td>Process runs but FREEZES &mdash; PersonHasEset_NotExists evaluates to False; process enters Frozen state in Job Queue</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-error">
+          <b>Frozen Process &mdash; Key Teaching Moment</b>
+          Test #3 Frozen state is intentional. A Frozen process means: "I was waiting for a condition but it never became True &mdash; I stopped." In production, Frozen = needs human intervention. Navigation: Job Queue &rarr; filter "Frozen" &rarr; select process &rarr; click Unfreeze. Monitoring for Frozen processes is a real OIM admin task.
+        </div>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          After demonstrating the Frozen state, show trainees the Unfreeze button and explain when it is appropriate to use it. Unreviewed Frozen processes can mask real automation failures in production environments.
+        </div>
+      </div>
+    </section>
+
+    <!-- PRO-5 -->
+    <section id="ex5">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">PRO-5</div>
+          <h3>Auto-Create IT Shop Service Item from Business Role</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">A single process handles both Business Role INSERT (auto-creates the Service Item and adds it to the IT Shop) and UPDATE (renames the Service Item when the BR is renamed). EventName.Equals() separates INSERT and UPDATE logic within the same process.</p>
+
+        <div class="section-label">Solution &mdash; Configuration Steps</div>
+        <ul class="steps">
+          <li>Table = <code>Org</code> (Business Role table), Events = <code>Insert</code> AND <code>Update</code></li>
+          <li>Process step <strong>Insert_AccProduct</strong> &mdash; Generating Condition:</li>
+        </ul>
+        <pre>{Value = EventName.Equals("INSERT", StringComparison.OrdinalIgnoreCase)}</pre>
+        <ul class="steps">
+          <li>Process step <strong>Insert_QERAssign</strong> &mdash; same INSERT Generating Condition as above</li>
+          <li>Process step <strong>Insert_ITShopOrgHasQERAssign</strong> &mdash; same INSERT Generating Condition</li>
+          <li>Process step <strong>UPDATE_Ident_Org</strong> &mdash; Generating Condition:</li>
+        </ul>
+        <pre>{Value = EventName.Equals("UPDATE", StringComparison.OrdinalIgnoreCase)}</pre>
+
+        <div class="callout callout-tip">
+          <b>EventName Pattern</b>
+          <code>EventName.Equals("INSERT", StringComparison.OrdinalIgnoreCase)</code> is the standard way to distinguish INSERT from UPDATE within a single process. Using <code>OrdinalIgnoreCase</code> makes the comparison robust. Do not use the <code>=</code> operator for string comparison in VB.NET process conditions.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Create Business Role WITHOUT proper description</td><td>Create BR &mdash; leave the required description field empty</td><td>Process does NOT run &mdash; trigger condition on description not met</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Create Business Role WITH proper description</td><td>Create BR with a valid description populated</td><td>Process runs; Service Item automatically created; item available in IT Shop; request routed to Manager for approval</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Rename Business Role after Service Item created</td><td>Update the BR's display name after the Service Item has been created</td><td>Service Item display name is updated to match the renamed BR</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          The EventName.Equals() approach avoids maintaining two separate processes with nearly identical steps. Both INSERT steps and the UPDATE step live in the SAME process &mdash; the step-level Generating Conditions branch the logic. Show trainees the process in Designer and point out both types of Generating Conditions side by side.
+        </div>
+      </div>
+    </section>
+
+    <!-- PRO-6 -->
+    <section id="ex6">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">PRO-6</div>
+          <h3>Complex Cleanup &mdash; Two Processes (Person + Department)</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Create two cleanup processes: <strong>Process6</strong> (Person table, triggered by <code>IsInActive</code>) and <strong>Process6b</strong> (Department table, triggered by <code>IsCutNode</code>). Each removes AD Groups and Identities from a System Role and disables the System Role.</p>
+
+        <div class="section-label">Solution &mdash; Process6 (Person table)</div>
+        <ul class="steps">
+          <li>Table = <code>Person</code>, Event = <code>Update</code></li>
+          <li>Process Generating Conditions: <code>{Value = $IsInActive:Bool$}</code> and <code>{Event = Update}</code></li>
+          <li>Process step <strong>Remove_ADGroups</strong> &mdash; WhereClause:</li>
+        </ul>
+        <pre>{value = String.Format(
+  "UID_ESetHasEntitlement In(Select UID_ESetHasEntitlement from ESetHasEntitlement
+   Join Eset on ... WHERE Eset.DisplayName = '{0}')",
+  $LastName$)}</pre>
+        <ul class="steps">
+          <li>Process step <strong>Remove_Identities</strong>: removes all identities from the System Role</li>
+          <li>Process step <strong>Disable_SystemRole</strong>: disables the System Role object</li>
+        </ul>
+
+        <div class="section-label">Solution &mdash; Process6b (Department table)</div>
+        <ul class="steps">
+          <li>Table = <code>Department</code>, Event = <code>Update</code></li>
+          <li>Process Generating Condition: <code>{Value = $IsCutNode:Bool$}</code></li>
+          <li>Same three process steps as Process6 (Remove_ADGroups, Remove_Identities, Disable_SystemRole)</li>
+          <li>Key difference: use <code>$DepartmentName$</code> instead of <code>$LastName$</code> in the WhereClause String.Format call</li>
+        </ul>
+
+        <div class="callout callout-tip">
+          <b>Runtime Parameter Injection</b>
+          The <code>$ColumnName$</code> syntax (e.g., <code>$LastName$</code>, <code>$DepartmentName$</code>) injects the current object's column value at process execution time. This makes the WhereClause dynamic &mdash; it automatically targets the System Role named after the specific Person or Department that triggered the process.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Update unrelated field on Department or Person</td><td>Update any field that is not IsInActive or IsCutNode</td><td>Neither process runs</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Update the trigger field on Department OR Person</td><td>Set IsInActive = True on Person, OR set IsCutNode = True on Department</td><td>The corresponding process runs; all AD groups removed from System Role; all identities removed from System Role; System Role is disabled</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          Process6 and Process6b are structurally identical &mdash; only the trigger table, the Generating Condition field, and the column name in the WhereClause differ. Show trainees how to clone Process6 in Designer and adapt it for Process6b &mdash; this is faster and reduces transcription errors.
+        </div>
+      </div>
+    </section>
+
+    <!-- TROUBLESHOOTING -->
+    <section id="troubleshoot">
+      <div class="section-banner">Troubleshooting Reference</div>
+      <table>
+        <thead><tr><th>Problem</th><th>Cause</th><th>Solution</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Process never appears in Job Queue</td>
+            <td>Generating Condition evaluates to False at trigger time</td>
+            <td>Temporarily remove the Generating Condition to confirm the process fires; re-add conditions and test incrementally</td>
+          </tr>
+          <tr>
+            <td>Process fires on EVERY update</td>
+            <td>No Generating Condition set (or condition always True)</td>
+            <td>Add the appropriate boolean condition: <code>{Value = $IsTemporaryDeactivated:Bool$}</code></td>
+          </tr>
+          <tr>
+            <td>HandleObjectComponent-Delete deletes wrong records</td>
+            <td>WhereClause too broad &mdash; matches more objects than intended</td>
+            <td>Test the WhereClause as a raw SQL query in SSMS first; narrow it until only the intended rows are returned</td>
+          </tr>
+          <tr>
+            <td>Wait step causes Frozen process</td>
+            <td>The wait condition never becomes True</td>
+            <td>Check the wait condition logic; navigate to Job Queue &rarr; Frozen &rarr; Unfreeze to recover; address the underlying dependency issue</td>
+          </tr>
+          <tr>
+            <td>IT Shop Service Item not created (PRO-5)</td>
+            <td>Process trigger condition not met &mdash; description field empty</td>
+            <td>Verify the Business Role has the required description field populated before creation</td>
+          </tr>
+          <tr>
+            <td>EventName condition not working (PRO-5)</td>
+            <td>String comparison using wrong operator or case mismatch</td>
+            <td>Use <code>EventName.Equals("INSERT", StringComparison.OrdinalIgnoreCase)</code> &mdash; not the <code>=</code> operator</td>
+          </tr>
+          <tr>
+            <td>Process step handler not found in Designer</td>
+            <td>Wrong handler type selected in Process Step properties</td>
+            <td>Check the step handler type dropdown; ensure "HandleObjectComponent-Delete" is correctly selected for delete operations</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer style="margin-top:3rem;padding:1.25rem 2rem;background:#F5EFF8;border-top:2px solid #EDE8F0;font-size:0.78rem;color:var(--muted);text-align:center;">
+      INTRAGEN<span style="color:var(--golden)">.</span> Academy &mdash; Mentoring Documentation &mdash;
+      &copy; Intragen International. This document remains strictly private and confidential.
+    </footer>
+  </main>
+</div>
+</body>
+</html>

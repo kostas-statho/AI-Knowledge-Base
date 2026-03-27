@@ -1,0 +1,1226 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 016 - PowerShell Connector (PSC) | Mentor Guide | Intragen Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"><style>
+:root {
+  --purple:      #7B2D8B;
+  --purple-dark: #5C1F6B;
+  --teal:        #007B77;
+  --golden:      #F0A800;
+  /* Legacy variable overrides â€” keeps existing HTML class references working */
+  --navy:  #7B2D8B;
+  --blue:  #007B77;
+  --green: #27AE60;
+  --orange:#E67E22;
+  --red:   #E74C3C;
+  --bg:    #F0EDE8;
+  /* New tokens */
+  --body-bg:  #FAF8F5;
+  --code-bg:  #1E1E1E;
+  --border:   #DDD;
+  --text:     #2C2C2C;
+  --muted:    #6B6B6B;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+}
+/* â”€â”€ Layout â”€â”€ */
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+/* â”€â”€ Sidebar â”€â”€ */
+.sidebar {
+  background: var(--purple);
+  color: #fff;
+  width: 260px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.logo, .intragen-logo {
+  padding: 1.25rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+}
+.logo-dot { color: var(--golden); }
+.module-title, .module-title-sidebar {
+  padding: 0.6rem 1rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--golden);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.nav-label, .nav-section-label, .module-label {
+  padding: 0.75rem 1rem 0.2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+.sidebar a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.82rem;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a:hover {
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--teal);
+  color: #fff;
+}
+/* â”€â”€ Main â”€â”€ */
+main { padding: 2rem; max-width: 1080px; }
+/* â”€â”€ Module header â”€â”€ */
+.module-header {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+  color: #fff;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.module-header::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.module-header .intragen-watermark {
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.mod-num { display: inline-block; font-size: 2.5rem; font-weight: 900; opacity: 0.2; float: right; line-height: 1; }
+.module-header h1 { font-size: 1.55rem; margin-bottom: 0.4rem; }
+.module-header p  { opacity: 0.85; font-size: 0.9rem; }
+/* â”€â”€ Badges â”€â”€ */
+.badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.beginner    { background: #d4edda; color: #155724; }
+.intermediate{ background: #fff3cd; color: #856404; }
+.advanced    { background: #f8d7da; color: #721c24; }
+/* â”€â”€ Overview grid â”€â”€ */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+.info-card {
+  background: #fff;
+  border-left: 4px solid var(--teal);
+  padding: 1.1rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.info-card h3 { color: var(--purple-dark); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.info-card ul { padding-left: 1.2rem; }
+.info-card li { font-size: 0.9rem; margin-bottom: 0.25rem; }
+/* â”€â”€ Sections â”€â”€ */
+section { margin-bottom: 2.5rem; }
+section > h2 {
+  color: var(--purple-dark);
+  font-size: 1.15rem;
+  border-bottom: 2px solid var(--teal);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+.section-banner {
+  background: var(--purple-dark);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 1.25rem;
+  border-radius: 3px;
+}
+/* â”€â”€ Exercise cards â”€â”€ */
+.exercise-card {
+  background: #fff;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  padding: 1.4rem;
+  margin-bottom: 1.4rem;
+  border-left: 4px solid var(--teal);
+}
+.ex-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.ex-num {
+  background: var(--purple-dark);
+  color: #fff;
+  min-width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+}
+.ex-header h3 { color: var(--purple-dark); font-size: 1rem; margin: 0; }
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  margin: 0.9rem 0 0.3rem;
+}
+/* â”€â”€ Callouts â”€â”€ */
+.callout {
+  padding: 0.85rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 0.8rem 0;
+  font-size: 0.9rem;
+}
+.callout b, .callout strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.callout-mentor, .callout-note  { border-left: 4px solid #2D6DB5; background: #E8F4FF; }
+.callout-tip                    { border-left: 4px solid #22C55E; background: #F0FDF4; }
+.callout-warn                   { border-left: 4px solid #F59E0B; background: #FFF8E1; }
+.callout-error, .callout-important { border-left: 4px solid var(--purple); background: #F5EFF8; }
+/* â”€â”€ Steps / Lists â”€â”€ */
+.steps { padding-left: 1.4rem; margin: 0.4rem 0; }
+.steps li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+li::marker { color: var(--purple); }
+/* â”€â”€ Code â”€â”€ */
+pre, .code-block {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  padding: 1rem 1.1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0.8rem 0;
+  font-family: 'Cascadia Code','Fira Code', Consolas, 'Courier New', monospace;
+  white-space: pre;
+}
+code {
+  background: #EDE8F0;
+  color: #8B2080;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+  font-size: 0.82rem;
+}
+pre code { background: none; color: inherit; padding: 0; }
+/* â”€â”€ Tables â”€â”€ */
+table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; }
+thead tr, th { background: var(--purple-dark); color: #fff; }
+th { padding: 0.55rem 0.9rem; text-align: left; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.4px; }
+td { padding: 0.55rem 0.9rem; border: 1px solid var(--border); vertical-align: top; }
+tbody tr:nth-child(even), tr:nth-child(even) td { background: #F8F5FB; }
+td.pass { color: #155724; font-weight: 600; }
+td.fail { color: #721c24; font-weight: 600; }
+/* â”€â”€ Footer â”€â”€ */
+footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  border-top: 2px solid #EDE8F0;
+  margin-top: 2rem;
+  background: #F5EFF8;
+}
+.footer-dot { color: var(--golden); }
+h3 { color: var(--purple); }
+h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="module-badge">Module 016</div>
+    <h1>PowerShell Connector (PSC)</h1>
+    <div class="meta">
+      Level: <span>Advanced</span><br>
+      Server: <span>StathopoulosK</span><br>
+      Database: <span>CCC_PSC</span>
+    </div>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="nav-label">Overview</div>
+    <a href="#background">Background &amp; Architecture</a>
+
+    <div class="nav-label">Exercises</div>
+    <a href="#prep"><span class="ex-num">PREP</span> Database Setup</a>
+    <a href="#psc1"><span class="ex-num">PSC-1</span> Read Functions</a>
+    <a href="#psc2"><span class="ex-num">PSC-2</span> Write Functions</a>
+    <a href="#psc3"><span class="ex-num">PSC-3</span> Modify-User</a>
+    <a href="#psc4"><span class="ex-num">PSC-4</span> Delete Functions</a>
+    <a href="#psc5"><span class="ex-num">PSC-5</span> XML Connector</a>
+    <a href="#psc6"><span class="ex-num">PSC-6</span> UNS Root Object</a>
+    <a href="#psc7"><span class="ex-num">PSC-7</span> Mappings &amp; Sync</a>
+    <a href="#psc8"><span class="ex-num">PSC-8</span> Single Object Ops</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════════════ -->
+<main id="main">
+
+  <div class="page-title">Module 016 — PowerShell Connector (PSC)</div>
+  <div class="page-subtitle">Mentor Guide &nbsp;|&nbsp; <strong>Advanced</strong> &nbsp;|&nbsp; Server: StathopoulosK &nbsp;|&nbsp; DB: CCC_PSC</div>
+
+  <!-- Background -->
+  <div class="bg-card" id="background">
+    <h2>Background &amp; Architecture</h2>
+    <p>
+      This module builds a complete custom PowerShell Target System Connector for One Identity Manager. Trainees start by writing raw PowerShell CRUD scripts against a custom SQL database, then progressively wire those scripts into an OIM XML Connector definition, configure synchronization mappings, and finally create Single Object Operations for real-time provisioning.
+    </p>
+    <p>
+      The custom target database <strong>CCC_PSC</strong> on server <strong>StathopoulosK</strong> contains three tables representing a simple identity store:
+    </p>
+    <div class="db-tables">
+      <div class="db-table-chip">dbo.[User]</div>
+      <div class="db-table-chip">dbo.[Role]</div>
+      <div class="db-table-chip">dbo.[UserInRole]</div>
+    </div>
+    <p style="margin-top:12px;">
+      Exercises flow: <strong>PSC-Prep</strong> (DB creation) → <strong>PSC-1 to PSC-4</strong> (interactive PS scripts) → <strong>PSC-5</strong> (strip interactivity for XML connector) → <strong>PSC-6</strong> (UNS Root) → <strong>PSC-7</strong> (mappings &amp; sync workflow) → <strong>PSC-8</strong> (Single Object Operations).
+    </p>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────
+       PREPARATION
+  ────────────────────────────────────────────────── -->
+  <div class="exercise-card" id="prep">
+    <div class="exercise-header">
+      <span class="ex-id">Prep</span>
+      <h2>Database Setup — CCC_PSC</h2>
+      <span class="level-badge">Pre-requisite</span>
+    </div>
+    <div class="exercise-body">
+
+      <div class="section-block">
+        <div class="section-heading">Requirements</div>
+        <ul class="req-list">
+          <li>Create a new SQL Server database named <strong>CCC_PSC</strong> on <strong>StathopoulosK</strong>.</li>
+          <li>Create the three required tables with correct columns, data types, and constraints.</li>
+          <li>Ensure SQL Server is configured for <strong>Mixed Mode authentication</strong> so both Windows and SQL logins work.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Solution Steps</div>
+        <ol class="solution-steps">
+          <li>In SSMS, connect to <strong>StathopoulosK</strong> and create a new database named <code>CCC_PSC</code>.</li>
+          <li>Create table <strong>dbo.[User]</strong>: columns <code>UserID int PK</code>, <code>FirstName nvarchar</code>, <code>LastName nvarchar</code>, <code>EmailAddress nvarchar</code>, <code>JobDescription nvarchar</code>.</li>
+          <li>Create table <strong>dbo.[Role]</strong>: columns <code>RoleID int PK</code>, <code>RoleName nvarchar</code>.</li>
+          <li>Create table <strong>dbo.[UserInRole]</strong>: columns <code>UserID int FK → dbo.[User](UserID)</code>, <code>RoleID int FK → dbo.[Role](RoleID)</code>. Composite PK on both columns.</li>
+        </ol>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Mentor Tips / Troubleshooting</div>
+        <div class="mentor-tips">
+          <div class="tips-heading">Mentor Tips</div>
+          <ul>
+            <li>CCC_PSC uses SQL authentication in later exercises — verify SQL Server allows mixed mode auth (<em>Server Properties → Security → SQL Server and Windows Authentication mode</em>).</li>
+            <li>The FK constraints in <strong>dbo.[UserInRole]</strong> are intentional — they will cause expected errors in PSC-5 tests 13 &amp; 15 when trying to delete parents with children.</li>
+            <li><strong>StathopoulosK</strong> is the server name used throughout every exercise — confirm trainees do not hardcode a different server.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────
+       PSC-1
+  ────────────────────────────────────────────────── -->
+  <div class="exercise-card" id="psc1">
+    <div class="exercise-header">
+      <span class="ex-id">PSC-1</span>
+      <h2>Read Functions — Get-Users, Get-Roles, Get-UserInRole</h2>
+      <span class="level-badge">PowerShell</span>
+    </div>
+    <div class="exercise-body">
+
+      <div class="section-block">
+        <div class="section-heading">Requirements</div>
+        <ul class="req-list">
+          <li>Create a single <code>.ps1</code> file containing all three read functions plus shared helper functions.</li>
+          <li><strong>Get-Users</strong> — reads from <code>dbo.[User]</code>.</li>
+          <li><strong>Get-Roles</strong> — reads from <code>dbo.[Role]</code>.</li>
+          <li><strong>Get-UserInRole</strong> — reads from <code>dbo.[UserInRole]</code> joined with user &amp; role info.</li>
+          <li>Auth modes: <code>-Integrated</code> (Windows auth), <code>-Credential</code> (switch — triggers internal GUI popup with retry on wrong creds and graceful exit on cancel), <code>-CredentialObject &lt;PSCredential&gt;</code>.</li>
+          <li>Filtering via ASK switches only: <code>-AskUserID</code> (prompts for numeric UserID), <code>-AskRoleID</code> (prompts for numeric RoleID). No <code>-UserID</code>/<code>-RoleID</code> direct parameters (avoids binding conflicts).</li>
+          <li>Per-run log files written to <code>C:\Users\OneIM\Desktop\PowerShell_Scripts\logs\</code>, named <code>&lt;FunctionName&gt;_yyyyMMdd_HHmmss.log</code>.</li>
+          <li>Log levels: <strong>INFO</strong> (Write-Host + file), <strong>DEBUG</strong> (Write-Host + file), <strong>TRACE</strong> (Write-Verbose + file, visible only with <code>-Verbose</code>), <strong>ERROR</strong> (Write-Warning + file).</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Key Design Notes</div>
+        <div class="note-pill">-Credential as SWITCH (not [PSCredential])</div>
+        <p style="font-size:13px;color:#444;line-height:1.7;margin-top:6px;">
+          PowerShell normally requires a value for <code>[pscredential]</code> parameters. By declaring <code>-Credential</code> as a <code>[switch]</code> and calling <code>Get-Credential</code> internally, the UX becomes: type <code>-Credential</code> and a popup appears. This pattern includes retry logic on authentication failure and clean exit on dialog cancel. This is a deliberate advanced UX decision — trainees should understand why it is implemented this way.
+        </p>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Test Commands</div>
+        <div class="code-block"><span class="comment"># Auth --- SQL (also test wrong credentials + cancel dialog)</span>
+<span class="comment"># Get-Users</span>
+Get-Users -SqlServer <span class="string">"StathopoulosK"</span> -SqlDatabase <span class="string">"CCC_PSC"</span> -Integrated | Format-Table -Auto
+$cred = Get-Credential
+Get-Users -SqlServer <span class="string">"StathopoulosK"</span> -SqlDatabase <span class="string">"CCC_PSC"</span> -Credential $cred | Format-Table -Auto
+Get-Users -SqlServer <span class="string">"StathopoulosK"</span> -SqlDatabase <span class="string">"CCC_PSC"</span> -Integrated -AskUserID | Format-Table -Auto
+
+<span class="comment"># Get-Roles</span>
+Get-Roles -SqlServer <span class="string">"StathopoulosK"</span> -SqlDatabase <span class="string">"CCC_PSC"</span> -Integrated | Format-Table -Auto
+Get-Roles -SqlServer <span class="string">"StathopoulosK"</span> -SqlDatabase <span class="string">"CCC_PSC"</span> -Credential $cred | Format-Table -Auto
+Get-Roles -SqlServer <span class="string">"StathopoulosK"</span> -SqlDatabase <span class="string">"CCC_PSC"</span> -Integrated -AskRoleId | Format-Table -Auto
+
+<span class="comment"># Get-UserInRole</span>
+Get-UserInRole -SqlServer <span class="string">"StathopoulosK"</span> -SqlDatabase <span class="string">"CCC_PSC"</span> -Integrated | Format-Table -Auto
+Get-UserInRole -SqlServer <span class="string">"StathopoulosK"</span> -SqlDatabase <span class="string">"CCC_PSC"</span> -Credential $cred | Format-Table -Auto
+Get-UserInRole -SqlServer <span class="string">"StathopoulosK"</span> -SqlDatabase <span class="string">"CCC_PSC"</span> -Integrated -askuserid | Format-Table -Auto
+Get-UserInRole -SqlServer <span class="string">"StathopoulosK"</span> -SqlDatabase <span class="string">"CCC_PSC"</span> -Integrated -askroleid | Format-Table -Auto
+Get-UserInRole -SqlServer <span class="string">"StathopoulosK"</span> -SqlDatabase <span class="string">"CCC_PSC"</span> -Integrated -askuserid -askroleid | Format-Table -Auto</div>
+        <p style="font-size:12px;color:#888;margin-top:8px;font-style:italic;">No formal test table — the commands above cover all verification scenarios.</p>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Mentor Tips / Troubleshooting</div>
+        <div class="mentor-tips">
+          <div class="tips-heading">Mentor Tips</div>
+          <ul>
+            <li>The <code>-Credential</code> switch pattern is intentional — do not let trainees "simplify" it to a <code>[PSCredential]</code> parameter, as this removes the retry-on-wrong-credentials behavior.</li>
+            <li>The logging helper functions defined in PSC-1 must be reused in PSC-2, PSC-3, and PSC-4 — establish this shared pattern early.</li>
+            <li>TRACE level messages are hidden unless the user adds <code>-Verbose</code> — this is the correct behavior; confirm trainees understand the difference between Verbose and Debug output.</li>
+            <li>Log files must include timestamp in filename — multiple test runs in the same session should produce separate log files.</li>
+          </ul>
+        </div>
+        <div class="troubleshoot">
+          <div class="trouble-heading">Common Issues</div>
+          <ul>
+            <li>If <code>Get-UserInRole</code> returns no rows, check that JOIN columns (UserID, RoleID) are correctly aliased and that data exists in all three tables.</li>
+            <li>If the <code>-Credential</code> popup does not appear, ensure the parameter is declared as <code>[switch]</code> not <code>[pscredential]</code>.</li>
+            <li>If log directory does not exist, the function should create it automatically — remind trainee to add a <code>New-Item -Force</code> guard.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────
+       PSC-2
+  ────────────────────────────────────────────────── -->
+  <div class="exercise-card" id="psc2">
+    <div class="exercise-header">
+      <span class="ex-id">PSC-2</span>
+      <h2>Write Functions — Create-User, Create-Role, Create-UserInRole</h2>
+      <span class="level-badge">PowerShell</span>
+    </div>
+    <div class="exercise-body">
+
+      <div class="section-block">
+        <div class="section-heading">Requirements</div>
+        <ul class="req-list">
+          <li>Create a single <code>.ps1</code> file with three create functions.</li>
+          <li><strong>Create-User</strong> — inserts into <code>dbo.[User]</code>. If <code>-SetUserID</code> switch → prompt for unique numeric ID; otherwise → auto-pick smallest free integer.</li>
+          <li><strong>Create-Role</strong> — inserts into <code>dbo.[Role]</code>. If <code>-SetRoleID</code> switch → prompt for unique numeric ID; otherwise → auto-pick smallest free integer.</li>
+          <li><strong>Create-UserInRole</strong> — UserID and RoleID mandatory parameters. Function checks both IDs exist; if not → warns and re-prompts until valid, then inserts into <code>dbo.[UserInRole]</code>.</li>
+          <li>Logs to <code>C:\Users\OneIM\Desktop\PowerShell_Scripts\logs\&lt;Function&gt;_yyyyMMdd_HHmmss.log</code>. Reuse logging helpers from PSC-1.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Test Cases</div>
+        <div class="test-table-wrapper">
+          <table class="test-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Test Scenario</th>
+                <th>Test Steps</th>
+                <th>Expected Results</th>
+                <th>Mentor Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Create-User with auto-generated UserID</td>
+                <td>Run <code>Create-User</code> without <code>-SetUserID</code></td>
+                <td>User inserted; UserID is smallest available integer</td>
+                <td>Verify the auto-ID logic handles gaps in the sequence correctly</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Create-User with manually set UserID</td>
+                <td>Use <code>-SetUserID</code>; enter wrong format, then already-used ID, then valid unique ID</td>
+                <td>Warns on invalid/duplicate; user inserted on valid ID</td>
+                <td>All three sub-cases must be tested in one run to verify retry loop</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Create-Role with auto-generated RoleID</td>
+                <td>Run <code>Create-Role</code> without <code>-SetRoleID</code></td>
+                <td>Role inserted; RoleID is smallest available integer</td>
+                <td>Same auto-ID logic as Create-User</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Create-Role with manually set RoleID</td>
+                <td>Use <code>-SetRoleID</code>; enter wrong format, already-used ID, then valid unique ID</td>
+                <td>Warns on invalid/duplicate; role inserted on valid ID</td>
+                <td>Confirm duplicate check queries DB, not just in-memory</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Create-UserInRole with existing membership</td>
+                <td>Attempt to create a membership that already exists</td>
+                <td>Message displayed: <em>"MEMBERSHIP ALREADY EXISTS..."</em></td>
+                <td>Should check before insert, not rely on PK violation</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>Create-UserInRole with non-existing / wrong format UserID</td>
+                <td>Enter non-existing or non-numeric UserID; then enter a valid UserID</td>
+                <td>Warns and re-prompts; membership inserted on valid input</td>
+                <td>Verify existence check runs against DB for each attempt</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>Create-UserInRole with non-existing / wrong format RoleID</td>
+                <td>Enter non-existing or non-numeric RoleID; then enter a valid RoleID</td>
+                <td>Warns and re-prompts; membership inserted on valid input</td>
+                <td>Both UserID and RoleID validation must be independent</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Mentor Tips / Troubleshooting</div>
+        <div class="mentor-tips">
+          <div class="tips-heading">Mentor Tips</div>
+          <ul>
+            <li>The "smallest free integer" logic: query existing IDs into an array and find the first gap starting from 1. Avoid <code>MAX(ID)+1</code> — it does not handle gaps.</li>
+            <li><code>Create-UserInRole</code> must validate existence of both IDs before attempting insert — not rely on FK constraint errors as user feedback.</li>
+            <li>Ensure logging helpers from PSC-1 are dot-sourced or imported, not duplicated.</li>
+          </ul>
+        </div>
+        <div class="troubleshoot">
+          <div class="trouble-heading">Common Issues</div>
+          <ul>
+            <li>If auto-ID picks wrong value, the trainee is likely using <code>MAX+1</code> — redirect to gap-finding approach.</li>
+            <li>If "MEMBERSHIP ALREADY EXISTS" is not shown and a PK error is thrown instead, the trainee is missing the pre-insert existence check.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────
+       PSC-3
+  ────────────────────────────────────────────────── -->
+  <div class="exercise-card" id="psc3">
+    <div class="exercise-header">
+      <span class="ex-id">PSC-3</span>
+      <h2>Modify-User</h2>
+      <span class="level-badge">PowerShell</span>
+    </div>
+    <div class="exercise-body">
+
+      <div class="section-block">
+        <div class="section-heading">Requirements</div>
+        <ul class="req-list">
+          <li>Create a <code>.ps1</code> file with the <strong>Modify-User</strong> function.</li>
+          <li>If UserID does not exist — warn and re-prompt until a valid UserID is entered.</li>
+          <li>If EmailAddress is provided but invalid — warn and re-prompt until a valid email is entered, <em>or</em> user presses Enter to skip the email update entirely.</li>
+          <li>Only update fields that are provided, non-empty, and different from current DB values. Never overwrite with empty strings or null.</li>
+          <li>Reuse PSC-1 helper functions (logging, connection).</li>
+          <li>Logs to <code>C:\Users\OneIM\Desktop\PowerShell_Scripts\logs\Modify-User_yyyyMMdd_HHmmss.log</code>.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Test Cases</div>
+        <div class="test-table-wrapper">
+          <table class="test-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Test Scenario</th>
+                <th>Test Steps</th>
+                <th>Expected Results</th>
+                <th>Mentor Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Modify-User with all parameters</td>
+                <td>Provide all updatable parameters with valid values</td>
+                <td>All provided fields updated in Target System</td>
+                <td>Verify each column is updated, not just the last one</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Modify-User with wrong ID format or non-existing ID</td>
+                <td>Enter non-numeric or non-existing UserID; then enter a valid UserID</td>
+                <td>Warns and re-prompts; user updated on valid UserID</td>
+                <td>Retry loop must re-query the DB each iteration</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Modify-User with invalid email format</td>
+                <td>Provide a badly formatted EmailAddress (e.g. <code>badEmail</code>)</td>
+                <td>User is NOT updated; warning shown about email format</td>
+                <td>Test both: re-prompt with valid email vs. pressing Enter to skip</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Test Commands</div>
+        <div class="code-block">$Server = <span class="string">"StathopoulosK"</span>; $Db = <span class="string">"CCC_PSC"</span>
+
+<span class="comment"># All parameters — should update</span>
+Modify-User -SqlServer $Server -SqlDatabase $Db -Integrated -UserID 5 `
+  -EmailAddress <span class="string">"valid@example.com"</span> -JobDescription <span class="string">"Senior Analyst"</span>
+
+<span class="comment"># Non-existent UserID — should re-prompt</span>
+Modify-User -SqlServer $Server -SqlDatabase $Db -Integrated -UserID 999999 `
+  -JobDescription <span class="string">"Test JD"</span>
+
+<span class="comment"># Invalid email — should warn and re-prompt or skip</span>
+Modify-User -SqlServer $Server -SqlDatabase $Db -Integrated -UserID 5 `
+  -EmailAddress <span class="string">"badEmail"</span></div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Mentor Tips / Troubleshooting</div>
+        <div class="mentor-tips">
+          <div class="tips-heading">Mentor Tips</div>
+          <ul>
+            <li>The "only update changed fields" requirement means the function must first SELECT the current row, compare each incoming value, and build a dynamic SET clause.</li>
+            <li>Pressing Enter on the email re-prompt should result in the email column being left unchanged — not set to an empty string.</li>
+            <li>Email validation can use a simple regex: <code>[^@]+@[^@]+\.[^@]+</code> is sufficient for this exercise.</li>
+          </ul>
+        </div>
+        <div class="troubleshoot">
+          <div class="trouble-heading">Common Issues</div>
+          <ul>
+            <li>If all fields are always updated regardless of change, the trainee is missing the current-value comparison step.</li>
+            <li>If pressing Enter on email prompt clears the email in DB, the trainee is not distinguishing between "empty input" and "no update".</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────
+       PSC-4
+  ────────────────────────────────────────────────── -->
+  <div class="exercise-card" id="psc4">
+    <div class="exercise-header">
+      <span class="ex-id">PSC-4</span>
+      <h2>Delete-User &amp; Delete-UserInRole</h2>
+      <span class="level-badge">PowerShell</span>
+    </div>
+    <div class="exercise-body">
+
+      <div class="section-block">
+        <div class="section-heading">Requirements</div>
+        <ul class="req-list">
+          <li>Create a <code>.ps1</code> file with <strong>Delete-User</strong> and <strong>Delete-UserInRole</strong>.</li>
+          <li><strong>Delete-User</strong>: removes a user by UserID; lists existing memberships; prompts Y/N confirmation. <code>-Force</code> switch skips the prompt entirely.</li>
+          <li><strong>Delete-UserInRole</strong>: removes a single membership by (UserID, RoleID) pair. If UserID does not exist — warn and re-prompt.</li>
+          <li>Both functions: if UserID does not exist → warn and re-prompt.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Test Cases</div>
+        <div class="test-table-wrapper">
+          <table class="test-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Test Scenario</th>
+                <th>Test Steps</th>
+                <th>Expected Results</th>
+                <th>Mentor Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Delete existing membership</td>
+                <td>Run <code>Delete-UserInRole</code> with valid UserID + RoleID that exist</td>
+                <td>Membership deleted from Target System</td>
+                <td>Verify with <code>Get-UserInRole</code> after deletion</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Delete non-existing membership</td>
+                <td>Run <code>Delete-UserInRole</code> with IDs that have no matching row</td>
+                <td>Message: <em>"Status: NotFound"</em></td>
+                <td>Must not throw an exception — graceful not-found handling</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Delete membership with non-existing UserID</td>
+                <td>Provide a UserID that does not exist in <code>dbo.[User]</code></td>
+                <td>Message: <em>"Status: NotFound"</em></td>
+                <td>Distinction from test 2: user does not exist at all</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Delete membership with non-existing RoleID</td>
+                <td>Provide a RoleID that does not exist in <code>dbo.[Role]</code></td>
+                <td>Message: <em>"Status: NotFound"</em></td>
+                <td>Same graceful handling as tests 2 &amp; 3</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Delete User with no memberships</td>
+                <td>Run <code>Delete-User</code> on a UserID with no rows in <code>dbo.[UserInRole]</code></td>
+                <td>User deleted directly (no membership confirmation needed)</td>
+                <td>Function should still prompt Y/N unless -Force is used</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>Delete User with memberships</td>
+                <td>Run <code>Delete-User</code> on a UserID that has memberships; confirm Y</td>
+                <td>All memberships deleted first; then user deleted</td>
+                <td>List of memberships must be shown before prompt</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>Delete User with memberships + <code>-Force</code></td>
+                <td>Run <code>Delete-User -Force</code> on a UserID with memberships</td>
+                <td>User and all memberships deleted without any prompt</td>
+                <td>Confirm -Force skips Y/N entirely, not just auto-answers Y</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>Reject membership deletion</td>
+                <td>Enter wrong UserID; then answer N to reject deletion</td>
+                <td>Message: <em>"Status: AbortedByUser"</em></td>
+                <td>Ensure nothing is deleted when user answers N</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Mentor Tips / Troubleshooting</div>
+        <div class="mentor-tips">
+          <div class="tips-heading">Mentor Tips</div>
+          <ul>
+            <li>The <code>-Force</code> flag skips the Y/N prompt <em>entirely</em> — it does not just auto-answer Y. The confirmation logic should be inside an <code>if (-not $Force)</code> block.</li>
+            <li>Delete-User with memberships must delete child rows from <code>dbo.[UserInRole]</code> before deleting from <code>dbo.[User]</code> due to FK constraints.</li>
+            <li>Distinguish clearly between "Status: NotFound" (resource does not exist) and "Status: AbortedByUser" (user chose not to proceed).</li>
+          </ul>
+        </div>
+        <div class="troubleshoot">
+          <div class="trouble-heading">Common Issues</div>
+          <ul>
+            <li>FK violation on Delete-User: trainee is deleting from <code>dbo.[User]</code> before removing <code>dbo.[UserInRole]</code> rows — fix deletion order.</li>
+            <li>If <code>-Force</code> still shows the prompt, the trainee has the condition inverted — check the <code>if</code> guard logic.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────
+       PSC-5
+  ────────────────────────────────────────────────── -->
+  <div class="exercise-card" id="psc5">
+    <div class="exercise-header">
+      <span class="ex-id">PSC-5</span>
+      <h2>OIM XML Connector Definition</h2>
+      <span class="level-badge">Connector</span>
+    </div>
+    <div class="exercise-body">
+
+      <div class="section-block">
+        <div class="section-heading">Requirements</div>
+        <ul class="req-list">
+          <li>Update PSC-1 through PSC-4 scripts to use <strong>direct parameter-based IDs</strong> instead of interactive ASK/SET switches.</li>
+          <li>Replace: <code>-AskUserID</code> → <code>-UserID &lt;value&gt;</code>, <code>-SetUserID</code> → <code>-UserID &lt;value&gt;</code>, <code>-AskRoleID</code> → <code>-RoleID &lt;value&gt;</code>, <code>-SetRoleID</code> → <code>-RoleID &lt;value&gt;</code>.</li>
+          <li>Remove <code>-Integrated</code> and SQL prompt authentication modes from all scripts.</li>
+          <li>Remove all interactive data-entry checks and email format validation — data validation is OIM's responsibility, not the PowerShell script's.</li>
+          <li>Create the XML connector file, set required parameters, and verify all PSC-1 to PSC-4 functions through the OIM PSC browser.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Solution Steps</div>
+        <ol class="solution-steps">
+          <li>Strip all interactive prompts from the PS scripts — functions must accept all values as parameters only.</li>
+          <li>Create the XML connector definition file, referencing the updated PS scripts.</li>
+          <li>Set all required connection parameters in the XML (server, database, credentials).</li>
+          <li>In the OIM PSC Connector browser, test all functions from PSC-1, PSC-2, PSC-3, and PSC-4.</li>
+        </ol>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Test Cases</div>
+        <div class="test-table-wrapper">
+          <table class="test-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Test Scenario</th>
+                <th>Test Steps</th>
+                <th>Expected Results</th>
+                <th>Mentor Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Get-Users</td>
+                <td>Browse all Users via PSC connector</td>
+                <td>All Users from Target System displayed</td>
+                <td>Confirms read is wired correctly in XML</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Get-Roles</td>
+                <td>Browse all Roles via PSC connector</td>
+                <td>All Roles from Target System displayed</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Get-UserInRole</td>
+                <td>Browse all memberships via PSC connector</td>
+                <td>All UserInRole memberships displayed</td>
+                <td>Verify JOIN columns are mapped correctly</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Create-User</td>
+                <td>Create a new User via connector</td>
+                <td>User created; UserID auto-calculated</td>
+                <td>Auto-ID now fully computed in PS, not prompted</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Create-Role</td>
+                <td>Create a new Role via connector</td>
+                <td>Role created; RoleID auto-calculated</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>Create-UserInRole</td>
+                <td>Create a new membership via connector</td>
+                <td>Membership created successfully</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>Create-User duplicate</td>
+                <td>Attempt to create a User with an already-used UserID</td>
+                <td>Error: <em>"Violation of PRIMARY KEY..."</em></td>
+                <td>Expected behavior — OIM handles the error surface</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>Create-Role duplicate</td>
+                <td>Attempt to create a Role with an already-used RoleID</td>
+                <td>Error: <em>"Violation of PRIMARY KEY..."</em></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td>Create-UserInRole duplicate</td>
+                <td>Attempt to create a membership that already exists</td>
+                <td>Error: <em>"Violation of PRIMARY KEY..."</em></td>
+                <td>Now a DB constraint error (pre-insert check removed)</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>Modify-User all parameters</td>
+                <td>Update all parameters for an existing User</td>
+                <td>All parameters updated in Target System</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>11</td>
+                <td>Modify-User specific parameter</td>
+                <td>Update only email or only a name field</td>
+                <td>Only the specified parameter is changed</td>
+                <td>Confirms selective-update logic still works without prompts</td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td>Delete-User without memberships</td>
+                <td>Delete a User with no existing memberships</td>
+                <td>User deleted successfully</td>
+                <td>No prompt in connector mode</td>
+              </tr>
+              <tr>
+                <td>13</td>
+                <td>Delete-User with memberships</td>
+                <td>Delete a User who has active memberships</td>
+                <td>Error: <em>"REFERENCE constraint FK_UserInRole_User"</em></td>
+                <td>Expected — FK prevents deletion; OIM sync handles ordering</td>
+              </tr>
+              <tr>
+                <td>14</td>
+                <td>Delete-Role without memberships</td>
+                <td>Delete a Role with no assigned users</td>
+                <td>Role deleted successfully</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>15</td>
+                <td>Delete-Role with memberships</td>
+                <td>Delete a Role that has assigned users</td>
+                <td>Error: <em>"REFERENCE constraint FK_UserInRole_Role"</em></td>
+                <td>Expected — FK prevents deletion; same as test 13</td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td>Delete-UserInRole</td>
+                <td>Delete an existing membership via connector</td>
+                <td>Membership deleted successfully</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Mentor Tips / Troubleshooting</div>
+        <div class="mentor-tips">
+          <div class="tips-heading">Mentor Tips</div>
+          <ul>
+            <li>The core lesson of PSC-5: OIM XML connectors call scripts with explicit parameters — there is no console for interactive prompts. All interactivity must be removed.</li>
+            <li>Data validation is OIM's responsibility, not PowerShell's — stripping email checks and existence re-prompts is correct and expected behavior.</li>
+            <li>FK errors on Delete (tests 13 &amp; 15) are the correct outcome — the connector reflects real DB behavior. In a full sync workflow, OIM would handle deletion ordering.</li>
+          </ul>
+        </div>
+        <div class="troubleshoot">
+          <div class="trouble-heading">Common Issues</div>
+          <ul>
+            <li>If functions still use <code>Read-Host</code> internally, the connector will hang — all prompts must be removed.</li>
+            <li>If <code>-Integrated</code> is still present, the connector may fail to authenticate — ensure SQL credential parameters are used instead.</li>
+            <li>PSC-9 duplicate errors (tests 7, 8, 9) should surface as DB errors, not custom "already exists" messages — confirm the pre-insert check was removed.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────
+       PSC-6
+  ────────────────────────────────────────────────── -->
+  <div class="exercise-card" id="psc6">
+    <div class="exercise-header">
+      <span class="ex-id">PSC-6</span>
+      <h2>OIM UNS Root Object Creation</h2>
+      <span class="level-badge">OIM Configuration</span>
+    </div>
+    <div class="exercise-body">
+
+      <div class="section-block">
+        <div class="section-heading">Requirements</div>
+        <ul class="req-list">
+          <li>Create the UNSRootB object in OIM that represents the CCC_PSC target system.</li>
+          <li>This object must exist before PSC-7 mappings can be configured — it is the anchor point for all connector mappings.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Test Cases</div>
+        <div class="test-table-wrapper">
+          <table class="test-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Test Scenario</th>
+                <th>Test Steps</th>
+                <th>Expected Results</th>
+                <th>Mentor Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>UNSRootB object created</td>
+                <td>Run the verification SQL query against the OIM database to check for the UNSRootB record</td>
+                <td>UNSRootB object for CCC_PSC is returned in query results</td>
+                <td>Trainee must show the query result as proof of creation. The UNSRootB UID will be needed for PSC-7 virtual attributes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Mentor Tips / Troubleshooting</div>
+        <div class="mentor-tips">
+          <div class="tips-heading">Mentor Tips</div>
+          <ul>
+            <li>The UNSRootB object must be created <strong>before</strong> PSC-7 mappings — if the trainee skips or rushes PSC-6, PSC-7 virtual attributes (<code>vrt_UID_UNSRootB</code>) will have no valid reference.</li>
+            <li>This is a common stopping point — remind trainees that the UNSRootB UID is referenced directly in the mapping virtual attributes in PSC-7.</li>
+          </ul>
+        </div>
+        <div class="troubleshoot">
+          <div class="trouble-heading">Common Issues</div>
+          <ul>
+            <li>If the query returns no rows, the UNSRootB object was not saved — check that the OIM Manager save operation completed without errors.</li>
+            <li>If PSC-7 virtual attribute <code>vrt_UID_UNSRootB</code> cannot be configured, return here and confirm the object exists.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────
+       PSC-7
+  ────────────────────────────────────────────────── -->
+  <div class="exercise-card" id="psc7">
+    <div class="exercise-header">
+      <span class="ex-id">PSC-7</span>
+      <h2>OIM Mappings &amp; Sync Workflow</h2>
+      <span class="level-badge">OIM Configuration</span>
+    </div>
+    <div class="exercise-body">
+
+      <div class="section-block">
+        <div class="section-heading">Requirements</div>
+        <ul class="req-list">
+          <li>Build three OIM connector mappings — one per DB table.</li>
+          <li><strong>Users mapping</strong>: include virtual attributes <code>vrt_InternalName</code> and <code>vrt_UID_UNSRootB</code>.</li>
+          <li><strong>Roles mapping</strong>: include virtual attributes <code>vrt_UID_UNSRootB</code> and <code>vrt_RoleName</code> (used as reference in UsersInRoles mapping).</li>
+          <li><strong>UsersInRoles mapping</strong>: include virtual attributes <code>vrt_RoleName</code> and <code>vrt_UserName</code>.</li>
+          <li>Create a <strong>Sync workflow</strong> (Target → OIM, read direction) and a <strong>Provision workflow</strong> (OIM → Target, write direction).</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Solution Steps</div>
+        <ol class="solution-steps">
+          <li>Create the <strong>Users</strong> mapping with <code>vrt_InternalName</code> and <code>vrt_UID_UNSRootB</code> virtual attributes.</li>
+          <li>Create the <strong>Roles</strong> mapping with <code>vrt_UID_UNSRootB</code> and <code>vrt_RoleName</code> virtual attributes.</li>
+          <li>Create the <strong>UsersInRoles</strong> mapping with <code>vrt_RoleName</code> and <code>vrt_UserName</code> virtual attributes.</li>
+          <li>Create the Provision and Sync workflows and associate them with the connector.</li>
+        </ol>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Test Cases</div>
+        <div class="test-table-wrapper">
+          <table class="test-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Test Scenario</th>
+                <th>Test Steps</th>
+                <th>Expected Results</th>
+                <th>Mentor Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Run Sync — insert 3 accounts</td>
+                <td>Insert 3 new Users into Target System using sample SQL; run Sync workflow</td>
+                <td>Data from Target System passed to OIM; 3 accounts visible in OIM</td>
+                <td>Use the sample INSERT SQL provided below</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Run Sync — full CRUD</td>
+                <td>Delete, update, and insert Users, Roles, and Memberships in Target System; run Sync</td>
+                <td>All changes from Target System reflected in OIM</td>
+                <td>Test each object type separately for clarity</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Run Provision — create</td>
+                <td>Add a User Account, Role, and membership in OIM; run Provision workflow</td>
+                <td>Data from OIM passed to Target System; objects visible in DB</td>
+                <td>Confirms write direction (OIM → Target)</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Run Provision — full CRUD</td>
+                <td>Delete, update, and insert Accounts, Groups, and Assignments via OIM Manager; run Provision</td>
+                <td>All changes from OIM passed to Target System</td>
+                <td>Verify in DB after each Provision run</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Sample SQL for Test 1</div>
+        <div class="sql-block">INSERT INTO dbo.[User] (UserID, FirstName, LastName, EmailAddress, JobDescription) VALUES
+(5, 'Alice NEW',   'Smith', 'alice.smith@example.com',   'Developer'),
+(6, 'Bob NEW',     'Jones', 'bob.jones@example.com',     'Tester'),
+(7, 'CharlieNEW',  'Brown', 'charlie.brown@example.com', 'Analyst');
+-- Then run the Sync workflow in OIM</div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Mentor Tips / Troubleshooting</div>
+        <div class="mentor-tips">
+          <div class="tips-heading">Mentor Tips</div>
+          <ul>
+            <li>The <code>vrt_</code> prefix means virtual attribute — these are computed/mapped values not stored directly in the target schema column.</li>
+            <li>Three separate mappings are required (one per table) — trainees sometimes try to combine them into one.</li>
+            <li>Sync workflow direction: Target → OIM (read data into OIM). Provision workflow direction: OIM → Target (push changes out).</li>
+            <li><code>vrt_RoleName</code> defined in the Roles mapping is referenced again in the UsersInRoles mapping — the order of mapping creation matters.</li>
+          </ul>
+        </div>
+        <div class="troubleshoot">
+          <div class="trouble-heading">Common Issues</div>
+          <ul>
+            <li>If Sync runs but no data appears in OIM, check that <code>vrt_UID_UNSRootB</code> resolves to the correct UNSRootB UID created in PSC-6.</li>
+            <li>If Provision creates objects but they are not in the Target DB, verify the PS script paths referenced in the XML connector are correct and scripts are not still reading from interactive mode.</li>
+            <li>Missing <code>vrt_RoleName</code> in the Roles mapping will break the UsersInRoles mapping — always configure mappings in order.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────
+       PSC-8
+  ────────────────────────────────────────────────── -->
+  <div class="exercise-card" id="psc8">
+    <div class="exercise-header">
+      <span class="ex-id">PSC-8</span>
+      <h2>Single Object Operations</h2>
+      <span class="level-badge">OIM Configuration</span>
+    </div>
+    <div class="exercise-body">
+
+      <div class="section-block">
+        <div class="section-heading">Requirements</div>
+        <ul class="req-list">
+          <li>Create Single Object Operations in OIM for real-time sync without waiting for a scheduled full sync.</li>
+          <li>Create process <strong>CCC_UNS_AccountB_Adhoc</strong>: configure Prescript, Generation Condition, Events, and Process Step Configuration for user account changes.</li>
+          <li>Create process <strong>CCC_UNSAccountHasUNSGroup_Adhoc</strong>: configure Prescript, Generation Condition, Events, and Process Step Configuration for group membership changes.</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Solution Steps</div>
+        <ol class="solution-steps">
+          <li>In OIM Synchronization Editor, create the Single Object Operations configuration linked to the PSC connector.</li>
+          <li>Create process <strong>CCC_UNS_AccountB_Adhoc</strong>: set Prescript (if required), Generation Condition to control when the process fires, Events (Insert/Update/Delete), and Process Step Config pointing to the connector's user account operation.</li>
+          <li>Create process <strong>CCC_UNSAccountHasUNSGroup_Adhoc</strong>: same structure as above but targeting group membership operations.</li>
+        </ol>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Test Cases</div>
+        <div class="test-table-wrapper">
+          <table class="test-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Test Scenario</th>
+                <th>Test Steps</th>
+                <th>Expected Results</th>
+                <th>Mentor Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Add &amp; Remove User Account</td>
+                <td>Add a User Account via OIM; verify process fires; remove the account; verify process fires again</td>
+                <td>Process <code>CCC_UNS_AccountB_Adhoc</code> runs; data from Target System passed to OIM in real time</td>
+                <td>Check Job Queue in OIM to confirm the adhoc process was triggered — do not wait for scheduled sync</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Add &amp; Remove Account, Role, Membership via Manager</td>
+                <td>Add and remove all object types via OIM Manager; verify each triggers the appropriate adhoc process</td>
+                <td>Both adhoc processes run; data from OIM passed to Target System in real time</td>
+                <td>Test Add and Remove separately. Verify Target DB reflects each change immediately after the process runs.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-heading">Mentor Tips / Troubleshooting</div>
+        <div class="mentor-tips">
+          <div class="tips-heading">Mentor Tips</div>
+          <ul>
+            <li>Single Object Operations allow real-time sync — the key advantage over scheduled full sync is immediacy. Emphasize this to trainees.</li>
+            <li><code>CCC_UNS_AccountB_Adhoc</code> handles user account changes; <code>CCC_UNSAccountHasUNSGroup_Adhoc</code> handles group membership changes — these are separate processes with separate triggers.</li>
+            <li>The Generation Condition controls exactly when the process fires — an incorrect condition means the process either never fires or fires too broadly.</li>
+            <li>Trainees should check the Job Queue / process history in OIM after each test to confirm the adhoc process was triggered and completed successfully.</li>
+          </ul>
+        </div>
+        <div class="troubleshoot">
+          <div class="trouble-heading">Common Issues</div>
+          <ul>
+            <li>If the process does not fire, inspect the Generation Condition — it may reference a wrong object type or use an incorrect condition expression.</li>
+            <li>If the process fires but the Target DB is not updated, verify the PS script paths in the Process Step Config and confirm the scripts run without interactive prompts.</li>
+            <li>If both processes fire for every change (membership and account changes triggering both), the Generation Conditions are not scoped narrowly enough.</li>
+            <li>Common pitfall: DLL not copied to both required locations — if the OIM server cannot load the connector DLL, adhoc processes will fail silently.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+<footer>
+  INTRAGEN<span class="footer-dot">.</span> Academy &mdash; Mentoring Documentation &mdash;
+  &copy; Intragen International. This document remains strictly private and confidential.
+</footer>
+</body>
+</html>

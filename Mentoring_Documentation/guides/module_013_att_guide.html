@@ -1,0 +1,621 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 013 — Attestations (ATT) | Mentor Guide | Intragen Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"><style>
+:root {
+  --purple:      #7B2D8B;
+  --purple-dark: #5C1F6B;
+  --teal:        #007B77;
+  --golden:      #F0A800;
+  /* Legacy variable overrides â€” keeps existing HTML class references working */
+  --navy:  #7B2D8B;
+  --blue:  #007B77;
+  --green: #27AE60;
+  --orange:#E67E22;
+  --red:   #E74C3C;
+  --bg:    #F0EDE8;
+  /* New tokens */
+  --body-bg:  #FAF8F5;
+  --code-bg:  #1E1E1E;
+  --border:   #DDD;
+  --text:     #2C2C2C;
+  --muted:    #6B6B6B;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+}
+/* â”€â”€ Layout â”€â”€ */
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+/* â”€â”€ Sidebar â”€â”€ */
+.sidebar {
+  background: var(--purple);
+  color: #fff;
+  width: 260px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.logo, .intragen-logo {
+  padding: 1.25rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+}
+.logo-dot { color: var(--golden); }
+.module-title, .module-title-sidebar {
+  padding: 0.6rem 1rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--golden);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.nav-label, .nav-section-label, .module-label {
+  padding: 0.75rem 1rem 0.2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+.sidebar a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.82rem;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a:hover {
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--teal);
+  color: #fff;
+}
+/* â”€â”€ Main â”€â”€ */
+main { padding: 2rem; max-width: 1080px; }
+/* â”€â”€ Module header â”€â”€ */
+.module-header {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+  color: #fff;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.module-header::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.module-header .intragen-watermark {
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.mod-num { display: inline-block; font-size: 2.5rem; font-weight: 900; opacity: 0.2; float: right; line-height: 1; }
+.module-header h1 { font-size: 1.55rem; margin-bottom: 0.4rem; }
+.module-header p  { opacity: 0.85; font-size: 0.9rem; }
+/* â”€â”€ Badges â”€â”€ */
+.badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.beginner    { background: #d4edda; color: #155724; }
+.intermediate{ background: #fff3cd; color: #856404; }
+.advanced    { background: #f8d7da; color: #721c24; }
+/* â”€â”€ Overview grid â”€â”€ */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+.info-card {
+  background: #fff;
+  border-left: 4px solid var(--teal);
+  padding: 1.1rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.info-card h3 { color: var(--purple-dark); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.info-card ul { padding-left: 1.2rem; }
+.info-card li { font-size: 0.9rem; margin-bottom: 0.25rem; }
+/* â”€â”€ Sections â”€â”€ */
+section { margin-bottom: 2.5rem; }
+section > h2 {
+  color: var(--purple-dark);
+  font-size: 1.15rem;
+  border-bottom: 2px solid var(--teal);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+.section-banner {
+  background: var(--purple-dark);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 1.25rem;
+  border-radius: 3px;
+}
+/* â”€â”€ Exercise cards â”€â”€ */
+.exercise-card {
+  background: #fff;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  padding: 1.4rem;
+  margin-bottom: 1.4rem;
+  border-left: 4px solid var(--teal);
+}
+.ex-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.ex-num {
+  background: var(--purple-dark);
+  color: #fff;
+  min-width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+}
+.ex-header h3 { color: var(--purple-dark); font-size: 1rem; margin: 0; }
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  margin: 0.9rem 0 0.3rem;
+}
+/* â”€â”€ Callouts â”€â”€ */
+.callout {
+  padding: 0.85rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 0.8rem 0;
+  font-size: 0.9rem;
+}
+.callout b, .callout strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.callout-mentor, .callout-note  { border-left: 4px solid #2D6DB5; background: #E8F4FF; }
+.callout-tip                    { border-left: 4px solid #22C55E; background: #F0FDF4; }
+.callout-warn                   { border-left: 4px solid #F59E0B; background: #FFF8E1; }
+.callout-error, .callout-important { border-left: 4px solid var(--purple); background: #F5EFF8; }
+/* â”€â”€ Steps / Lists â”€â”€ */
+.steps { padding-left: 1.4rem; margin: 0.4rem 0; }
+.steps li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+li::marker { color: var(--purple); }
+/* â”€â”€ Code â”€â”€ */
+pre, .code-block {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  padding: 1rem 1.1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0.8rem 0;
+  font-family: 'Cascadia Code','Fira Code', Consolas, 'Courier New', monospace;
+  white-space: pre;
+}
+code {
+  background: #EDE8F0;
+  color: #8B2080;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+  font-size: 0.82rem;
+}
+pre code { background: none; color: inherit; padding: 0; }
+/* â”€â”€ Tables â”€â”€ */
+table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; }
+thead tr, th { background: var(--purple-dark); color: #fff; }
+th { padding: 0.55rem 0.9rem; text-align: left; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.4px; }
+td { padding: 0.55rem 0.9rem; border: 1px solid var(--border); vertical-align: top; }
+tbody tr:nth-child(even), tr:nth-child(even) td { background: #F8F5FB; }
+td.pass { color: #155724; font-weight: 600; }
+td.fail { color: #721c24; font-weight: 600; }
+/* â”€â”€ Footer â”€â”€ */
+footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  border-top: 2px solid #EDE8F0;
+  margin-top: 2rem;
+  background: #F5EFF8;
+}
+.footer-dot { color: var(--golden); }
+h3 { color: var(--purple); }
+h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo">INTRAGEN<span class="logo-dot">.</span></div>
+    <div class="module-title">Module 013 — ATT</div>
+    <div class="nav-label">Exercises</div>
+    <a href="#att1">ATT-1: Basic Manager Attestation</a>
+    <a href="#att2">ATT-2: SQL Function Approver Lookup</a>
+    <a href="#att3">ATT-3: Full Attestation + Email</a>
+    <div class="nav-label">Configuration</div>
+    <a href="#mandatory-reason">Mandatory Denial Reason</a>
+    <div class="nav-label">Reference</div>
+    <a href="#mentor-tips">Mentor Tips</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+  </aside>
+
+  <main>
+    <div class="module-header">
+      <span class="mod-num">013</span>
+      <div style="margin-bottom:.5rem">
+        <span class="badge intermediate">Intermediate</span>
+        &nbsp;<span style="font-size:.85rem;opacity:.8">3 Exercises &nbsp;|&nbsp; ~2 days</span>
+      </div>
+      <h1>Attestations (ATT)</h1>
+      <p>Build complete attestation systems using workflows, approval policies, SQL-based approver lookup, and process-driven email notification on membership loss.</p>
+    </div>
+
+    <!-- Overview -->
+    <div class="overview-grid">
+      <div class="info-card">
+        <h3>Key Concepts</h3>
+        <ul>
+          <li>Attestation Policy</li>
+          <li>Attestation Approval Workflow</li>
+          <li>Approval Procedure</li>
+          <li><code>dbo.CCC_IsInternalManager</code> SQL function</li>
+          <li><code>UID_QERTermsOfUse</code> / <code>UID_QERJustificationDeny</code></li>
+          <li>Event: <code>CCC_SystemRole_Membership_Lost</code></li>
+          <li>Mail templates + process automation</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Module Objectives</h3>
+        <ul>
+          <li>Create end-to-end attestation from scratch</li>
+          <li>Use custom SQL for dynamic approver resolution</li>
+          <li>Configure auto-denial when no approver found</li>
+          <li>Trigger email notification on workflow denial</li>
+          <li>Enforce mandatory denial reason via web designer</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Prerequisites</h3>
+        <ul>
+          <li>Module 011 (WFL) complete — especially WFL-3 for the SQL function</li>
+          <li>Understanding of OIM approval workflows</li>
+          <li>OIM Designer access</li>
+          <li>Web Designer access (for mandatory reason config)</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Exercise Progression</h3>
+        <ul>
+          <li><strong>ATT-1:</strong> Simple manager attestation, auto-denial on no manager</li>
+          <li><strong>ATT-2:</strong> SQL function resolves first internal manager</li>
+          <li><strong>ATT-3:</strong> Extended workflow + email on denial event</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Exercises -->
+    <section id="exercises">
+      <h2>Exercises</h2>
+
+      <!-- ATT-1 -->
+      <div class="exercise-card" id="att1">
+        <div class="ex-header">
+          <div class="ex-num">ATT-1</div>
+          <h3>Basic Attestation with Manager Approval</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">Build a complete attestation flow from scratch: approval workflow, approval policy, and attestation policy. The attestation engine automatically denies when no approver is found.</p>
+
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Build a complete attestation from scratch, demonstrating both the happy path (manager approves) and the auto-denial path (no manager assigned to identity).</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 — Create Approval Workflow for Attestations:</strong> In OIM Designer, create a new approval workflow. Add an approval step pointing to the identity's manager (UID_PersonHead). Configure the step to auto-deny if no approver is found.</li>
+          <li><strong>Step 2 — Create Approval Policy:</strong> Create a new Approval Policy and assign the workflow created in Step 1. This policy will be referenced by the attestation policy.</li>
+          <li><strong>Step 3 — Create Attestation Policy:</strong> Create a new Attestation Policy. Set the attestation object (e.g., system role membership), assign the Approval Policy from Step 2, and configure the attestation schedule or run manually.</li>
+        </ol>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          When the approval workflow step finds no approver (no manager on the identity), OIM's attestation engine will automatically deny the attestation and remove the membership. This is built-in behaviour — trainees do not need to write custom logic for auto-denial.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Run attestation for assignment with manager</td>
+              <td>Execute the attestation policy for an identity that has a manager assigned</td>
+              <td>Manager receives an attestation task and can approve/deny</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Run attestation for assignment without manager</td>
+              <td>Execute the attestation policy for an identity that has NO manager assigned</td>
+              <td>Attestation is automatically denied and the system role membership is removed</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-tip">
+          <b>Verification Tip</b>
+          After running the attestation for a manager-less identity, check the attestation run logs. You should see the auto-denial event recorded. Also verify the system role membership has been physically removed from the identity.
+        </div>
+      </div>
+
+      <!-- ATT-2 -->
+      <div class="exercise-card" id="att2">
+        <div class="ex-header">
+          <div class="ex-num">ATT-2</div>
+          <h3>Attestation with SQL Function for Internal Manager Lookup</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">Replace simple manager lookup with a custom SQL function <code>dbo.CCC_IsInternalManager</code> that climbs the management chain to find the first internal manager. When no internal manager is found, the task falls back to the Operation Engineers group.</p>
+
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Use the custom SQL function (same as used in WFL-3) to find the first internal manager in the hierarchy. When no internal manager exists anywhere in the chain, the "Operation Engineers" group handles the attestation.</p>
+
+        <div class="callout callout-tip">
+          <b>Reuse from WFL-3</b>
+          If trainees completed WFL-3, the <code>dbo.CCC_IsInternalManager</code> SQL function already exists on the SQL Server instance. They can create the Approval Procedure pointing to it directly — no need to recreate the function.
+        </div>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 — Create SQL Function on SSMS:</strong> Create (or verify) the <code>dbo.CCC_IsInternalManager</code> scalar function on the OIM database. The function takes a UID_Person parameter and walks the management chain to return the UID of the first internal manager found.</li>
+          <li><strong>Step 2 — Create Approval Procedure:</strong> In OIM Designer, create a new Approval Procedure that calls <code>dbo.CCC_IsInternalManager</code>. Configure it to fall through to "Operation Engineers" when the function returns NULL (no internal manager found). Enable "deny if no approver found" for the fallback step.</li>
+          <li><strong>Step 3 — Create new Workflow:</strong> Create a new Attestation Approval Workflow (same structure as ATT-1 but referencing the new approval procedure from Step 2).</li>
+          <li><strong>Step 4 — Create new Approval Policy:</strong> Create a new Approval Policy using the workflow from Step 3. This separates ATT-2 from ATT-1's configuration so both can be tested independently.</li>
+        </ol>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Run attestation with internal manager in chain</td>
+              <td>Execute attestation policy for an identity whose management chain contains at least one internal manager</td>
+              <td>The first internal manager found in the chain receives the attestation task</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Run attestation with no internal manager in chain</td>
+              <td>Execute attestation policy for an identity whose entire management chain has no internal managers</td>
+              <td>Operation Engineers group receives the attestation task</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Deny attestation</td>
+              <td>Log in as the approver (manager or Operation Engineers member) and deny the attestation</td>
+              <td>The system role membership is removed from the identity</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-warn">
+          <b>Important</b>
+          The SQL function walks UP the management chain — it checks the identity's manager, then their manager, and so on. Make sure test identities have a correctly configured management chain in OIM before running this exercise.
+        </div>
+      </div>
+
+      <!-- ATT-3 -->
+      <div class="exercise-card" id="att3">
+        <div class="ex-header">
+          <div class="ex-num">ATT-3</div>
+          <h3>Full Attestation with Mail Notification on Denial</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">The most complete attestation scenario: an extended workflow with extra approval and deny steps, a custom mail template, and a process that fires on the <code>CCC_SystemRole_Membership_Lost</code> custom event to send an email notification when a membership is removed via denial.</p>
+
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Complex workflow with extra approval/deny steps, plus email notification triggered by a custom event (<code>CCC_SystemRole_Membership_Lost</code>) on the attestation workflow denial.</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 — Create new Workflow with extra steps:</strong> Build an attestation approval workflow with an extra step on the APPROVE path and an extra step on the DENY path. The deny path step should raise the custom event <code>CCC_SystemRole_Membership_Lost</code> when denial is completed.</li>
+          <li><strong>Step 2 — Create new Approval Policy:</strong> Create a new Approval Policy using the ATT-3 workflow. Keep this separate from ATT-1 and ATT-2 policies.</li>
+          <li><strong>Step 3 — Create new Attestation Policy:</strong> Create a new Attestation Policy referencing the ATT-3 Approval Policy. Configure the same system role membership object as previous exercises.</li>
+          <li><strong>Step 4 — Create mail template:</strong> In OIM Designer, create a mail template for the "membership removed" notification. The template should include the identity name, the system role name, and the denial reason. Use the <code>UID_QERTermsOfUse</code> parameter if applicable.</li>
+          <li><strong>Step 5 — Create process on event:</strong> Create a new process in OIM Designer triggered by the event <code>CCC_SystemRole_Membership_Lost</code>. Add a process step that sends the mail template created in Step 4 to the relevant recipient (e.g., the identity whose membership was removed).</li>
+        </ol>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note — Custom Events on Workflow Steps</b>
+          The event <code>CCC_SystemRole_Membership_Lost</code> is a CUSTOM event — it does not exist by default in OIM. Show trainees where to register custom events on workflow steps (in the step's "Event" or "Raise Event" configuration). The process listens for this event and fires when it is raised by the workflow denial step.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Run attestation with internal manager in chain</td>
+              <td>Execute the ATT-3 attestation policy for an identity with an internal manager</td>
+              <td>Manager receives attestation task; extra approval step visible in workflow</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Run attestation with no internal manager</td>
+              <td>Execute for identity with no internal manager in chain</td>
+              <td>Operation Engineers receive the attestation task as fallback</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Deny attestation — verify membership removed AND email sent</td>
+              <td>Deny the attestation as the assigned approver</td>
+              <td>Membership is removed from the identity AND an email notification is received (check mail client)</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-tip">
+          <b>Verification Steps for Test Case 3</b>
+          After denial: (1) Check the identity's system role memberships — the role should be gone. (2) Check the OIM job queue or process log — the process for <code>CCC_SystemRole_Membership_Lost</code> should show as completed. (3) Check the email client for the notification.
+        </div>
+      </div>
+    </section>
+
+    <!-- Mandatory Standard Reason -->
+    <section id="mandatory-reason">
+      <h2>Configuration: Mandatory Standard Reason When Denying</h2>
+
+      <div class="exercise-card" style="border-left-color:var(--orange)">
+        <div class="ex-header">
+          <div class="ex-num" style="background:var(--orange)">CFG</div>
+          <h3>Enforce Mandatory Denial Reason in Web Portal</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">This is a Web Designer configuration change (not a Designer change) that makes the denial reason field mandatory when an approver denies an attestation in the web portal.</p>
+
+        <div class="callout callout-warn">
+          <b>Web Designer vs Designer</b>
+          This change is made in the <strong>Web Designer</strong> (web portal configuration editor), NOT in the OIM Designer (database object editor). These are two separate tools. Make sure trainees understand the distinction before proceeding.
+        </div>
+
+        <div class="section-label">Configuration Steps</div>
+        <ol class="steps">
+          <li>Open the <strong>Web Designer</strong> and navigate to the <strong>VI_Attestation</strong> module.</li>
+          <li>Locate the <code>UID_QERJustificationDeny</code> node within the VI_Attestation module.</li>
+          <li>Add an extension in the <strong>CCC module</strong> (custom module) — do not modify the base VI_Attestation module directly.</li>
+          <li>Copy all elements from the base <code>UID_QERJustificationDeny</code> node into the CCC extension.</li>
+          <li>In the copied element, set the <strong>"minimum character count"</strong> property to <code>1</code>.</li>
+          <li>Save and <strong>rebuild / deploy the web portal</strong> for the change to take effect.</li>
+        </ol>
+
+        <div class="callout callout-tip">
+          <b>Effect</b>
+          Setting minimum character count to 1 makes the reason field required — the approver cannot submit a denial without entering at least one character in the reason field. This applies to all attestation denials in the web portal.
+        </div>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          After making the Web Designer change, you must rebuild the web portal for the change to be visible. Show trainees the rebuild/deploy process. Also demonstrate what happens before the change (reason optional) vs. after (reason required) by attempting to deny without a reason.
+        </div>
+      </div>
+    </section>
+
+    <!-- Mentor Tips -->
+    <section id="mentor-tips">
+      <h2>Mentor Tips</h2>
+
+      <div class="callout callout-mentor" style="margin-bottom:.8rem">
+        <b>ATT-1: Auto-Denial Behaviour</b>
+        The "no manager = automatic denial" behaviour is built into OIM's attestation engine. When the approver query returns no one, OIM auto-denies. Show trainees this in the attestation run logs — they can see the decision reason. No custom code is needed for this. Emphasise this is a feature, not a bug.
+      </div>
+
+      <div class="callout callout-mentor" style="margin-bottom:.8rem">
+        <b>ATT-2: Reusing the SQL Function from WFL-3</b>
+        The SQL function <code>dbo.CCC_IsInternalManager</code> was introduced in WFL-3. If trainees completed WFL-3 first, they can reuse the existing function — no need to recreate it. This is a good opportunity to show how custom SQL assets are reused across multiple OIM features (workflows AND attestation). If they skipped WFL-3, they need to create the function now.
+      </div>
+
+      <div class="callout callout-mentor" style="margin-bottom:.8rem">
+        <b>ATT-3: Registering Custom Events on Workflow Steps</b>
+        The event <code>CCC_SystemRole_Membership_Lost</code> is a CUSTOM event that must be explicitly registered. Show trainees the workflow step editor and where the "raise event" or "event name" field is. Once the event is raised by the denial step, the OIM process engine picks it up and fires the associated process. Walk through the full chain: denial step fires event → process engine receives event → process sends email.
+      </div>
+
+      <div class="callout callout-mentor" style="margin-bottom:.8rem">
+        <b>Mandatory Reason: Web Designer vs Designer</b>
+        The web designer change for mandatory denial reason is a <em>web configuration change</em>, not a Designer change. Show trainees both tools and explain the difference: Designer = database objects (workflows, policies, processes); Web Designer = web portal UI configuration (forms, fields, layouts). Both are part of OIM but serve different purposes.
+      </div>
+
+      <div class="callout callout-tip">
+        <b>General: Attestation Run Logs</b>
+        Always show trainees how to read attestation run logs. After each test case, pull up the run log and point out: who was selected as approver, when the task was created, when it was resolved, what decision was made. This builds confidence in debugging attestation issues.
+      </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section id="troubleshooting">
+      <h2>Troubleshooting</h2>
+      <table>
+        <thead>
+          <tr><th>Problem</th><th>Likely Cause</th><th>Solution</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Attestation not generating tasks</td>
+            <td>Attestation Policy has not been executed — policies must be manually run or scheduled; they do not fire automatically</td>
+            <td>Check if the policy has been executed. Navigate to the attestation policy and run it manually from the policy page. Check the OIM job queue for any errors during execution.</td>
+          </tr>
+          <tr>
+            <td>Auto-denial not happening for identity without manager</td>
+            <td>The approval procedure is not configured to auto-deny when no approver is found</td>
+            <td>Open the Approval Procedure in Designer. Find the "deny if no approver found" or equivalent option and enable it. Re-run the attestation to verify auto-denial now occurs.</td>
+          </tr>
+          <tr>
+            <td>Email not sent on denial (ATT-3)</td>
+            <td>The process for the <code>CCC_SystemRole_Membership_Lost</code> event is not correctly configured or the event is not being raised by the workflow step</td>
+            <td>Verify the workflow deny step is configured to raise the <code>CCC_SystemRole_Membership_Lost</code> event. Check the process in Designer — ensure it is set to trigger on this event. Check the OIM job queue for process execution errors. Verify mail step configuration.</td>
+          </tr>
+          <tr>
+            <td>Mandatory reason not enforced in portal</td>
+            <td>The Web Designer change has not been deployed — a web portal rebuild is required after any Web Designer change</td>
+            <td>Trigger a web portal rebuild after the Web Designer change. Clear browser cache and reload. Test again by attempting to deny without entering a reason.</td>
+          </tr>
+          <tr>
+            <td>SQL function not found (ATT-2)</td>
+            <td><code>dbo.CCC_IsInternalManager</code> was not created or was created in the wrong database</td>
+            <td>Open SSMS, connect to the OIM database, and run <code>SELECT OBJECT_ID('dbo.CCC_IsInternalManager')</code>. If NULL, the function does not exist — create it using the WFL-3 script.</td>
+          </tr>
+          <tr>
+            <td>Operation Engineers fallback not triggering (ATT-2)</td>
+            <td>The approval procedure fallback step is not configured correctly, or the Operation Engineers group UID is wrong</td>
+            <td>Open the Approval Procedure in Designer. Check the fallback step — verify the Operation Engineers group UID or dynamic role is correctly assigned as the fallback approver group.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+  INTRAGEN<span class="footer-dot">.</span> Academy &mdash; Mentoring Documentation &mdash;
+  &copy; Intragen International. This document remains strictly private and confidential.
+</footer>
+  </main>
+</div>
+</body>
+</html>

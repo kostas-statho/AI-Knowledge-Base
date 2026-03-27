@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 011 — Approval Workflows (WFL) | Intragen Mentor Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#7B2D8B;
+  --purple-dark:#5C1F6B;
+  --teal:#007B77;
+  --golden:#F0A800;
+  --body-bg:#FAF8F5;
+  --code-bg:#1E1E1E;
+  --border:#DDD;
+  --text:#2C2C2C;
+  --muted:#6B6B6B;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;background:#F0EDE8;color:var(--text)}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{background:var(--purple);color:#fff;padding:0;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.sidebar-logo{padding:1.25rem 1rem 1rem;font-size:1.1rem;font-weight:900;letter-spacing:.02em;color:#fff;border-bottom:1px solid rgba(255,255,255,.15);text-transform:uppercase}
+.sidebar-logo span{color:var(--golden)}
+.sidebar-module-title{padding:.75rem 1rem;font-size:.82rem;font-weight:700;color:var(--golden);border-bottom:1px solid rgba(255,255,255,.12)}
+.nav-label{padding:.75rem 1rem .25rem;font-size:.67rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.sidebar a{display:block;padding:.42rem 1rem;color:rgba(255,255,255,.8);text-decoration:none;font-size:.84rem;border-left:3px solid transparent;transition:background .15s,border-color .15s,color .15s}
+.sidebar a:hover{background:rgba(255,255,255,.08);border-left-color:var(--teal);color:#fff}
+
+/* MAIN */
+main{padding:2rem;max-width:1080px;background:var(--body-bg)}
+
+/* MODULE HEADER */
+.module-header{background:linear-gradient(135deg,var(--purple-dark) 0%,var(--purple) 100%);color:#fff;padding:2rem 2rem 1.5rem;border-radius:12px;margin-bottom:2rem;position:relative;overflow:hidden}
+.module-header::before{content:'';position:absolute;right:-20px;top:-20px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.05)}
+.header-watermark{position:absolute;top:1rem;right:1.25rem;font-size:.78rem;font-weight:900;letter-spacing:.04em;color:rgba(255,255,255,.5);text-transform:uppercase}
+.header-watermark span{color:rgba(240,168,0,.5)}
+.mod-num{display:inline-block;font-size:2.5rem;font-weight:900;opacity:.2;float:right;line-height:1}
+.module-header h1{font-size:1.6rem;margin-bottom:.4rem;font-weight:700}
+.module-header p{opacity:.85;font-size:.9rem}
+
+/* BADGES */
+.badge{display:inline-block;padding:.2rem .7rem;border-radius:999px;font-size:.72rem;font-weight:700;text-transform:uppercase}
+.beginner{background:#d4edda;color:#155724}
+.intermediate{background:#fff3cd;color:#856404}
+.advanced{background:#f8d7da;color:#721c24}
+
+/* OVERVIEW GRID */
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:2rem}
+.info-card{background:#fff;border-left:4px solid var(--teal);padding:1.1rem 1.2rem;border-radius:0 8px 8px 0;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.info-card h3{color:var(--purple-dark);font-size:.85rem;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.info-card ul{padding-left:1.2rem}
+.info-card li{font-size:.88rem;margin-bottom:.25rem}
+
+/* SECTIONS */
+section{margin-bottom:2.5rem}
+section>h2{font-size:1.1rem;font-weight:700;background:var(--purple-dark);color:#fff;padding:.55rem 1rem;border-radius:4px;margin-bottom:1.2rem;text-transform:uppercase;letter-spacing:.06em}
+
+/* EXERCISE CARDS */
+.exercise-card{background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.07);padding:1.4rem;margin-bottom:1.4rem;border-left:4px solid var(--teal)}
+.ex-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.ex-num{background:var(--purple-dark);color:#fff;min-width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0}
+.ex-header h3{color:var(--purple-dark);font-size:1rem;margin:0;font-weight:700}
+.section-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--purple);margin:.9rem 0 .3rem}
+
+/* CALLOUTS */
+.callout{padding:.85rem 1rem;border-radius:0 8px 8px 0;margin:.8rem 0;font-size:.88rem}
+.callout-mentor{border-left:4px solid var(--purple);background:#F5EFF8}
+.callout-tip{border-left:4px solid var(--teal);background:#E8F5F5}
+.callout-warn{border-left:4px solid var(--golden);background:#FEF9E7}
+.callout-error{border-left:4px solid #C0392B;background:#FDEDEC}
+.callout b{display:block;margin-bottom:.2rem;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.callout-mentor b{color:var(--purple-dark)}
+.callout-tip b{color:var(--teal)}
+.callout-warn b{color:#9A6700}
+.callout-error b{color:#721c24}
+
+/* STEPS */
+.steps{padding-left:1.4rem;margin:.4rem 0}
+.steps li{margin-bottom:.4rem;font-size:.9rem}
+
+/* CODE */
+pre{background:var(--code-bg);color:#D4D4D4;padding:1rem;border-radius:8px;overflow-x:auto;font-size:.8rem;margin:.8rem 0;font-family:'Courier New',monospace}
+code{background:#EDE8F0;padding:.1rem .3rem;border-radius:3px;font-family:'Courier New',monospace;font-size:.82rem;color:#8B2080}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.88rem}
+thead tr{background:var(--purple-dark);color:#fff}
+th,td{padding:.6rem .9rem;border:1px solid var(--border);text-align:left}
+tbody tr:nth-child(even){background:#F8F5FB}
+
+/* PASS/FAIL */
+.pass{color:#155724;font-weight:700}
+.fail{color:#721c24;font-weight:700}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem 1rem;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem;background:#fff}
+footer strong{color:var(--purple-dark)}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-logo">INTRAGEN<span>.</span></div>
+    <div class="sidebar-module-title">Module 011 — WFL</div>
+    <div class="nav-label">Exercises</div>
+    <a href="#wfl1">WFL-1: Auto-Approve Workflow</a>
+    <a href="#wfl2">WFL-2: Manager Approval</a>
+    <a href="#wfl3">WFL-3: Custom SQL Approval</a>
+    <a href="#wfl4">WFL-4: Multi-Step + Fallback</a>
+    <div class="nav-label">Reference</div>
+    <a href="#tips">Mentor Tips</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+  </nav>
+
+  <main>
+    <div class="module-header">
+      <div class="header-watermark">INTRAGEN<span>.</span></div>
+      <span class="mod-num">011</span>
+      <div style="margin-bottom:.6rem">
+        <span class="badge intermediate">Intermediate</span>
+        &nbsp;<span style="font-size:.8rem;opacity:.75">4 Exercises &nbsp;|&nbsp; ~2 Days</span>
+      </div>
+      <h1>Approval Workflows (WFL)</h1>
+      <p>Approval workflows control who must approve IT Shop requests and attestation cases. These exercises progress from a simple auto-approve workflow through manager approval, custom SQL-based approval procedures, and complex multi-step workflows with fallback approvers.</p>
+    </div>
+
+    <div class="overview-grid">
+      <div class="info-card">
+        <h3>Key Concepts</h3>
+        <ul>
+          <li>Approval Workflow, Approval Level, Approval Step</li>
+          <li>Approval Procedure, Approval Policy</li>
+          <li>Service Item assignment</li>
+          <li>CM - Recipient's Manager (built-in approval level)</li>
+          <li>Custom SQL function for approver lookup</li>
+          <li>Product Owner, FallBack_Approvers role</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Exercise Progression</h3>
+        <ul>
+          <li><strong>WFL-1:</strong> Simple auto-approve workflow — baseline</li>
+          <li><strong>WFL-2:</strong> Manager approval via CM - Recipient's Manager</li>
+          <li><strong>WFL-3:</strong> Custom SQL function as approval procedure</li>
+          <li><strong>WFL-4:</strong> Multi-step workflow with Product Owner and Fallback approvers</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- WFL-1 -->
+    <section id="wfl1">
+      <h2>WFL-1: Simple Workflow — Auto-Approve (No Manager)</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">1</div>
+          <h3>Simple Workflow — Auto-Approve</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">Creates the baseline approval workflow: a simple auto-approve (or direct-assignment) workflow. This is the starting point before adding approval logic in WFL-2. The contrast between WFL-1 and WFL-2 makes the approval mechanism clear.</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 — Create Approval Workflow:</strong> Create a new Approval Workflow (simple — auto-approve or direct assignment to the requester). No additional approval level configuration is needed for the baseline.</li>
+          <li><strong>Step 2 — Create Approval Policy:</strong> Create a new Approval Policy and assign the workflow created in Step 1 to it.</li>
+          <li><strong>Step 3 — Create System Role and Service Item:</strong> Create a System Role and a corresponding Service Item. Add the Service Item to the IT Shop. Assign the Approval Policy from Step 2 to the Service Item.</li>
+        </ol>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          The purpose of WFL-1 is to establish the approval infrastructure (workflow + policy + service item) with zero friction. Trainees learn the configuration chain — Workflow -&gt; Policy -&gt; Service Item — before any approval logic is added. WFL-2 then modifies the approval level to add real approval.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Identities</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Request with identity A</td>
+              <td>User logs in as Identity A and requests the product</td>
+              <td>Product is assigned to Identity A automatically (no approval step)</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Request with identity B</td>
+              <td>User logs in as Identity B and requests the product</td>
+              <td>Product is assigned to Identity B automatically (no approval step)</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- WFL-2 -->
+    <section id="wfl2">
+      <h2>WFL-2: Manager Approval Workflow</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">2</div>
+          <h3>Manager Approval Workflow (CM - Recipient's Manager)</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">Modifies the WFL-1 workflow to require manager approval using the built-in "CM - Recipient's Manager" approval level. Also removes the Unsubscription Workflow from the Approval Policy so that unsubscriptions are auto-approved.</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 — Modify Approval Level to "CM - Recipient's Manager":</strong> In the approval workflow created in WFL-1, change the approval level to the built-in <strong>CM - Recipient's Manager</strong> type. This causes the request to be sent to the identity's manager (UID_PersonHead) for approval.</li>
+          <li><strong>Step 2 — Remove Unsubscription Workflow from Approval Policy:</strong> In the Approval Policy, remove or clear the Unsubscription Workflow. This ensures that unsubscriptions (product removal requests) are automatically approved without requiring manager approval.</li>
+        </ol>
+
+        <div class="callout callout-tip">
+          <b>CM - Recipient's Manager</b>
+          This is a built-in OIM approval level that resolves to the <code>UID_PersonHead</code> field of the requesting identity. If the identity has no manager configured (UID_PersonHead is null), the request cannot proceed through this approval level unless a fallback is configured.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Setup</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Request for self — manager must approve</td>
+              <td>Identity B requests for himself; Identity A is B's manager (UID_PersonHead = A)</td>
+              <td>Request is routed to Identity A for approval — A must accept before product is assigned to B</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Request by A for B — requester is approver</td>
+              <td>Identity A requests the product for Identity B; A is also B's manager</td>
+              <td>Request is automatically approved — requester A is the same person as the designated approver (self-approval)</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Unsubscription by B for himself</td>
+              <td>Identity B unsubscribes (removes) the product from himself</td>
+              <td>Unsubscription is automatically approved — no manager approval needed (Unsubscription Workflow removed from policy)</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Unsubscription by A for B</td>
+              <td>Identity A unsubscribes the product on behalf of Identity B</td>
+              <td>Unsubscription is automatically approved — no additional approval required</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- WFL-3 -->
+    <section id="wfl3">
+      <h2>WFL-3: Custom SQL Function as Approval Procedure</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">3</div>
+          <h3>Custom SQL Function as Approval Procedure</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">A complex workflow that uses a custom SQL function to find the first internal manager in an identity's management chain. If no internal manager exists, approval falls back to a business role (Operation Engineer AERole). The workflow dynamically recalculates approvers as conditions change mid-workflow.</p>
+
+        <div class="callout callout-warn">
+          <b>SQL Function Created Outside OIM</b>
+          The function <code>dbo.CCC_IsInternalManager</code> is created in SQL Server Management Studio (SSMS) — directly in the OIM database — OUTSIDE of OIM configuration. This is a custom database function. Show trainees how OIM approval procedures can call custom SQL that exists in the database.
+        </div>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 — Create SQL function "dbo.CCC_IsInternalManager" via SSMS:</strong> In SQL Server Management Studio, create a table-valued function in the OIM database that traverses the management chain of a given identity and returns the first manager who is NOT marked as external (<code>isExternal = 0</code>).</li>
+          <li><strong>Step 2 — Create Approval Procedure calling the SQL function:</strong> In OIM, create a new Approval Procedure that invokes the <code>dbo.CCC_IsInternalManager</code> function to resolve the approver. The procedure receives the request UID and returns the appropriate approver identity.</li>
+          <li><strong>Step 3 — Create Workflow "CCC_Workflow03":</strong> Create an approval workflow with a conditional approval structure:
+            <ul style="padding-left:1.2rem;margin-top:.3rem">
+              <li><strong>CD condition (primary path):</strong> <code>{exists (Select * from dbo.CCC_IsInternalManager('@uid_personwantsorg'))}</code> — uses the SQL function if an internal manager exists</li>
+              <li><strong>OR Role (fallback path):</strong> <code>{Base roles\Operations support\Operation Engineer}</code> — routes to Operation Engineer AERole members if no internal manager exists</li>
+            </ul>
+          </li>
+          <li><strong>Step 4 — Create Approval Policy "CCC_workflow_policy03":</strong> Create and configure an Approval Policy that uses the <code>CCC_Workflow03</code> workflow. Assign this policy to the relevant Service Item (ESet service item).</li>
+        </ol>
+
+        <div class="callout callout-tip">
+          <b>The Dynamic Recalculation Behaviour</b>
+          When an approval step is pending and the underlying condition changes (e.g., a manager is switched from external to internal), OIM can recalculate the approver on the next workflow transition. This is the key behaviour validated in Test #3.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Setup</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Valid internal manager exists</td>
+              <td>Request ESet with Identity D; Identity C is D's manager and C is internal (<code>isExternal = 0</code>)</td>
+              <td>Identity C receives the approval request and must approve before the ESet is assigned</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Manager set to external — fallback to next level</td>
+              <td>Set Identity C to External (<code>isExternal = 1</code>); request ESet with Identity D again</td>
+              <td>Identity B (next internal manager in the chain) receives the approval request</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>All managers external — AERole approves; then reconfigure mid-workflow</td>
+              <td>Set all managers in D's chain to External; submit the request; approve to AERole step; then set B back to Internal; advance workflow</td>
+              <td>First: AERole "Operations Engineer" members receive approval task. After reconfiguring B to Internal, the next workflow recalculation routes to B. Approve with B to complete.</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-error">
+          <b>Test #3 Walk-Through Note</b>
+          Test #3 demonstrates dynamic recalculation and requires careful step-by-step execution. Path: (1) All managers external → request submitted → OE role receives task. (2) Without resolving OE task, set B back to Internal. (3) Advance the workflow to trigger recalculation — approval is now rerouted to B. (4) Approve with B. Walk trainees through this very slowly and draw the approval chain transitions on a whiteboard.
+        </div>
+      </div>
+    </section>
+
+    <!-- WFL-4 -->
+    <section id="wfl4">
+      <h2>WFL-4: Multi-Step Workflow with Product Owner and Fallback</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">4</div>
+          <h3>Multi-Step Workflow — Product Owner + Fallback Approvers</h3>
+        </div>
+
+        <p style="font-size:.9rem;margin-bottom:.8rem">A two-step approval workflow: Step 1 requires the product owner (determined by the SQL function) to approve; Step 2 requires a different product owner who did not approve Step 1 to approve again. Both steps use the Operation Engineer AERole as Fallback_Approvers.</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 — Create Product Owner &amp; Assign to ESet:</strong> Create a Product Owner (Application Role or direct person assignment) and assign it to the ESet named <code>CCC_Workflow</code>. The product owner represents who is responsible for approving requests for this resource.</li>
+          <li><strong>Step 2 — Create Approval Procedure for Remaining Product Owners:</strong> Create a new approval procedure that returns product owners who did NOT approve Step 1 (i.e., the remaining product owner for Step 2 approval).</li>
+          <li><strong>Step 3 — Create Workflow with FallBack_Approvers on Both Steps:</strong> Configure the multi-step workflow:
+            <ul style="padding-left:1.2rem;margin-top:.3rem">
+              <li>Step 1: Product owner approval using the SQL function from WFL-3; <strong>Fallback_Approvers = Operation Engineer AERole members</strong></li>
+              <li>Step 2: Remaining product owner (from Step 2 procedure); <strong>Fallback_Approvers = Operation Engineer AERole members</strong></li>
+            </ul>
+          </li>
+        </ol>
+
+        <div class="callout callout-mentor">
+          <b>Mentor — Product Owner Concept</b>
+          Product Owner approval is an additional approval concept. Instead of the requester's manager approving, the owner of the requested resource approves. This is a common pattern for sensitive or shared resources (AD groups, privileged roles) where the resource owner must consent to who gets access.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Setup</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Happy Flow — internal manager and product owners set</td>
+              <td>B is internal; A and B are both product owners of the ESet</td>
+              <td>Step 1: Request goes to B (internal manager / first product owner). Step 2: After B approves, request goes to A (second product owner). A approves and ESet is assigned.</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>No internal manager — only A as product owner</td>
+              <td>All managers set to External; A is the only product owner</td>
+              <td>Step 1: Operation Engineer AERole members receive approval task (fallback, no internal manager). Step 2: After OE approves, A (product owner) must approve. A approves and ESet is assigned.</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>No internal manager AND no product owner</td>
+              <td>All managers set to External; all product owners removed from ESet</td>
+              <td>Both Step 1 and Step 2: Operation Engineer AERole members receive approval task on BOTH steps (fallback used for both). After both OE approvals, ESet is assigned.</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Set internal manager and product owner AFTER request is already pending</td>
+              <td>Start with all external and no product owners (OE gets both steps); then set B as internal and A as product owner while request is pending</td>
+              <td>Step 1: Initially goes to OE; after reconfiguring B as internal → approval reroutes to B. Step 2: Initially goes to OE; after setting A as product owner → approval reroutes to A. Both dynamic recalculations work correctly.</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-warn">
+          <b>Test #4 — Dynamic Recalculation on Both Steps</b>
+          This is the most complex test in the module. It demonstrates that dynamic recalculation works independently on each workflow step. Walk through this test step by step. After Test #4, trainees should fully understand the dynamic approval recalculation mechanism.
+        </div>
+      </div>
+    </section>
+
+    <!-- Mentor Tips -->
+    <section id="tips">
+      <h2>Mentor Tips</h2>
+
+      <div class="callout callout-mentor" style="margin-bottom:.8rem">
+        <b>WFL-1 / WFL-2 — Contrast Is the Teaching Tool</b>
+        Always start with WFL-1 (no approval) before adding manager approval in WFL-2. The contrast between "request is immediately assigned" (WFL-1) and "request waits for manager" (WFL-2) makes the approval mechanism click for trainees. If you start directly with WFL-2, the baseline is unclear.
+      </div>
+
+      <div class="callout callout-mentor" style="margin-bottom:.8rem">
+        <b>WFL-2 — No Manager Means No Approval Path</b>
+        The "CM - Recipient's Manager" approval level uses <code>UID_PersonHead</code>. If the requesting identity has no manager configured, the request cannot be approved through this level (unless a fallback is configured). This is a common production issue. Always check manager assignments when testing this workflow.
+      </div>
+
+      <div class="callout callout-mentor" style="margin-bottom:.8rem">
+        <b>WFL-3 — SQL Function Is Created Outside OIM</b>
+        The function <code>dbo.CCC_IsInternalManager</code> is created in SSMS directly in the OIM SQL Server database. This is a custom database function, not an OIM script. Show trainees how OIM approval procedures can call custom SQL functions that exist in the database. This is a powerful extensibility pattern.
+      </div>
+
+      <div class="callout callout-mentor" style="margin-bottom:.8rem">
+        <b>WFL-3 Test #3 — Walk Very Slowly</b>
+        The dynamic recalculation behaviour in Test #3 is confusing. Draw the approval chain on a whiteboard and show each state transition: all external → OE receives task → configure B as internal → workflow advances → B receives task → B approves. The key insight is that recalculation only happens on workflow transitions, not instantaneously when the manager changes.
+      </div>
+
+      <div class="callout callout-mentor">
+        <b>WFL-4 — Product Owner Is a Different Approval Axis</b>
+        Manager approval is "who is responsible for the person." Product Owner approval is "who is responsible for the resource." These are two independent axes. WFL-4 combines both via the SQL function (internal manager determines product owner at Step 1) and the remaining product owner at Step 2. Common real-world pattern for sensitive resources.
+      </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section id="troubleshooting">
+      <h2>Troubleshooting Reference</h2>
+      <table>
+        <thead>
+          <tr><th>Problem</th><th>Likely Cause</th><th>Solution</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Request auto-approves when approval is expected</td>
+            <td>No approval step in the workflow, or "CM-Recipient's Manager" resolves to the requester (self-approval)</td>
+            <td>Check workflow configuration — confirm an approval step is present; verify the manager chain so the approver is not the same person as the requester</td>
+          </tr>
+          <tr>
+            <td>Request stuck "waiting for approval" indefinitely</td>
+            <td>Approver does not exist — empty business role, no manager, or SQL function returns no rows</td>
+            <td>Check approver query resolution in Sync Editor or Designer; verify manager assignment on the requesting identity; add a fallback approver to the workflow step</td>
+          </tr>
+          <tr>
+            <td>SQL function not found by OIM</td>
+            <td>Function not created in the correct database or schema (<code>dbo</code>)</td>
+            <td>Verify <code>dbo.CCC_IsInternalManager</code> exists in the OIM SQL Server database; test the function directly in SSMS with a known UID_PersonWantsOrg value</td>
+          </tr>
+          <tr>
+            <td>Operation Engineer AERole not receiving approval tasks</td>
+            <td>No members assigned to the "Operations support / Operation Engineer" AERole</td>
+            <td>Open OIM Manager; navigate to Business Roles / AERoles; assign at least one identity to the "Operation Engineer" role</td>
+          </tr>
+          <tr>
+            <td>Workflow not recalculating after manager change</td>
+            <td>Recalculation only occurs on the next workflow transition — not instantaneously</td>
+            <td>Advance the workflow to the next transition step to trigger recalculation; recalculation requires a workflow event, not just a data change</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <strong>INTRAGEN.</strong> Academy &mdash; Mentoring Documentation &mdash; &copy; Intragen International. This document remains strictly private and confidential.
+    </footer>
+  </main>
+</div>
+</body>
+</html>

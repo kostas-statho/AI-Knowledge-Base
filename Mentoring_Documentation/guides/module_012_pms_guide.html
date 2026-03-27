@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 012 — Permissions (PMS) | Intragen Mentor Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#7B2D8B;
+  --purple-dark:#5C1F6B;
+  --teal:#007B77;
+  --golden:#F0A800;
+  --body-bg:#FAF8F5;
+  --code-bg:#1E1E1E;
+  --border:#DDD;
+  --text:#2C2C2C;
+  --muted:#6B6B6B;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;background:#F0EDE8;color:var(--text)}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{background:var(--purple);color:#fff;padding:0;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.sidebar-logo{padding:1.25rem 1rem 1rem;font-size:1.1rem;font-weight:900;letter-spacing:.02em;color:#fff;border-bottom:1px solid rgba(255,255,255,.15);text-transform:uppercase}
+.sidebar-logo span{color:var(--golden)}
+.sidebar-module-title{padding:.75rem 1rem;font-size:.82rem;font-weight:700;color:var(--golden);border-bottom:1px solid rgba(255,255,255,.12)}
+.nav-label{padding:.75rem 1rem .25rem;font-size:.67rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.sidebar a{display:block;padding:.42rem 1rem;color:rgba(255,255,255,.8);text-decoration:none;font-size:.84rem;border-left:3px solid transparent;transition:background .15s,border-color .15s,color .15s}
+.sidebar a:hover{background:rgba(255,255,255,.08);border-left-color:var(--teal);color:#fff}
+
+/* MAIN */
+main{padding:2rem 2.5rem;max-width:960px;background:var(--body-bg)}
+
+/* MODULE HEADER */
+.module-header{background:linear-gradient(135deg,var(--purple-dark) 0%,var(--purple) 100%);color:#fff;padding:2rem 2.5rem;border-radius:12px;margin-bottom:2rem;position:relative;overflow:hidden}
+.module-header::before{content:'';position:absolute;right:-20px;top:-20px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.05)}
+.header-watermark{position:absolute;top:1rem;right:1.25rem;font-size:.78rem;font-weight:900;letter-spacing:.04em;color:rgba(255,255,255,.5);text-transform:uppercase}
+.header-watermark span{color:rgba(240,168,0,.5)}
+.module-header .breadcrumb{font-size:.75rem;color:rgba(255,255,255,.5);margin-bottom:.6rem}
+.module-header h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem}
+.module-header .subtitle{font-size:.9rem;color:rgba(255,255,255,.75);margin-bottom:1rem}
+
+/* BADGES */
+.badge-row{display:flex;gap:.6rem;flex-wrap:wrap}
+.badge{display:inline-block;padding:.25rem .75rem;border-radius:20px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.badge-intermediate{background:var(--golden);color:#fff}
+.badge-info{background:rgba(255,255,255,.18);color:#fff}
+
+/* SECTION HEADINGS */
+h2{font-size:1.1rem;font-weight:700;background:var(--purple-dark);color:#fff;padding:.55rem 1rem;border-radius:4px;margin-bottom:1.2rem;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:.6rem}
+h2 .section-icon{width:26px;height:26px;background:rgba(255,255,255,.2);border-radius:4px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:700;flex-shrink:0}
+h3{font-size:1rem;color:var(--purple-dark);margin-bottom:.6rem;font-weight:600}
+
+.content-section{margin-bottom:2.5rem}
+
+/* INFO GRID */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+.info-card{background:#fff;border-radius:8px;padding:1rem 1.2rem;box-shadow:0 2px 6px rgba(0,0,0,.06);border-top:3px solid var(--teal)}
+.info-card .ic-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:.3rem;font-weight:600}
+.info-card .ic-value{font-size:1.1rem;font-weight:700;color:var(--purple-dark)}
+
+/* OBJECTIVES */
+.objectives-list{list-style:none;padding:0}
+.objectives-list li{display:flex;align-items:flex-start;gap:.75rem;padding:.55rem 0;border-bottom:1px solid var(--border);font-size:.9rem}
+.objectives-list li:last-child{border-bottom:none}
+.obj-num{width:24px;height:24px;background:var(--purple);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* PREREQUISITES */
+.prereq-list{display:flex;flex-wrap:wrap;gap:.5rem;padding:0;list-style:none}
+.prereq-tag{background:rgba(92,31,107,.1);color:var(--purple-dark);padding:.3rem .8rem;border-radius:20px;font-size:.8rem;font-weight:600;border:1px solid rgba(92,31,107,.2)}
+
+/* EXERCISE CARDS */
+.exercise-card{background:#fff;border-left:4px solid var(--teal);border-radius:0 8px 8px 0;box-shadow:0 2px 8px rgba(0,0,0,.07);padding:1.5rem;margin-bottom:1.5rem;transition:box-shadow .2s}
+.exercise-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.exercise-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.exercise-id{background:var(--purple);color:#fff;padding:.2rem .65rem;border-radius:4px;font-size:.72rem;font-weight:700;font-family:'Courier New',monospace;white-space:nowrap}
+.exercise-title{font-size:1rem;font-weight:700;color:var(--purple-dark)}
+.exercise-goal{font-size:.88rem;color:var(--text);margin-bottom:1rem;padding:.65rem .9rem;background:#F5EFF8;border-radius:5px}
+.exercise-goal strong{color:var(--purple-dark)}
+
+/* STEPS */
+.steps-list{list-style:none;padding:0;margin-bottom:1rem}
+.steps-list li{display:flex;gap:.75rem;align-items:flex-start;font-size:.875rem;padding:.35rem 0}
+.step-dot{width:8px;height:8px;background:var(--teal);border-radius:50%;margin-top:7px;flex-shrink:0}
+
+/* CALLOUTS */
+.callout{border-radius:0 6px 6px 0;padding:.85rem 1rem;margin:.85rem 0;font-size:.875rem;border-left:4px solid}
+.callout-title{font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.35rem}
+.callout-tip{background:rgba(0,123,119,.08);border-color:var(--teal)}
+.callout-tip .callout-title{color:var(--teal)}
+.callout-warning{background:#FEF9E7;border-color:var(--golden)}
+.callout-warning .callout-title{color:#9A6700}
+.callout-error{background:#FDEDEC;border-color:#C0392B}
+.callout-error .callout-title{color:#721c24}
+.callout-info{background:#F5EFF8;border-color:var(--purple)}
+.callout-info .callout-title{color:var(--purple-dark)}
+
+/* CODE */
+pre{background:var(--code-bg);color:#D4D4D4;border-radius:6px;padding:1rem 1.25rem;overflow-x:auto;margin:.85rem 0;font-family:'Courier New','Consolas',monospace;font-size:.82rem;line-height:1.7}
+code{font-family:'Courier New','Consolas',monospace;font-size:.85em;background:#EDE8F0;color:#8B2080;padding:.1em .4em;border-radius:3px}
+pre code{background:none;color:inherit;padding:0;font-size:inherit}
+
+/* TROUBLE TABLE */
+.trouble-table{width:100%;border-collapse:collapse;font-size:.875rem;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.trouble-table thead tr{background:var(--purple-dark);color:#fff}
+.trouble-table th{padding:.75rem 1rem;text-align:left;font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.trouble-table td{padding:.75rem 1rem;border-bottom:1px solid var(--border);vertical-align:top}
+.trouble-table tbody tr:last-child td{border-bottom:none}
+.trouble-table tbody tr:nth-child(even){background:#F8F5FB}
+.trouble-symptom{font-weight:600;color:#C0392B}
+
+/* COMPARE GRID */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+.compare-card{background:#fff;border-radius:8px;padding:1.2rem;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.compare-card.biz{border-top:4px solid var(--purple)}
+.compare-card.app{border-top:4px solid var(--teal)}
+.compare-card h4{font-size:.9rem;font-weight:700;margin-bottom:.75rem}
+.compare-card.biz h4{color:var(--purple-dark)}
+.compare-card.app h4{color:var(--teal)}
+.compare-card ul{list-style:none;padding:0;font-size:.83rem;color:var(--text)}
+.compare-card ul li{padding:.28rem 0 .28rem 1rem;border-bottom:1px solid var(--border);position:relative}
+.compare-card ul li:last-child{border-bottom:none}
+.compare-card ul li::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:6px;height:6px;border-radius:50%}
+.compare-card.biz ul li::before{background:var(--purple)}
+.compare-card.app ul li::before{background:var(--teal)}
+
+/* BITMASK TABLE */
+.bitmask-table{width:100%;border-collapse:collapse;font-size:.875rem;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07);margin:1rem 0}
+.bitmask-table thead tr{background:var(--purple-dark);color:#fff}
+.bitmask-table th{padding:.6rem 1rem;text-align:left;font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.bitmask-table td{padding:.65rem 1rem;border-bottom:1px solid var(--border);font-family:'Courier New',monospace;font-size:.85rem}
+.bitmask-table tbody tr:last-child td{border-bottom:none}
+.bitmask-table tbody tr:nth-child(even){background:#F8F5FB}
+.xo-direct{color:var(--purple);font-weight:700}
+.xo-inherited{color:var(--teal);font-weight:700}
+.xo-both{color:var(--golden);font-weight:700}
+
+/* HIERARCHY */
+.hierarchy-tree{background:#fff;border-radius:8px;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.07);margin:1rem 0;font-size:.875rem}
+.tree-root{background:var(--purple-dark);color:#fff;padding:.6rem 1.2rem;border-radius:6px;display:inline-block;font-weight:600;margin-bottom:.75rem}
+.tree-branch{display:flex;gap:1rem;margin-top:.5rem;padding-left:1.5rem;border-left:2px dashed var(--border);flex-wrap:wrap}
+.tree-node-wrap{display:flex;flex-direction:column;align-items:center}
+.tree-node{background:var(--purple);color:#fff;padding:.45rem 1rem;border-radius:5px;font-size:.82rem;font-weight:600}
+.tree-member{font-size:.75rem;color:var(--muted);margin-top:.3rem;text-align:center}
+
+/* OUTCOME BOX */
+.outcome-box{background:rgba(0,123,119,.08);border:1px solid rgba(0,123,119,.3);border-radius:6px;padding:.85rem 1rem;font-size:.875rem;margin-top:.75rem}
+.outcome-box strong{color:var(--teal)}
+
+/* FOOTER */
+.page-footer{margin-top:3rem;padding:1.5rem 1rem;border-top:1px solid var(--border);text-align:center;font-size:.8rem;color:var(--muted);background:#fff}
+.page-footer strong{color:var(--purple-dark)}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">INTRAGEN<span>.</span></div>
+  <div class="sidebar-module-title">Module 012 — PMS</div>
+  <div class="nav-label">On This Page</div>
+  <a href="#overview">Overview</a>
+  <a href="#objectives">Learning Objectives</a>
+  <a href="#prerequisites">Prerequisites</a>
+  <a href="#concepts">Core Concepts</a>
+  <a href="#sample-data">Sample Data</a>
+  <a href="#exercises">Exercises</a>
+  <a href="#pms1">PMS-1: Role Types</a>
+  <a href="#pms2">PMS-2: Role Hierarchy</a>
+  <a href="#pms3">PMS-3: Import Employees</a>
+  <a href="#pms4">PMS-4: Assign &amp; XOrigin</a>
+  <a href="#pms5">PMS-5: App Roles &amp; Portal</a>
+  <div class="nav-label">Reference</div>
+  <a href="#troubleshooting">Troubleshooting</a>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main>
+
+  <!-- PAGE HEADER -->
+  <div class="module-header" id="overview">
+    <div class="header-watermark">INTRAGEN<span>.</span></div>
+    <div class="breadcrumb">Intragen OIM Academy &rsaquo; Mentor Guides &rsaquo; Module 012</div>
+    <h1>Module 012 &mdash; Permissions (PMS)</h1>
+    <p class="subtitle">OIM's role model governs who can access what across the organisation. This module covers Business Roles, Application Roles, permission propagation through hierarchies, and a practical CSV employee import exercise using provided sample data.</p>
+    <div class="badge-row">
+      <span class="badge badge-intermediate">Intermediate</span>
+      <span class="badge badge-info">5 Exercises</span>
+      <span class="badge badge-info">~2 Days</span>
+      <span class="badge badge-info">PMS</span>
+    </div>
+  </div>
+
+  <!-- INFO GRID -->
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ic-label">Module Code</div>
+      <div class="ic-value">PMS</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Exercises</div>
+      <div class="ic-value">5</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Duration</div>
+      <div class="ic-value">~2 days</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Level</div>
+      <div class="ic-value">Intermediate</div>
+    </div>
+  </div>
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="content-section" id="objectives">
+    <h2><span class="section-icon">01</span> Learning Objectives</h2>
+    <ul class="objectives-list">
+      <li><span class="obj-num">1</span>Understand the conceptual difference between Business Roles and Application Roles in OIM</li>
+      <li><span class="obj-num">2</span>Create a role hierarchy with a parent and child roles demonstrating inheritance</li>
+      <li><span class="obj-num">3</span>Assign permissions to roles and understand how permissions propagate downward through the tree</li>
+      <li><span class="obj-num">4</span>Assign roles to Persons both directly and through inheritance from parent roles</li>
+      <li><span class="obj-num">5</span>Create employee Person objects from CSV sample data including correct use of the External flag</li>
+      <li><span class="obj-num">6</span>Understand XOrigin propagation: 0x01 Direct, 0x02 Inherited, and bitmask combinations such as 0x03</li>
+      <li><span class="obj-num">7</span>Configure access control for the web portal using Application Roles linked to Business Roles</li>
+      <li><span class="obj-num">8</span>Verify the resulting access matrix by logging in as different test users and comparing what they can see</li>
+    </ul>
+  </div>
+
+  <!-- PREREQUISITES -->
+  <div class="content-section" id="prerequisites">
+    <h2><span class="section-icon">02</span> Prerequisites</h2>
+    <ul class="prereq-list">
+      <li class="prereq-tag">Module BAS complete</li>
+      <li class="prereq-tag">OIM Manager access</li>
+      <li class="prereq-tag">OIM Designer access</li>
+      <li class="prereq-tag">CSV knowledge helpful</li>
+      <li class="prereq-tag">Basic understanding of org structures</li>
+    </ul>
+
+    <div class="callout callout-info" style="margin-top:1rem;">
+      <div class="callout-title">Mentor Note</div>
+      Ensure trainees have completed Module BAS before starting PMS. Concepts of database sessions, DBQueue processing, and the OIM Manager UI are assumed throughout this module. If the trainee is unfamiliar with DBQueue, review that briefly before starting Exercise PMS-4.
+    </div>
+  </div>
+
+  <!-- CORE CONCEPTS -->
+  <div class="content-section" id="concepts">
+    <h2><span class="section-icon">03</span> Core Concepts</h2>
+
+    <h3>Business Roles vs Application Roles</h3>
+    <div class="compare-grid">
+      <div class="compare-card biz">
+        <h4>Business Roles (Organisational)</h4>
+        <ul>
+          <li>Represents who a person <em>is</em> in the org</li>
+          <li>Arranged in a tree hierarchy</li>
+          <li>Examples: Developer in IT Dept, Manager in Finance</li>
+          <li>People are <em>members</em> of Business Roles</li>
+          <li>Business Roles <em>grant</em> Application Roles</li>
+          <li>Drives provisioning and entitlement decisions</li>
+        </ul>
+      </div>
+      <div class="compare-card app">
+        <h4>Application Roles (Functional)</h4>
+        <ul>
+          <li>Represents what a person can <em>do</em></li>
+          <li>Flat list structure — no hierarchy</li>
+          <li>Examples: Read-Only Portal, Admin Access</li>
+          <li>Granted <em>via</em> Business Roles (not directly to persons)</li>
+          <li>Controls OIM UI and API permissions</li>
+          <li>Compiled and deployed via Designer to take effect</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Analogy for Trainees</div>
+      Business Role = "who you are in the org" (e.g. Developer in IT Department). Application Role = "what you can do" (e.g. Read-only portal access). An org role GRANTS application roles; people are MEMBERS of org roles. Avoid mixing these up — it is one of the most common architecture mistakes in OIM implementations. Make the trainee state this distinction back in their own words before proceeding.
+    </div>
+
+    <h3 style="margin-top:1.5rem;">XOrigin Bitmask</h3>
+    <p style="font-size:.875rem;margin-bottom:.75rem;">XOrigin is a bitmask field on <code>PersonInRole</code> (and similar assignment tables) that records <em>how</em> an assignment came to exist. Multiple bits can be set simultaneously — the value is additive, not exclusive.</p>
+
+    <table class="bitmask-table">
+      <thead>
+        <tr>
+          <th>Label</th>
+          <th>Hex Value</th>
+          <th>Binary</th>
+          <th>Meaning</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="xo-direct">Direct</td>
+          <td>0x01</td>
+          <td>0001</td>
+          <td>Person was explicitly assigned to this role by a user or process</td>
+        </tr>
+        <tr>
+          <td class="xo-inherited">Inherited</td>
+          <td>0x02</td>
+          <td>0010</td>
+          <td>Assignment flowed down from a parent role in the hierarchy</td>
+        </tr>
+        <tr>
+          <td class="xo-both">Both</td>
+          <td>0x03</td>
+          <td>0011</td>
+          <td>Directly assigned AND inherited simultaneously — both bits are set</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">Common Misunderstanding — Bitmask Is Not Exclusive</div>
+      Trainees often expect XOrigin to be a single exclusive value. Show them that 0x03 means <em>both bits are set at once</em>. This is important when removing a direct assignment: if inheritance also applies, the PersonInRole record stays with XOrigin = 0x02 rather than being deleted. The assignment persists via the inherited path even after the direct assignment is removed.
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Role Hierarchy for This Module</h3>
+    <div class="hierarchy-tree">
+      <div class="tree-root">IT Department &nbsp;(Parent Business Role)</div>
+      <div class="tree-branch">
+        <div class="tree-node-wrap">
+          <div class="tree-node">Tester</div>
+          <div class="tree-member">Dimitris Kalfas</div>
+        </div>
+        <div class="tree-node-wrap">
+          <div class="tree-node">Developer</div>
+          <div class="tree-member">Anestis Antwniou</div>
+        </div>
+        <div class="tree-node-wrap">
+          <div class="tree-node">Publisher</div>
+          <div class="tree-member">Anna Lyra</div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:.5rem;">Members of child roles inherit membership of the parent "IT Department" role. The Portal Read-Only Application Role is linked to Publisher only — so Anna Lyra gains portal access while Kalfas does not.</p>
+  </div>
+
+  <!-- SAMPLE DATA -->
+  <div class="content-section" id="sample-data">
+    <h2><span class="section-icon">04</span> Sample Data &mdash; Employees_file.csv</h2>
+
+    <p style="font-size:.875rem;margin-bottom:.75rem;">This CSV file is used in PMS-3 to create the three sample employees. Each employee maps directly to a Business Role created in PMS-2. The <code>External</code> column maps to the <code>IsExternal</code> flag on the OIM Person object.</p>
+
+    <pre><code>Name,Surname,Description,External
+Dimitris,Kalfas,Tester,0
+Anestis,Antwniou,Developer,1
+Anna,Lyra,Publisher,0</code></pre>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">External Flag — Do Not Overlook</div>
+      <code>External=1</code> for Anestis Antwniou marks him as an external contractor. This must map to <code>IsExternal = Yes</code> on the Person object. External contractors commonly receive different provisioning rules, different approval workflows, time-limited accounts, and may be excluded from certain entitlements. If this flag is wrong at the Person level, incorrect provisioning flows silently downstream.
+    </div>
+
+    <table class="trouble-table" style="margin-top:1rem;">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Business Role</th>
+          <th>IsExternal</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Dimitris</td>
+          <td>Kalfas</td>
+          <td>Tester</td>
+          <td>No (0)</td>
+          <td>Internal employee; no portal access in final state</td>
+        </tr>
+        <tr>
+          <td>Anestis</td>
+          <td>Antwniou</td>
+          <td>Developer</td>
+          <td><strong style="color:#9A6700;">Yes (1)</strong></td>
+          <td>External contractor — must tick IsExternal checkbox</td>
+        </tr>
+        <tr>
+          <td>Anna</td>
+          <td>Lyra</td>
+          <td>Publisher</td>
+          <td>No (0)</td>
+          <td>Internal; gains Portal Read-Only access via role in PMS-5</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- EXERCISES -->
+  <div class="content-section" id="exercises">
+    <h2><span class="section-icon">05</span> Exercises</h2>
+
+    <!-- PMS-1 -->
+    <div class="exercise-card" id="pms1">
+      <div class="exercise-header">
+        <span class="exercise-id">PMS-1</span>
+        <span class="exercise-title">Business Roles vs Application Roles</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Understand the conceptual difference between Business Roles and Application Roles; explore both interfaces in OIM Manager and compare their structure.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Open OIM Manager and navigate to <strong>Business Roles</strong> — observe the tree view structure and note that roles can be nested</li>
+        <li><span class="step-dot"></span>Navigate to <strong>Application Roles</strong> — observe the flat list and confirm there is no hierarchy</li>
+        <li><span class="step-dot"></span>Compare the two interfaces side by side: note the structural differences</li>
+        <li><span class="step-dot"></span>Open an existing Business Role — examine the <strong>Application Roles</strong> tab to see what functional permissions this org role grants</li>
+        <li><span class="step-dot"></span>Open an existing Application Role — examine which Business Roles reference it</li>
+        <li><span class="step-dot"></span>Ask the trainee: "If a new employee joins as a Developer, which role type do you assign to them, and why?"</li>
+        <li><span class="step-dot"></span>Confirm understanding: trainee should answer Business Role, because it expresses their organisational position</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Mentor Hint</div>
+        Use the analogy directly: Business Role = "who you are in the org" (e.g. Developer in IT Dept); Application Role = "what you can do" (e.g. Read-only portal access). An org role GRANTS application roles; people are MEMBERS of org roles. Make the trainee explain it back in their own words before proceeding to PMS-2.
+      </div>
+
+      <div class="callout callout-error">
+        <div class="callout-title">Common Mistake</div>
+        Assigning Application Roles directly to Persons instead of routing through Business Roles. This bypasses the governance structure — individual assignments are invisible to role management reports, cannot be bulk-revoked when someone changes roles, and do not follow the recertification process. Always route access through Business Roles.
+      </div>
+    </div>
+
+    <!-- PMS-2 -->
+    <div class="exercise-card" id="pms2">
+      <div class="exercise-header">
+        <span class="exercise-id">PMS-2</span>
+        <span class="exercise-title">Create Role Hierarchy</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create an "IT Department" parent Business Role with three child roles — Tester, Developer, Publisher — matching the sample CSV employees.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Manager &rarr; Business Roles &rarr; <strong>New</strong> &rarr; set Name = "IT Department"</li>
+        <li><span class="step-dot"></span>Enable the <strong>Inherit assignments</strong> flag on the IT Department role before saving</li>
+        <li><span class="step-dot"></span>Save the parent role and confirm it appears in the tree as a root-level entry</li>
+        <li><span class="step-dot"></span>Create a new Business Role named "Tester"; in the <strong>Parent</strong> field, select "IT Department"</li>
+        <li><span class="step-dot"></span>Create a new Business Role named "Developer"; set Parent = "IT Department"</li>
+        <li><span class="step-dot"></span>Create a new Business Role named "Publisher"; set Parent = "IT Department"</li>
+        <li><span class="step-dot"></span>Verify the tree view shows IT Department with three child nodes nested beneath it</li>
+        <li><span class="step-dot"></span>Refresh the tree if the children do not appear immediately</li>
+      </ul>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">Mentor Hint</div>
+        Connect the role names to the CSV employees now: Kalfas = Tester, Antwniou = Developer, Lyra = Publisher. This makes PMS-3 and PMS-4 feel purposeful rather than arbitrary. Trainees retain information significantly better when example data carries real meaning — avoid purely abstract examples like "Role A" and "Role B".
+      </div>
+
+      <div class="callout callout-error">
+        <div class="callout-title">Common Mistake — Missing Parent Field</div>
+        Not setting the <strong>Parent</strong> field on child roles. Without it, all three roles appear as separate root-level entries with no hierarchy, and inheritance cannot work at all. Always verify the tree view after creating each child role — the tree is the definitive visual confirmation.
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">Inherit Assignments Flag</div>
+        The "Inherit assignments" flag on IT Department controls whether entitlements assigned to the parent flow down to child role members. If this flag is off, child role members will not inherit parent-level entitlements, and XOrigin will never show 0x02 (Inherited). Enable it before the exercise to avoid confusion in PMS-4.
+      </div>
+    </div>
+
+    <!-- PMS-3 -->
+    <div class="exercise-card" id="pms3">
+      <div class="exercise-header">
+        <span class="exercise-id">PMS-3</span>
+        <span class="exercise-title">Import Employees from CSV</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create the three sample employees in OIM as Person objects, matching the CSV data exactly — including the correct IsExternal flag value for Anestis Antwniou.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Manager &rarr; Persons &rarr; <strong>New</strong></li>
+        <li><span class="step-dot"></span>Create Person 1: First Name = Dimitris, Last Name = Kalfas, Description = Tester, <strong>IsExternal = No</strong> &rarr; Save</li>
+        <li><span class="step-dot"></span>Create Person 2: First Name = Anestis, Last Name = Antwniou, Description = Developer, <strong>IsExternal = Yes (tick the checkbox)</strong> &rarr; Save</li>
+        <li><span class="step-dot"></span>Create Person 3: First Name = Anna, Last Name = Lyra, Description = Publisher, <strong>IsExternal = No</strong> &rarr; Save</li>
+        <li><span class="step-dot"></span>Verify all three records exist: search for each by surname and confirm the IsExternal field value matches the CSV</li>
+        <li><span class="step-dot"></span>Note the OIM-assigned UID on each Person record for reference in PMS-4</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Mentor Hint</div>
+        For Anestis, explicitly tick the IsExternal checkbox and have the trainee confirm its value before saving. External contractors in OIM commonly receive different provisioning rules — for example, excluded from Active Directory group provisioning, given time-limited accounts, or subject to additional approval workflows. This flag feeds into conditional process logic throughout OIM. Getting it right at the Person level prevents incorrect provisioning downstream.
+      </div>
+
+      <div class="callout callout-error">
+        <div class="callout-title">Common Mistake</div>
+        Creating all three employees with IsExternal = 0. The CSV clearly marks Anestis as External = 1. If this is missed, Anestis receives the same provisioning path as internal staff — which is incorrect and may violate security policy. Cross-reference source data carefully and verify every field, not just names.
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">Optional Extension</div>
+        If the environment supports CSV synchronisation, briefly show how an OIM Sync project could import the CSV automatically rather than requiring manual entry. This previews Module SYN and demonstrates that manual Person creation is the exception, not the operational norm.
+      </div>
+    </div>
+
+    <!-- PMS-4 -->
+    <div class="exercise-card" id="pms4">
+      <div class="exercise-header">
+        <span class="exercise-id">PMS-4</span>
+        <span class="exercise-title">Assign Roles and Verify XOrigin</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Assign each employee to their matching Business Role; run the DBQueue; inspect XOrigin values on PersonInRole records to understand the difference between direct and inherited assignments.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Open Dimitris Kalfas &rarr; <strong>Business Roles</strong> tab &rarr; click Assign &rarr; select "Tester" &rarr; Save</li>
+        <li><span class="step-dot"></span>Open Anestis Antwniou &rarr; <strong>Business Roles</strong> tab &rarr; click Assign &rarr; select "Developer" &rarr; Save</li>
+        <li><span class="step-dot"></span>Open Anna Lyra &rarr; <strong>Business Roles</strong> tab &rarr; click Assign &rarr; select "Publisher" &rarr; Save</li>
+        <li><span class="step-dot"></span>Run the <strong>DBQueue Processor</strong> (or trigger the job service cycle)</li>
+        <li><span class="step-dot"></span>After processing, open a database query tool and query <code>PersonInRole</code> filtered by each Person's UID</li>
+        <li><span class="step-dot"></span>Examine the <code>XOrigin</code> column on each row — note which rows show 0x01, 0x02, or 0x03</li>
+        <li><span class="step-dot"></span>Check for rows where the linked Business Role is "IT Department" (the parent) — these show XOrigin = 0x02 (inherited)</li>
+        <li><span class="step-dot"></span>Discuss: what would happen to XOrigin if you also directly assigned Kalfas to "IT Department" as well as "Tester"?</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Mentor Hint &mdash; Reading the Bitmask</div>
+        Direct assignment gives XOrigin = 0x01 on the Tester/Developer/Publisher row. The IT Department parent row will show XOrigin = 0x02 (inherited). If someone is <em>also</em> directly assigned to the parent role, that parent row becomes 0x03 (both bits set: 0x01 + 0x02 = 0x03). Walk trainees through binary: 0x03 = binary 0011 — bit 0 is Direct, bit 1 is Inherited. Multiple sources can be active simultaneously.
+      </div>
+
+      <div class="callout callout-error">
+        <div class="callout-title">Common Mistake &mdash; Expecting Exclusive Values</div>
+        Trainees often assume XOrigin is exclusive: either 0x01 or 0x02, never both. Show the actual database rows to prove that 0x03 is a valid and common value. This also matters operationally: removing the direct assignment when 0x03 is set does not delete the row — it becomes 0x02. The assignment persists via inheritance.
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">XIsInEffect</div>
+        If XOrigin looks correct but nothing is taking effect in the portal or provisioning, check the <code>XIsInEffect</code> column on PersonInRole. A value of 0 means the assignment is inactive — typically due to date restrictions or an unmet condition. XIsInEffect is separate from XOrigin and both must be 1 for the assignment to be active.
+      </div>
+    </div>
+
+    <!-- PMS-5 -->
+    <div class="exercise-card" id="pms5">
+      <div class="exercise-header">
+        <span class="exercise-id">PMS-5</span>
+        <span class="exercise-title">Application Roles and Portal Access</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create a "Portal Read-Only" Application Role; link it to the Publisher Business Role; verify that Anna Lyra can log into the portal read-only while Dimitris Kalfas cannot access the portal.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Manager &rarr; Application Roles &rarr; <strong>New</strong> &rarr; Name = "Portal Read-Only"</li>
+        <li><span class="step-dot"></span>Assign appropriate read permissions to the Application Role (portal navigation nodes and view rights)</li>
+        <li><span class="step-dot"></span>Open the <strong>Publisher</strong> Business Role &rarr; <strong>Application Roles</strong> tab &rarr; click Add &rarr; select "Portal Read-Only"</li>
+        <li><span class="step-dot"></span>Save all changes and run DBQueue</li>
+        <li><span class="step-dot"></span>In Designer, <strong>compile</strong> and <strong>deploy</strong> the Application Role configuration to the portal</li>
+        <li><span class="step-dot"></span>Log into the web portal as <strong>Anna Lyra</strong> &rarr; verify she can browse content but the edit/save controls are absent or disabled</li>
+        <li><span class="step-dot"></span>Log into the web portal as <strong>Dimitris Kalfas</strong> &rarr; verify he has no portal access (login fails or only default empty access)</li>
+        <li><span class="step-dot"></span>Confirm the difference is entirely explained by role membership, not individual configuration</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Mentor Hint</div>
+        This exercise is the payoff of the entire module — role membership directly controls system access without any individual exceptions. Test with both Anna and Kalfas and have the trainee narrate why each person sees what they see, tracing back through: Person &rarr; Business Role &rarr; Application Role &rarr; Permission. This confirms the full chain is understood.
+      </div>
+
+      <div class="callout callout-error">
+        <div class="callout-title">Common Mistake &mdash; Skipping Compile and Deploy</div>
+        Application Role changes made in Manager do not take effect in the portal until the configuration is compiled and deployed in Designer. This step is frequently forgotten. If Anna's access looks wrong after the exercise, the first question is always: "Was Designer compiled and deployed after the change?"
+      </div>
+
+      <div class="outcome-box">
+        <strong>Expected Outcome:</strong> The governance-driven role model is working. Anna Lyra has portal read-only access via the chain Publisher Business Role &rarr; Portal Read-Only Application Role. Kalfas has no portal access because the Tester Business Role has no Application Role grants. Access is controlled entirely by role membership, not individual assignment.
+      </div>
+    </div>
+  </div>
+
+  <!-- TROUBLESHOOTING -->
+  <div class="content-section" id="troubleshooting">
+    <h2><span class="section-icon">06</span> Troubleshooting Reference</h2>
+
+    <table class="trouble-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Symptom</th>
+          <th>Likely Cause</th>
+          <th>Resolution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td class="trouble-symptom">Role assignment not visible on account</td>
+          <td>DBQueue not processed after the assignment was saved</td>
+          <td>Run DBQueue Processor manually, or wait for the job service cycle; then refresh the Person view</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td class="trouble-symptom">XOrigin shows 0 despite assignment existing</td>
+          <td>Assignment not active — XIsInEffect = 0</td>
+          <td>Check effective start/end dates and conditions on the PersonInRole record; ensure XIsInEffect = 1</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td class="trouble-symptom">CSV employee creation silently fails</td>
+          <td>Mandatory Person fields missing or data type mismatch</td>
+          <td>Check OIM server error log; validate that all required fields (e.g. LastName) are populated</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td class="trouble-symptom">Child role not inheriting from parent</td>
+          <td>Inherit assignments flag not enabled on parent role</td>
+          <td>Open parent Business Role &rarr; enable "Inherit assignments" &rarr; save &rarr; re-run DBQueue</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td class="trouble-symptom">External employee receiving internal provisioning</td>
+          <td>IsExternal flag not set on the Person object</td>
+          <td>Open Person &rarr; set IsExternal = Yes &rarr; save &rarr; re-trigger provisioning via DBQueue</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td class="trouble-symptom">Application Role not granting portal access after assignment</td>
+          <td>Designer compile and deploy not run after the change</td>
+          <td>Open Designer &rarr; compile Application Role configuration &rarr; deploy to portal &rarr; retest login</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td class="trouble-symptom">All employees appear to have the same access level</td>
+          <td>Role hierarchy not configured; all roles sitting at root level with no parent</td>
+          <td>Verify parent-child relationships on each role; confirm Application Roles are linked to the correct Business Roles only</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <strong>INTRAGEN.</strong> Academy &mdash; Mentoring Documentation &mdash; &copy; Intragen International. This document remains strictly private and confidential.
+  </div>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 024_002 - Bulk Actions Mentor Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #7B2D8B;
+    --purple-dark: #5C1F6B;
+    --teal: #007B77;
+    --golden: #F0A800;
+    --body-bg: #FAF8F5;
+    --code-bg: #1E1E1E;
+    --border: #DDD;
+    --text: #2C2C2C;
+    --muted: #6B6B6B;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    background: #F0EDE8;
+    color: var(--text);
+  }
+
+  /* Sidebar */
+  #sidebar {
+    background: var(--purple);
+    color: #fff;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 1.25rem 1rem 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-module-title {
+    color: var(--golden);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.75rem 1rem 0.25rem;
+  }
+
+  #sidebar nav a {
+    display: block;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.83rem;
+    border-left: 3px solid transparent;
+    padding: 0.4rem 1rem;
+    transition: all 0.2s;
+  }
+  #sidebar nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-left-color: var(--teal);
+    color: #fff;
+  }
+
+  .nav-section {
+    padding: 0.75rem 1rem 0.25rem;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.45);
+    font-weight: 700;
+    margin-top: 0.4rem;
+  }
+
+  /* Main */
+  #main {
+    padding: 2.25rem 2.5rem;
+    overflow-y: auto;
+    max-width: 1100px;
+    background: var(--body-bg);
+  }
+
+  /* Module header */
+  .module-header {
+    background: linear-gradient(135deg, #5C1F6B, #7B2D8B);
+    color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .module-header .deco-circle {
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .module-header .watermark {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+  .module-header h1 {
+    font-size: 1.6rem;
+    margin-bottom: 0.35rem;
+    color: #fff;
+  }
+  .module-header .page-subtitle {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.93rem;
+    margin-bottom: 0;
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.6rem;
+  }
+
+  /* Section banner */
+  .section-banner {
+    background: var(--purple-dark);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.5rem 0.9rem;
+    margin: 1.5rem 0 1rem;
+    border-radius: 3px;
+  }
+
+  /* Architecture box */
+  .arch-box {
+    background: #1a1a2e;
+    color: #cdd6f4;
+    border-radius: 10px;
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 2rem;
+  }
+  .arch-box h2 {
+    color: var(--golden);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.75rem;
+  }
+  .arch-box p { font-size: 0.88rem; margin-bottom: 0.9rem; color: #a0aec0; }
+  .arch-box ol { padding-left: 1.25rem; line-height: 1.9; font-size: 0.88rem; }
+  .arch-box code { background: rgba(240,168,0,0.18); color: #F0A800; padding: 1px 6px; border-radius: 4px; font-size: 0.86rem; }
+
+  /* Exercise card */
+  .exercise-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--teal);
+    border-radius: 0 8px 8px 0;
+    padding: 1.5rem;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .exercise-card .card-heading {
+    color: var(--purple-dark);
+    font-size: 1.1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #EDE8F0;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .ex-id {
+    background: var(--purple);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    letter-spacing: 0.03em;
+  }
+
+  .section-label {
+    background: var(--purple-dark);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.5rem 0.9rem;
+    margin: 1.5rem 0 1rem;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .requirements-box {
+    background: #F5EFF8;
+    border-left: 4px solid var(--purple);
+    border-radius: 0 6px 6px 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #333;
+  }
+
+  /* Steps */
+  .steps-list { list-style: none; padding: 0; counter-reset: steps; }
+  .steps-list > li {
+    counter-increment: steps;
+    padding: 0.5rem 0.75rem 0.5rem 2.75rem;
+    position: relative;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .steps-list > li:last-child { border-bottom: none; }
+  .steps-list > li::before {
+    content: counter(steps);
+    position: absolute;
+    left: 0.625rem;
+    top: 0.5rem;
+    background: var(--purple-dark);
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .steps-list code { background: #EDE8F0; color: #8B2080; padding: 1px 5px; border-radius: 3px; font-size: 0.82rem; font-family: Consolas, monospace; }
+
+  /* Tables */
+  .test-table-wrap { overflow-x: auto; margin-top: 0.5rem; }
+  table.test-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  table.test-table thead th {
+    background: var(--purple-dark);
+    color: #fff;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-align: left;
+  }
+  table.test-table tbody td {
+    padding: 0.5rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  table.test-table tbody tr:nth-child(even) td { background: #F8F5FB; }
+  table.test-table .num-col { text-align: center; font-weight: 700; color: var(--purple); width: 36px; }
+
+  /* Mentor box */
+  .mentor-box {
+    background: #F5EFF8;
+    border-left: 4px solid var(--purple);
+    border-radius: 0 6px 6px 0;
+    padding: 1rem 1.25rem;
+    margin-top: 0.625rem;
+  }
+  .mentor-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 3px;
+    color: var(--purple-dark);
+  }
+  .mentor-box ul { padding-left: 1.125rem; font-size: 0.86rem; line-height: 1.8; color: #444; }
+  .mentor-box li { margin-bottom: 4px; }
+  .mentor-box code { background: #EDE8F0; color: #8B2080; padding: 1px 5px; border-radius: 3px; font-size: 0.82rem; font-family: Consolas, monospace; }
+
+  /* Callouts */
+  .callout {
+    padding: 0.75rem 1rem;
+    border-radius: 0 6px 6px 0;
+    margin-top: 0.625rem;
+    font-size: 0.86rem;
+    line-height: 1.65;
+  }
+  .callout.tip    { background: #F0FDF4; border-left: 4px solid #22C55E; }
+  .callout.warn   { background: #FFF8E1; border-left: 4px solid #F59E0B; }
+  .callout.important { background: #F5EFF8; border-left: 4px solid var(--purple); }
+  .callout.note   { background: #E8F4FF; border-left: 4px solid #2D6DB5; }
+  .callout strong.label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  /* Inline code & code blocks */
+  code { background: #EDE8F0; color: #8B2080; font-family: Consolas, monospace; font-size: 0.82rem; padding: 1px 5px; border-radius: 3px; }
+  .code-block {
+    background: #1E1E1E;
+    color: #D4D4D4;
+    font-family: 'Cascadia Code', Consolas, monospace;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    padding: 1rem 1.1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 0.75rem 0;
+  }
+
+  /* Endpoint list */
+  .endpoint-list { list-style: none; padding: 0; }
+  .endpoint-list li { padding: 5px 0; font-size: 0.86rem; }
+  .endpoint-list code { background: #1a1a2e; color: #a0e9d0; padding: 3px 8px; border-radius: 4px; font-size: 0.82rem; display: inline-block; font-family: Consolas, monospace; }
+
+  .no-test-note { font-style: italic; color: var(--muted); font-size: 0.85rem; padding: 0.5rem 0; }
+
+  h3 { color: var(--purple); }
+  h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; }
+
+  /* Badges */
+  .badge-advanced { background: #f8d7da; color: #721c24; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+
+  /* Global mentor tips card override */
+  .card-ref { border-left-color: var(--purple-dark); }
+  .card-ref .card-heading { background: var(--purple-dark); color: #fff; margin: -1.5rem -1.5rem 1rem; padding: 1rem 1.5rem; border-radius: 0 8px 0 0; }
+  .card-ref .card-heading .ex-id { background: rgba(255,255,255,0.25); color: #fff; }
+
+  @media (max-width: 800px) {
+    body { grid-template-columns: 1fr; }
+    #sidebar { position: static; height: auto; }
+    #main { padding: 1.25rem 0.875rem; }
+  }
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div class="sidebar-logo">INTRAGEN<span style="color:#F0A800">.</span></div>
+  <div class="sidebar-module-title">024_002 &mdash; Bulk Actions<br>Angular + C# + Git</div>
+  <nav>
+    <div class="nav-section">Overview</div>
+    <a href="#architecture">Architecture</a>
+    <div class="nav-section">Exercises</div>
+    <a href="#ba01">BA_01 &mdash; Environment Setup</a>
+    <a href="#ba02">BA_02 &mdash; First Endpoint</a>
+    <a href="#ba03">BA_03 &mdash; Validation Endpoint</a>
+    <a href="#ba04">BA_04 &mdash; Action Endpoint</a>
+    <a href="#ba05">BA_05 &mdash; Full Identity Import</a>
+    <a href="#ba07">BA_07 &mdash; Add Entitlement</a>
+    <a href="#ba08">BA_08 &mdash; Remove Entitlement</a>
+    <div class="nav-section">Reference</div>
+    <a href="#mentor-tips">Mentor Tips</a>
+  </nav>
+</aside>
+
+<main id="main">
+
+  <div class="module-header">
+    <div class="deco-circle"></div>
+    <div class="watermark">INTRAGEN<span style="color:#F0A800">.</span></div>
+    <span class="badge">Mentor Guide</span>
+    <h1>Module 024_002 &mdash; Bulk Actions</h1>
+    <p class="page-subtitle">Advanced track: Angular front-end + C# CompositionAPI back-end + Git workflow</p>
+  </div>
+
+  <!-- Architecture -->
+  <div class="arch-box" id="architecture">
+    <h2>Architecture Overview &mdash; 4-Endpoint HTTP Contract</h2>
+    <p>
+      The Angular front-end calls these endpoints in sequence for every bulk CSV action.
+      Understanding this contract is essential before writing any endpoint code.
+    </p>
+    <ol>
+      <li><code>/csvtemplate</code> &mdash; Returns CSV column headers as a downloadable template file</li>
+      <li><code>/startvalidate</code> &mdash; Pre-flight check; returns <code>{ message, permission, collectImportData? }</code></li>
+      <li><code>/validate</code> &mdash; Per-row validation; returns an array of <code>{ column }</code> or <code>{ column, errorMsg }</code></li>
+      <li><code>/startaction</code>, <code>/action</code>, <code>/endaction</code> &mdash; Per-row processing and post-flight summary</li>
+    </ol>
+  </div>
+
+  <!-- BA_01 -->
+  <div class="exercise-card" id="ba01">
+    <div class="card-heading">
+      <span class="ex-id">BA_01</span>
+      Full Environment Setup
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Set up the complete development environment: Node.js, Angular CLI 18.2.14, the IMX Angular source (v93),
+      the bulk-actions plugin configuration, Git, and the C# plugin DLL in both required locations.
+      The environment must support building and serving the Angular app and deploying C# plugins.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Install Angular CLI globally: <code>npm install -g @angular/cli@18.2.14</code></li>
+      <li>Verify installed versions of Node.js and Angular CLI are compatible.</li>
+      <li>Download <strong>IdentityManager.Imx-93</strong> from GitHub using tag <code>v93</code>.</li>
+      <li>Copy the <strong>bulk-actions</strong> project folder into <code>IdentityManager.Imx-93\imxweb\projects\bulk-actions</code>.</li>
+      <li>Modify <code>qer-app-portal\project.json</code> to register the bulk-actions module.</li>
+      <li>Modify <code>imxweb\tsconfig.json</code> to include the bulk-actions path mapping.</li>
+      <li>In <code>angular.json</code>: copy the <code>rmb</code> block and rename <strong>ALL</strong> occurrences of "rmb" to "bulk-actions" &mdash; use VS Code Find &amp; Replace All to avoid missing any instance.</li>
+      <li>In the OIM <code>imxweb</code> folder: copy the <code>Html_aob</code> directory to <code>bulk-actions</code>; copy <code>imx-plugin-config.json</code> to <code>imxweb\bulk-actions\imx-plugin-config</code>.</li>
+      <li>Download and install <strong>Git for Windows</strong>.</li>
+      <li>Open Git Bash in the <code>imxweb</code> folder: run <code>git init</code>, create a branch, <code>git add .</code>, commit with a descriptive message, then <code>git push</code>.</li>
+      <li>Create a new directory <code>BulkActions_SC</code>, then run <code>git clone https://github.com/kostas-statho/BulkActions_V93.git</code>. Verify files and the correct branch are present.</li>
+      <li>Open <code>BulkActions_SC\BulkActions_V93\imxweb</code> in VS Code and run <code>npm install --skip-dialog</code>.</li>
+      <li>Copy <code>BulkActions93.CompositionApi.Server.Plugin.dll</code> to <strong>both</strong> <code>C:\Program Files\One Identity\One Identity Manager</code> <strong>AND</strong> <code>C:\inetpub\wwwroot\ApiServer\bin</code>.</li>
+      <li>Run <code>npm run nx:build-all</code>. If any package is missing, install it manually: <code>npm install &lt;package&gt;</code>.</li>
+      <li>Create a RoleBased permission group <strong>CCC_BulkActions</strong>.</li>
+      <li>Create an <strong>AERole</strong> and assign the permission group to it.</li>
+      <li>Login to ITShop with an Identity that has the CCC_BulkActions group and verify the Bulk Actions feature is accessible.</li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <p class="no-test-note">No formal test table for BA_01. Verify environment by confirming each setup step completes without errors, the Angular build succeeds, and the ITShop login with the test identity shows the Bulk Actions feature.</p>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li><code>npm run nx:build-all</code> takes 10&ndash;20 minutes on the first run &mdash; advise trainees to be patient.</li>
+        <li>If packages are missing after the build, install them one by one with <code>npm install &lt;package&gt;</code>; there is no batch shortcut.</li>
+        <li>The DLL <strong>must</strong> be copied to both the OIM install directory and <code>ApiServer\bin</code>. Missing either location causes intermittent failures that are hard to diagnose.</li>
+        <li>In <code>angular.json</code> Step 7, ALL occurrences of "rmb" must be renamed. Use VS Code Find &amp; Replace All (<kbd>Ctrl+Shift+H</kbd>) to guarantee nothing is missed.</li>
+        <li>Avoid spaces in any folder path along the development chain &mdash; Angular CLI and some npm scripts fail silently with spaces in paths.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- BA_02 -->
+  <div class="exercise-card" id="ba02">
+    <div class="card-heading">
+      <span class="ex-id">BA_02</span>
+      First Bulk Action Endpoint
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Create the first working C# endpoint for a bulk action. The endpoint must follow the
+      <code>IApiProvider</code> + <code>IApiProviderFor&lt;PortalApiProject&gt;</code> pattern,
+      register correctly with the plugin, build without errors, and respond in ITShop.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Create the proper endpoint class implementing <code>IApiProvider</code> and <code>IApiProviderFor&lt;PortalApiProject&gt;</code>.</li>
+      <li>Build the solution and copy the updated <code>.dll</code> to the Api Server bin directory.</li>
+      <li>Restart the API Server application pool and verify functionality in ITShop.</li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <p class="no-test-note">No formal test table. Verify the endpoint responds correctly in ITShop by triggering the action from the Bulk Actions UI and confirming the expected response is returned.</p>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>All endpoint classes must use namespace <code>QBM.CompositionApi</code>.</li>
+        <li>Endpoint URL prefix must be <code>webportalplus/</code> &mdash; verify this matches what the Angular component calls.</li>
+        <li>After deploying a new DLL, always recycle the API Server application pool in IIS.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- BA_03 -->
+  <div class="exercise-card" id="ba03">
+    <div class="card-heading">
+      <span class="ex-id">BA_03</span>
+      Validation Endpoint
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Implement the per-row validation endpoint. For each CSV row, the endpoint must return
+      an array of objects: <code>{ column }</code> for a valid field, or <code>{ column, errorMsg }</code>
+      when validation fails.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Create the <code>/validate</code> endpoint returning the correct per-row validation array structure.</li>
+      <li>Build the solution and copy the updated DLL to the Api Server.</li>
+      <li>Verify functionality by uploading a test CSV in ITShop and confirming per-row errors are displayed.</li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <p class="no-test-note">No formal test table. Validate by uploading CSVs with known bad rows and confirming errors surface in the correct columns in the ITShop UI.</p>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>The <code>errorMsg</code> field must be present on invalid rows only &mdash; sending an empty string is not the same as omitting the field.</li>
+        <li>All DB calls inside the endpoint must use <code>.ConfigureAwait(false)</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- BA_04 -->
+  <div class="exercise-card" id="ba04">
+    <div class="card-heading">
+      <span class="ex-id">BA_04</span>
+      Action Endpoint
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Implement the per-row <code>/action</code> endpoint that performs the actual database write or delete
+      using a <code>UnitOfWork</code>. The endpoint must commit changes transactionally and handle errors gracefully.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Create the <code>/action</code> endpoint using <code>qr.Session.StartUnitOfWork()</code>, <code>u.PutAsync()</code> or <code>u.DeleteAsync()</code>, and <code>u.CommitAsync()</code>.</li>
+      <li>Build the solution and copy the updated DLL to the Api Server.</li>
+      <li>Verify functionality by processing a valid CSV row and confirming the DB change.</li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <p class="no-test-note">No formal test table. Verify by running a full action through the ITShop UI and confirming the expected records are created or modified in the OIM database.</p>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>Always <code>using var u = qr.Session.StartUnitOfWork();</code> &mdash; the <code>using</code> block ensures disposal even on exception.</li>
+        <li>Use <code>$"..."</code> string interpolation (not <code>string.Format</code>) for strings with <code>\n</code> line breaks &mdash; Format with verbatim strings produces <code>\\n</code> literally.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- BA_05 -->
+  <div class="exercise-card" id="ba05">
+    <div class="card-heading">
+      <span class="ex-id">BA_05</span>
+      Full Identity Import with Validation
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Build a complete identity import bulk action with validation. Enforce OIM rules: Personnel number
+      must be unique, LastName is mandatory. Successfully import single and multiple complete rows.
+      Permissions must be correctly assigned so the importing user has write access to the Person table.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Assign the required permissions to the importing identity so it can write to the Person table.</li>
+      <li>Create the two required endpoints: the validation endpoint and the action endpoint, with rules for Personnel number uniqueness and LastName being mandatory.</li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th class="num-col">#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num-col">1</td>
+            <td>Import duplicate user</td>
+            <td>Upload a CSV containing a Personnel number that already exists in OIM</td>
+            <td>Validation error: "Value in field Personnel number must be unique"</td>
+            <td>Personnel number uniqueness is enforced at OIM DB level; check the Person table directly if in doubt.</td>
+          </tr>
+          <tr>
+            <td class="num-col">2</td>
+            <td>Import user without last name</td>
+            <td>Upload a CSV row with the LastName field empty or missing</td>
+            <td>Validation error: "Last Name is a mandatory field."</td>
+            <td>LastName (CentralAccount) is marked mandatory in the OIM Person table schema.</td>
+          </tr>
+          <tr>
+            <td class="num-col">3</td>
+            <td>Import user with all fields</td>
+            <td>Upload a single complete CSV row with all required fields populated</td>
+            <td>Successful import &mdash; identity appears in OIM</td>
+            <td>Verify the new Person record in Designer or ITShop after import.</td>
+          </tr>
+          <tr>
+            <td class="num-col">4</td>
+            <td>Import multiple users with all fields</td>
+            <td>Upload a CSV with multiple complete rows (at least 3)</td>
+            <td>All rows import successfully</td>
+            <td>Check that row count in the summary message matches the number of CSV rows processed.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>Personnel number uniqueness is enforced at the OIM level &mdash; the validation endpoint should query the Person table before accepting the row.</li>
+        <li>If the importing user lacks write permission on the Person table, the action endpoint will throw an authorization exception rather than a user-friendly error.</li>
+        <li>Ensure the <code>/startvalidate</code> endpoint correctly signals that data collection (import) is enabled via <code>collectImportData</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- BA_07 -->
+  <div class="exercise-card" id="ba07">
+    <div class="card-heading">
+      <span class="ex-id">BA_07</span>
+      Add Entitlement Bulk Action
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Implement a complete six-endpoint bulk action for adding entitlements. All required Configuration
+      Parameters must be created. Each endpoint URL must exactly match what the Angular component calls.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Create all required Configuration Parameters in OIM Designer for the Add Entitlement feature.</li>
+      <li>Create and register all six required endpoints:
+        <ul class="endpoint-list" style="margin-top:8px;">
+          <li><code>webportalplus/addentitlement/csvtemplate</code></li>
+          <li><code>webportalplus/addentitlement/startvalidate</code></li>
+          <li><code>webportalplus/addentitlement/validate</code></li>
+          <li><code>webportalplus/addentitlement/startaction</code></li>
+          <li><code>webportalplus/addentitlement/action</code></li>
+          <li><code>webportalplus/addentitlement/endaction</code></li>
+        </ul>
+      </li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th class="num-col">#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num-col">1</td>
+            <td>Import existing membership</td>
+            <td>Upload a CSV where the identity already has the listed entitlement assigned</td>
+            <td>Validation error: "Assignment already exists."</td>
+            <td>Check ESetHasEntitlement or relevant assignment table before inserting.</td>
+          </tr>
+          <tr>
+            <td class="num-col">2</td>
+            <td>Import for non-existent Person</td>
+            <td>Upload a CSV with a Personnel number that does not exist in any department</td>
+            <td>Error: "Identity does not exist in the Department."</td>
+            <td>The lookup should scope to the user's department context as configured in Config Parameters.</td>
+          </tr>
+          <tr>
+            <td class="num-col">3</td>
+            <td>Import for non-existent Eset</td>
+            <td>Upload a CSV with an entitlement name/ID that does not exist or is not permitted</td>
+            <td>Error: "Entitlement does not exist or the assignment is not permitted."</td>
+            <td>Verify the Eset exists AND that assignment is allowed per OIM configuration.</td>
+          </tr>
+          <tr>
+            <td class="num-col">4</td>
+            <td>Import proper memberships</td>
+            <td>Upload a valid CSV with correct Personnel numbers and valid entitlements</td>
+            <td>Successful import &mdash; assignments created in OIM</td>
+            <td>Confirm assignments in Designer or the Entitlement view in ITShop.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>Endpoint URL prefix <code>webportalplus/addentitlement/</code> must match exactly what the Angular component calls &mdash; typos cause silent 404 errors that are difficult to trace.</li>
+        <li>Config Parameters drive the department scope and Eset lookup &mdash; review them carefully if validation errors are unexpected.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- BA_08 -->
+  <div class="exercise-card" id="ba08">
+    <div class="card-heading">
+      <span class="ex-id">BA_08</span>
+      Remove Entitlement Bulk Action
+    </div>
+
+    <span class="section-label">Requirements</span>
+    <div class="requirements-box">
+      Implement a complete six-endpoint bulk action for removing entitlements. Mirror the BA_07 pattern
+      but validate that an assignment exists before attempting deletion. All Config Parameters must be
+      created and endpoint URLs must match exactly.
+    </div>
+
+    <span class="section-label">Solution Steps</span>
+    <ol class="steps-list">
+      <li>Create all required Configuration Parameters in OIM Designer for the Remove Entitlements feature.</li>
+      <li>Create and register all six required endpoints:
+        <ul class="endpoint-list" style="margin-top:8px;">
+          <li><code>webportalplus/removeentitlements/csvtemplate</code></li>
+          <li><code>webportalplus/removeentitlements/startvalidate</code></li>
+          <li><code>webportalplus/removeentitlements/validate</code></li>
+          <li><code>webportalplus/removeentitlements/startaction</code></li>
+          <li><code>webportalplus/removeentitlements/action</code></li>
+          <li><code>webportalplus/removeentitlements/endaction</code></li>
+        </ul>
+      </li>
+    </ol>
+
+    <span class="section-label">Test Cases</span>
+    <div class="test-table-wrap">
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th class="num-col">#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num-col">1</td>
+            <td>Remove non-existent membership</td>
+            <td>Upload a CSV with an assignment that does not currently exist for the identity</td>
+            <td>Error: "Entitlement is not assigned to this identity."</td>
+            <td>Validate the assignment exists in the relevant table before attempting delete.</td>
+          </tr>
+          <tr>
+            <td class="num-col">2</td>
+            <td>Non-existent Person</td>
+            <td>Upload a CSV with an invalid/unknown Personnel number</td>
+            <td>Error: "Identity does not exist in the Department."</td>
+            <td>Same person-lookup logic as BA_07 &mdash; share/reuse if possible.</td>
+          </tr>
+          <tr>
+            <td class="num-col">3</td>
+            <td>Non-existent Eset</td>
+            <td>Upload a CSV with an invalid entitlement identifier</td>
+            <td>Error: "Entitlement does not exist"</td>
+            <td>Check Eset lookup returns null before proceeding to assignment check.</td>
+          </tr>
+          <tr>
+            <td class="num-col">4</td>
+            <td>Remove proper memberships</td>
+            <td>Upload a valid CSV where listed assignments genuinely exist for the identities</td>
+            <td>Successful import &mdash; assignments removed from OIM</td>
+            <td>Confirm assignments are deleted in Designer or ITShop after processing.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <span class="section-label">Mentor Tips / Troubleshooting</span>
+    <div class="mentor-box">
+      <strong class="mentor-title">Mentor Notes</strong>
+      <ul>
+        <li>Endpoint URL prefix <code>webportalplus/removeentitlements/</code> &mdash; note the plural "removeentitlements" &mdash; must match Angular exactly.</li>
+        <li>The action endpoint uses <code>u.DeleteAsync(entity, ct)</code>; ensure the entity is loaded first with <code>TryGetAsync</code> before deletion.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Global Mentor Tips -->
+  <div class="exercise-card card-ref" id="mentor-tips">
+    <div class="card-heading" style="background:var(--purple-dark);color:#fff;margin:-1.5rem -1.5rem 1rem;padding:1rem 1.5rem;border-radius:0 8px 0 0;">
+      <span class="ex-id" style="background:rgba(255,255,255,0.25);color:#fff;">REF</span>
+      Module-Wide Mentor Tips &amp; Troubleshooting
+    </div>
+    <div class="mentor-box">
+      <strong class="mentor-title">Key Reminders Across All Exercises</strong>
+      <ul>
+        <li><strong>BA_01:</strong> <code>npm run nx:build-all</code> takes 10&ndash;20 minutes on first run; missing npm packages need manual install one by one.</li>
+        <li><strong>DLL deployment:</strong> Must be copied to both <code>C:\Program Files\One Identity\One Identity Manager</code> AND <code>C:\inetpub\wwwroot\ApiServer\bin</code> &mdash; missing either causes intermittent failures.</li>
+        <li><strong>angular.json rename:</strong> ALL occurrences of "rmb" must be renamed to "bulk-actions" &mdash; use VS Code Find &amp; Replace All to guarantee completeness.</li>
+        <li><strong>BA_05:</strong> Personnel number uniqueness is enforced at OIM level; LastName is mandatory in the Person table schema.</li>
+        <li><strong>BA_07/08:</strong> Endpoint URL prefixes must match exactly what Angular calls &mdash; typos cause silent 404 errors with no helpful error message in the UI.</li>
+        <li><strong>All endpoints:</strong> Use namespace <code>QBM.CompositionApi</code>; use <code>.ConfigureAwait(false)</code> on all DB calls; use <code>$"..."</code> interpolation (not <code>string.Format</code>) for strings with <code>\n</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+</main>
+
+<footer style="margin-top:3rem;padding:1.25rem 2rem;background:#F5EFF8;border-top:2px solid #EDE8F0;font-size:0.78rem;color:#6B6B6B;text-align:center;grid-column:1/-1;">
+  INTRAGEN<span style="color:#F0A800">.</span> Academy &mdash; Mentoring Documentation &mdash; &copy; Intragen International. This document remains strictly private and confidential.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,728 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OIM Academy — Mentor Portal | Intragen Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"><style>
+:root {
+  --purple:      #7B2D8B;
+  --purple-dark: #5C1F6B;
+  --teal:        #007B77;
+  --golden:      #F0A800;
+  /* Legacy variable overrides â€” keeps existing HTML class references working */
+  --navy:  #7B2D8B;
+  --blue:  #007B77;
+  --green: #27AE60;
+  --orange:#E67E22;
+  --red:   #E74C3C;
+  --bg:    #F0EDE8;
+  /* New tokens */
+  --body-bg:  #FAF8F5;
+  --code-bg:  #1E1E1E;
+  --border:   #DDD;
+  --text:     #2C2C2C;
+  --muted:    #6B6B6B;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+}
+/* â”€â”€ Layout â”€â”€ */
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+/* â”€â”€ Sidebar â”€â”€ */
+.sidebar {
+  background: var(--purple);
+  color: #fff;
+  width: 260px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.logo, .intragen-logo {
+  padding: 1.25rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+}
+.logo-dot { color: var(--golden); }
+.module-title, .module-title-sidebar {
+  padding: 0.6rem 1rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--golden);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.nav-label, .nav-section-label, .module-label {
+  padding: 0.75rem 1rem 0.2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+.sidebar a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.82rem;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a:hover {
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--teal);
+  color: #fff;
+}
+/* â”€â”€ Main â”€â”€ */
+main { padding: 2rem; max-width: 1080px; }
+/* â”€â”€ Module header â”€â”€ */
+.module-header {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+  color: #fff;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.module-header::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.module-header .intragen-watermark {
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.mod-num { display: inline-block; font-size: 2.5rem; font-weight: 900; opacity: 0.2; float: right; line-height: 1; }
+.module-header h1 { font-size: 1.55rem; margin-bottom: 0.4rem; }
+.module-header p  { opacity: 0.85; font-size: 0.9rem; }
+/* â”€â”€ Badges â”€â”€ */
+.badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.beginner    { background: #d4edda; color: #155724; }
+.intermediate{ background: #fff3cd; color: #856404; }
+.advanced    { background: #f8d7da; color: #721c24; }
+/* â”€â”€ Overview grid â”€â”€ */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+.info-card {
+  background: #fff;
+  border-left: 4px solid var(--teal);
+  padding: 1.1rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.info-card h3 { color: var(--purple-dark); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.info-card ul { padding-left: 1.2rem; }
+.info-card li { font-size: 0.9rem; margin-bottom: 0.25rem; }
+/* â”€â”€ Sections â”€â”€ */
+section { margin-bottom: 2.5rem; }
+section > h2 {
+  color: var(--purple-dark);
+  font-size: 1.15rem;
+  border-bottom: 2px solid var(--teal);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+.section-banner {
+  background: var(--purple-dark);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 1.25rem;
+  border-radius: 3px;
+}
+/* â”€â”€ Exercise cards â”€â”€ */
+.exercise-card {
+  background: #fff;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  padding: 1.4rem;
+  margin-bottom: 1.4rem;
+  border-left: 4px solid var(--teal);
+}
+.ex-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.ex-num {
+  background: var(--purple-dark);
+  color: #fff;
+  min-width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+}
+.ex-header h3 { color: var(--purple-dark); font-size: 1rem; margin: 0; }
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  margin: 0.9rem 0 0.3rem;
+}
+/* â”€â”€ Callouts â”€â”€ */
+.callout {
+  padding: 0.85rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 0.8rem 0;
+  font-size: 0.9rem;
+}
+.callout b, .callout strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.callout-mentor, .callout-note  { border-left: 4px solid #2D6DB5; background: #E8F4FF; }
+.callout-tip                    { border-left: 4px solid #22C55E; background: #F0FDF4; }
+.callout-warn                   { border-left: 4px solid #F59E0B; background: #FFF8E1; }
+.callout-error, .callout-important { border-left: 4px solid var(--purple); background: #F5EFF8; }
+/* â”€â”€ Steps / Lists â”€â”€ */
+.steps { padding-left: 1.4rem; margin: 0.4rem 0; }
+.steps li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+li::marker { color: var(--purple); }
+/* â”€â”€ Code â”€â”€ */
+pre, .code-block {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  padding: 1rem 1.1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0.8rem 0;
+  font-family: 'Cascadia Code','Fira Code', Consolas, 'Courier New', monospace;
+  white-space: pre;
+}
+code {
+  background: #EDE8F0;
+  color: #8B2080;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+  font-size: 0.82rem;
+}
+pre code { background: none; color: inherit; padding: 0; }
+/* â”€â”€ Tables â”€â”€ */
+table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; }
+thead tr, th { background: var(--purple-dark); color: #fff; }
+th { padding: 0.55rem 0.9rem; text-align: left; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.4px; }
+td { padding: 0.55rem 0.9rem; border: 1px solid var(--border); vertical-align: top; }
+tbody tr:nth-child(even), tr:nth-child(even) td { background: #F8F5FB; }
+td.pass { color: #155724; font-weight: 600; }
+td.fail { color: #721c24; font-weight: 600; }
+/* â”€â”€ Footer â”€â”€ */
+footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  border-top: 2px solid #EDE8F0;
+  margin-top: 2rem;
+  background: #F5EFF8;
+}
+.footer-dot { color: var(--golden); }
+h3 { color: var(--purple); }
+h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════ -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="header-logo">🎓</div>
+        <div class="header-text">
+          <h1>OIM Academy — Mentor Portal</h1>
+          <div class="header-sub">Intragen Training Programme</div>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="header-date" id="header-date">Loading date…</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════ -->
+  <div class="page-wrap">
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <div class="search-bar">
+        <span class="search-icon">🔎</span>
+        <input type="text" placeholder="Search modules, topics, exercises…" aria-label="Search modules" />
+        <button type="button">Search</button>
+      </div>
+    </div>
+
+    <!-- ── Progress / Curriculum Overview ── -->
+    <section class="progress-section" aria-label="Curriculum Overview">
+      <h2>📊 Curriculum Overview</h2>
+
+      <div class="skill-track">
+        <div class="skill-segment beginner">
+          🟢 Beginner
+          <span class="seg-count">2 modules</span>
+        </div>
+        <div class="track-arrow">▶</div>
+        <div class="skill-segment intermediate">
+          🟠 Intermediate
+          <span class="seg-count">9 modules</span>
+        </div>
+        <div class="track-arrow">▶</div>
+        <div class="skill-segment advanced">
+          🔴 Advanced
+          <span class="seg-count">7 modules</span>
+        </div>
+      </div>
+      <div class="skill-labels">
+        <span>Foundation skills &amp; core OIM concepts</span>
+        <span>Configuration, workflows &amp; integrations</span>
+        <span>Scripting, APIs &amp; custom tooling</span>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-num">18</div>
+          <div class="stat-label">Modules</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">120</div>
+          <div class="stat-label">Exercises</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">3</div>
+          <div class="stat-label">Skill Levels</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">36</div>
+          <div class="stat-label">Resources</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Module Cards ── -->
+    <div class="section-heading">
+      <div class="sh-icon">📚</div>
+      Module Library
+    </div>
+
+    <div class="modules-grid">
+
+      <!-- 005 BAS -->
+      <div class="mod-card level-beginner">
+        <div class="mod-card-header">
+          <div class="mod-icon">🔑</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 005 · BAS</div>
+            <div class="mod-name">Basic Account Synchronization</div>
+            <div class="mod-code">Foundation · Identity Lifecycle</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge beginner">Beginner</span>
+          <span class="mod-exercise-count"><strong>8</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_005_bas_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_005_bas_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 006 TPL -->
+      <div class="mod-card level-beginner">
+        <div class="mod-card-header">
+          <div class="mod-icon">📝</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 006 · TPL</div>
+            <div class="mod-name">Templates</div>
+            <div class="mod-code">Foundation · Configuration</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge beginner">Beginner</span>
+          <span class="mod-exercise-count"><strong>15</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_006_tpl_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_006_tpl_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 007 PRO -->
+      <div class="mod-card level-intermediate">
+        <div class="mod-card-header">
+          <div class="mod-icon">⚙️</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 007 · PRO</div>
+            <div class="mod-name">Processes</div>
+            <div class="mod-code">Automation · Event Handling</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="mod-exercise-count"><strong>6</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_007_pro_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_007_pro_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 008 TSA -->
+      <div class="mod-card level-intermediate">
+        <div class="mod-card-header">
+          <div class="mod-icon">🖥️</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 008 · TSA</div>
+            <div class="mod-name">Target Systems</div>
+            <div class="mod-code">Connectors · Provisioning</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="mod-exercise-count"><strong>6</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_008_tsa_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_008_tsa_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 009 SCN -->
+      <div class="mod-card level-intermediate">
+        <div class="mod-card-header">
+          <div class="mod-icon">🎯</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 009 · SCN</div>
+            <div class="mod-name">Scenarios</div>
+            <div class="mod-code">Configuration · Logic</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="mod-exercise-count"><strong>5</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_009_scn_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_009_scn_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 010 CNR -->
+      <div class="mod-card level-intermediate">
+        <div class="mod-card-header">
+          <div class="mod-icon">🔌</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 010 · CNR</div>
+            <div class="mod-name">Connectors</div>
+            <div class="mod-code">Integration · Synchronisation</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="mod-exercise-count"><strong>7</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_010_cnr_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_010_cnr_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 011 WFL -->
+      <div class="mod-card level-intermediate">
+        <div class="mod-card-header">
+          <div class="mod-icon">🔄</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 011 · WFL</div>
+            <div class="mod-name">Workflows</div>
+            <div class="mod-code">Approval · Orchestration</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="mod-exercise-count"><strong>4</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_011_wfl_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_011_wfl_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 012 PMS -->
+      <div class="mod-card level-intermediate">
+        <div class="mod-card-header">
+          <div class="mod-icon">🔐</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 012 · PMS</div>
+            <div class="mod-name">Permissions</div>
+            <div class="mod-code">Access Control · Roles</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="mod-exercise-count"><strong>5</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_012_pms_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_012_pms_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 013 ATT -->
+      <div class="mod-card level-intermediate">
+        <div class="mod-card-header">
+          <div class="mod-icon">✅</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 013 · ATT</div>
+            <div class="mod-name">Attestations</div>
+            <div class="mod-code">Compliance · Review Cycles</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="mod-exercise-count"><strong>3</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_013_att_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_013_att_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 014 TRS -->
+      <div class="mod-card level-intermediate">
+        <div class="mod-card-header">
+          <div class="mod-icon">🚚</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 014 · TRS</div>
+            <div class="mod-name">Transport</div>
+            <div class="mod-code">Deployment · Migration</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="mod-exercise-count"><strong>4</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_014_trs_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_014_trs_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 015 RPS -->
+      <div class="mod-card level-intermediate">
+        <div class="mod-card-header">
+          <div class="mod-icon">📊</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 015 · RPS</div>
+            <div class="mod-name">Reports</div>
+            <div class="mod-code">Reporting · Data Visibility</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge intermediate">Intermediate</span>
+          <span class="mod-exercise-count"><strong>3</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_015_rps_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_015_rps_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 016 PSC -->
+      <div class="mod-card level-advanced">
+        <div class="mod-card-header">
+          <div class="mod-icon">💻</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 016 · PSC</div>
+            <div class="mod-name">PowerShell</div>
+            <div class="mod-code">Scripting · Automation</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge advanced">Advanced</span>
+          <span class="mod-exercise-count"><strong>8</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_016_psc_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_016_psc_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 017 API -->
+      <div class="mod-card level-advanced">
+        <div class="mod-card-header">
+          <div class="mod-icon">🌐</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 017 · API</div>
+            <div class="mod-name">APIs</div>
+            <div class="mod-code">REST · CompositionAPI · Integration</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge advanced">Advanced</span>
+          <span class="mod-exercise-count"><strong>9</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_017_api_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_017_api_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 019 DIM -->
+      <div class="mod-card level-advanced">
+        <div class="mod-card-header">
+          <div class="mod-icon">📥</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 019 · DIM</div>
+            <div class="mod-name">Data Importer</div>
+            <div class="mod-code">ETL · Bulk Data · CSV</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge advanced">Advanced</span>
+          <span class="mod-exercise-count"><strong>5</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_019_dim_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_019_dim_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 024-1 DM -->
+      <div class="mod-card level-advanced">
+        <div class="mod-card-header">
+          <div class="mod-icon">🚀</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 024-1 · DM</div>
+            <div class="mod-name">Deployment Manager</div>
+            <div class="mod-code">Transport · Release Management</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge advanced">Advanced</span>
+          <span class="mod-exercise-count"><strong>14</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_024_001_dm_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_024_001_dm_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 024-2 BA -->
+      <div class="mod-card level-advanced">
+        <div class="mod-card-header">
+          <div class="mod-icon">⚡</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 024-2 · BA</div>
+            <div class="mod-name">Bulk Actions</div>
+            <div class="mod-code">Web Portal · CSV Processing</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge advanced">Advanced</span>
+          <span class="mod-exercise-count"><strong>8</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_024_002_ba_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_024_002_ba_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 024-3 DE -->
+      <div class="mod-card level-advanced">
+        <div class="mod-card-header">
+          <div class="mod-icon">🔍</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 024-3 · DE</div>
+            <div class="mod-name">DataExplorer+</div>
+            <div class="mod-code">Custom Endpoints · REST API</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge advanced">Advanced</span>
+          <span class="mod-exercise-count"><strong>6</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_024_003_de_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_024_003_de_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+      <!-- 024-4 TA -->
+      <div class="mod-card level-advanced">
+        <div class="mod-card-header">
+          <div class="mod-icon">🧪</div>
+          <div class="mod-meta">
+            <div class="mod-num-badge">Module 024-4 · TA</div>
+            <div class="mod-name">Test Assist</div>
+            <div class="mod-code">QA · Testing Frameworks</div>
+          </div>
+        </div>
+        <div class="mod-card-body">
+          <span class="badge advanced">Advanced</span>
+          <span class="mod-exercise-count"><strong>9</strong> exercises</span>
+        </div>
+        <div class="mod-card-footer">
+          <a href="guides/module_024_004_ta_guide.html" class="btn btn-primary">📖 Mentor Guide</a>
+          <a href="presentations/module_024_004_ta_intro.html" class="btn btn-outline">🖥️ Intro Presentation</a>
+        </div>
+      </div>
+
+    </div><!-- /modules-grid -->
+
+  </div><!-- /page-wrap -->
+
+  <!-- ══════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════ -->
+  <footer>
+  INTRAGEN<span class="footer-dot">.</span> Academy &mdash; Mentoring Documentation &mdash;
+  &copy; Intragen International. This document remains strictly private and confidential.
+</footer>
+
+  <!-- ── Dynamic date ── -->
+  <script>
+    (function () {
+      const el = document.getElementById('header-date');
+      if (!el) return;
+      try {
+        const now = new Date();
+        const opts = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+        el.textContent = now.toLocaleDateString('en-GB', opts);
+      } catch (e) {
+        el.textContent = new Date().toDateString();
+      }
+    })();
+  </script>
+
+</body>
+</html>

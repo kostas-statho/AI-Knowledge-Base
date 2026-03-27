@@ -1,0 +1,790 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Module 006 — Mentor Guide | Intragen Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"><style>
+:root {
+  --purple:      #7B2D8B;
+  --purple-dark: #5C1F6B;
+  --teal:        #007B77;
+  --golden:      #F0A800;
+  /* Legacy variable overrides â€” keeps existing HTML class references working */
+  --navy:  #7B2D8B;
+  --blue:  #007B77;
+  --green: #27AE60;
+  --orange:#E67E22;
+  --red:   #E74C3C;
+  --bg:    #F0EDE8;
+  /* New tokens */
+  --body-bg:  #FAF8F5;
+  --code-bg:  #1E1E1E;
+  --border:   #DDD;
+  --text:     #2C2C2C;
+  --muted:    #6B6B6B;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+}
+/* â”€â”€ Layout â”€â”€ */
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+/* â”€â”€ Sidebar â”€â”€ */
+.sidebar {
+  background: var(--purple);
+  color: #fff;
+  width: 260px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.logo, .intragen-logo {
+  padding: 1.25rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+}
+.logo-dot { color: var(--golden); }
+.module-title, .module-title-sidebar {
+  padding: 0.6rem 1rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--golden);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.nav-label, .nav-section-label, .module-label {
+  padding: 0.75rem 1rem 0.2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+.sidebar a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.82rem;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a:hover {
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--teal);
+  color: #fff;
+}
+/* â”€â”€ Main â”€â”€ */
+main { padding: 2rem; max-width: 1080px; }
+/* â”€â”€ Module header â”€â”€ */
+.module-header {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+  color: #fff;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.module-header::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.module-header .intragen-watermark {
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.mod-num { display: inline-block; font-size: 2.5rem; font-weight: 900; opacity: 0.2; float: right; line-height: 1; }
+.module-header h1 { font-size: 1.55rem; margin-bottom: 0.4rem; }
+.module-header p  { opacity: 0.85; font-size: 0.9rem; }
+/* â”€â”€ Badges â”€â”€ */
+.badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.beginner    { background: #d4edda; color: #155724; }
+.intermediate{ background: #fff3cd; color: #856404; }
+.advanced    { background: #f8d7da; color: #721c24; }
+/* â”€â”€ Overview grid â”€â”€ */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+.info-card {
+  background: #fff;
+  border-left: 4px solid var(--teal);
+  padding: 1.1rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.info-card h3 { color: var(--purple-dark); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.info-card ul { padding-left: 1.2rem; }
+.info-card li { font-size: 0.9rem; margin-bottom: 0.25rem; }
+/* â”€â”€ Sections â”€â”€ */
+section { margin-bottom: 2.5rem; }
+section > h2 {
+  color: var(--purple-dark);
+  font-size: 1.15rem;
+  border-bottom: 2px solid var(--teal);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+.section-banner {
+  background: var(--purple-dark);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 1.25rem;
+  border-radius: 3px;
+}
+/* â”€â”€ Exercise cards â”€â”€ */
+.exercise-card {
+  background: #fff;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  padding: 1.4rem;
+  margin-bottom: 1.4rem;
+  border-left: 4px solid var(--teal);
+}
+.ex-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.ex-num {
+  background: var(--purple-dark);
+  color: #fff;
+  min-width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+}
+.ex-header h3 { color: var(--purple-dark); font-size: 1rem; margin: 0; }
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  margin: 0.9rem 0 0.3rem;
+}
+/* â”€â”€ Callouts â”€â”€ */
+.callout {
+  padding: 0.85rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 0.8rem 0;
+  font-size: 0.9rem;
+}
+.callout b, .callout strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.callout-mentor, .callout-note  { border-left: 4px solid #2D6DB5; background: #E8F4FF; }
+.callout-tip                    { border-left: 4px solid #22C55E; background: #F0FDF4; }
+.callout-warn                   { border-left: 4px solid #F59E0B; background: #FFF8E1; }
+.callout-error, .callout-important { border-left: 4px solid var(--purple); background: #F5EFF8; }
+/* â”€â”€ Steps / Lists â”€â”€ */
+.steps { padding-left: 1.4rem; margin: 0.4rem 0; }
+.steps li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+li::marker { color: var(--purple); }
+/* â”€â”€ Code â”€â”€ */
+pre, .code-block {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  padding: 1rem 1.1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0.8rem 0;
+  font-family: 'Cascadia Code','Fira Code', Consolas, 'Courier New', monospace;
+  white-space: pre;
+}
+code {
+  background: #EDE8F0;
+  color: #8B2080;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+  font-size: 0.82rem;
+}
+pre code { background: none; color: inherit; padding: 0; }
+/* â”€â”€ Tables â”€â”€ */
+table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; }
+thead tr, th { background: var(--purple-dark); color: #fff; }
+th { padding: 0.55rem 0.9rem; text-align: left; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.4px; }
+td { padding: 0.55rem 0.9rem; border: 1px solid var(--border); vertical-align: top; }
+tbody tr:nth-child(even), tr:nth-child(even) td { background: #F8F5FB; }
+td.pass { color: #155724; font-weight: 600; }
+td.fail { color: #721c24; font-weight: 600; }
+/* â”€â”€ Footer â”€â”€ */
+footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  border-top: 2px solid #EDE8F0;
+  margin-top: 2rem;
+  background: #F5EFF8;
+}
+.footer-dot { color: var(--golden); }
+h3 { color: var(--purple); }
+h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo">INTRAGEN<span class="logo-dot">.</span></div>
+    <div class="module-title">MODULE 006 — TPL</div>
+    <nav>
+      <div class="nav-label">Navigation</div>
+      <a href="#overview">Overview</a>
+      <div class="nav-label">Exercises</div>
+      <a href="#ex1">TPL-1: Overwrite ON — Street</a>
+      <a href="#ex2">TPL-2: Overwrite OFF — Street</a>
+      <a href="#ex3">TPL-3: Cross-Object WITH Overwrite</a>
+      <a href="#ex4">TPL-4: Cross-Object WITHOUT Overwrite</a>
+      <a href="#ex5">TPL-5: BirthDate — Set Once</a>
+      <a href="#ex6">TPL-6: BirthDate — Set if Empty</a>
+      <a href="#ex7">TPL-7: ExitDate = EntryDate + 2 Months</a>
+      <a href="#ex8">TPL-8: ExitDate Variation</a>
+      <a href="#ex9">TPL-9: Track Previous ExitDate</a>
+      <a href="#ex10">TPL-10: Unique Suffix — CustomProperty03</a>
+      <a href="#ex11">TPL-11: Last Assigned BR Name</a>
+      <a href="#ex12">TPL-12: MultiValueProperty — Add Values</a>
+      <a href="#ex13">TPL-13: MultiValueProperty — First Only</a>
+      <a href="#ex14">TPL-14: MultiValueProperty — Last Value</a>
+      <a href="#ex15">TPL-15: MultiValueProperty — Second Value</a>
+      <div class="nav-label">Reference</div>
+      <a href="#troubleshoot">Troubleshooting</a>
+    </nav>
+  </aside>
+  <main>
+    <div class="module-header">
+      <span class="mod-num">006</span>
+      <h1>Templates</h1>
+      <p>Code: TPL | <span class="badge intermediate">Beginner–Intermediate</span> | 15 exercises | ~4 days</p>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section id="overview">
+      <h2>Overview</h2>
+      <div class="overview-grid">
+        <div class="info-card">
+          <h3>Module Purpose</h3>
+          <ul>
+            <li>OIM templates are VB.NET scripts that auto-calculate column values</li>
+            <li>Progress from basic overwrite behaviour through date calculations</li>
+            <li>Cross-table lookups and multi-value property management</li>
+            <li>15 exercises covering all major template patterns</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Prerequisites</h3>
+          <ul>
+            <li>BAS module complete</li>
+            <li>Basic VB.NET knowledge (If/Else, String, date arithmetic)</li>
+            <li>OIM Designer access</li>
+            <li>OIM Manager and Object Browser access</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Core Concepts</h3>
+          <ul>
+            <li><strong>TC:</strong> Target Column — what the template WRITES TO</li>
+            <li><strong>SC:</strong> Source Column — what the template READS FROM</li>
+            <li><strong>Overwrite ON:</strong> Recalculates even if TC has existing data</li>
+            <li><strong>Overwrite OFF:</strong> Only runs when TC is empty</li>
+            <li><strong>Triggers:</strong> Insert, Update, Save (configurable)</li>
+            <li><strong>MultiValueProperty:</strong> Column holding a list of values</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>VB.NET Reference</h3>
+          <ul>
+            <li><code>Value("Column")</code> — reads saved value from same object</li>
+            <li><code>Value("Table","Col","uid")</code> — reads from related table</li>
+            <li><code>DateAdd(DateInterval.Month, 2, date)</code> — date arithmetic</li>
+            <li>MultiValueProperty exercises (TPL-12 to 15) — do in order</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TPL-1 -->
+    <section id="ex1">
+      <h2>Exercises</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-1</div>
+          <h3>Template with Overwrite ON — Street</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Create a template with "Overwrites" option <strong>enabled</strong> on TC <code>Street</code> via Designer / Value Calculation. SC = <code>Street</code> (taking value from Firstname as the source value). The template should always overwrite Street with the SC value.</p>
+
+        <div class="section-label">Configuration</div>
+        <ul class="steps">
+          <li>Open Designer → Value Calculation → Person table → Street column</li>
+          <li>Create template; set SC = Firstname; enable "Overwrite" checkbox</li>
+          <li>Set trigger: Insert + Update</li>
+        </ul>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Run template on Street via Object Browser</td><td>Open identity in Object Browser; re-apply templates on Street</td><td>Street is updated to the Firstname value</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Update SC "Firstname"</td><td>Change Firstname on the identity</td><td>Street is automatically updated to the new Firstname value</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Update TC "Street" directly</td><td>Manually type a new value in Street field and save</td><td>Street reverts to Firstname value (Overwrite ON forces recalculation)</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          TPL-1 and TPL-2 should be done back-to-back. The contrast between Overwrite ON (TPL-1) and Overwrite OFF (TPL-2) is the single most important concept in this module — everything else builds on it.
+        </div>
+      </div>
+    </section>
+
+    <!-- TPL-2 -->
+    <section id="ex2">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-2</div>
+          <h3>Template with Overwrite OFF — Street</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Same template as TPL-1 on <code>Person.Street</code>, but with "Overwrite" option <strong>disabled</strong>. The template should only populate Street when it is currently empty.</p>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Clear Street, update SC</td><td>Clear the Street field, then update Firstname (SC)</td><td>TC (Street) is updated — it was empty so template fires</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Update SC when TC already has a value</td><td>Street has a value; update Firstname</td><td>Street is NOT updated (Overwrite OFF protects existing value)</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Update TC directly</td><td>Manually update Street field</td><td>SC (Firstname) is not affected; Street takes the manually entered value</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TPL-3 -->
+    <section id="ex3">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-3</div>
+          <h3>Cross-Object Template — Person.Street from Locality.Street (Overwrite ON)</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Template on <code>Person.Street</code> that reads from <code>Locality.Street</code> (a related/FK object). Overwrite is <strong>enabled</strong>. The identity's Street always mirrors the assigned Locality's Street.</p>
+
+        <div class="section-label">Configuration Note</div>
+        <div class="callout callout-tip">
+          <b>Related Object Lookup</b>
+          To read from a related table: <code>Value("Locality", "Street", Value("UID_Locality"))</code>. The third parameter is the FK value on the Person row pointing to the Locality record.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Assign location with Locality.Street value</td><td>Assign a Locality to the identity that has a Street value set</td><td>Person.Street = Locality.Street automatically</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Update Locality.Street</td><td>Change the Street value on the assigned Locality record</td><td>Person.Street updates accordingly</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Update Person.Street directly</td><td>Attempt to manually type a different value in Person.Street</td><td>Update NOT allowed — Overwrite ON forces revert to Locality.Street</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          Locality is a related object accessed via FK. Show trainees how to navigate to the Locality record in OIM Manager BEFORE writing the template — understanding the data model makes the VB.NET syntax intuitive.
+        </div>
+      </div>
+    </section>
+
+    <!-- TPL-4 -->
+    <section id="ex4">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-4</div>
+          <h3>Cross-Object Template — Conditional (Overwrite OFF)</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Template on <code>Person.Street</code> from <code>Locality.Street</code> with Overwrite <strong>disabled</strong>. Observe the nuanced interaction when Locality has a value vs when it is empty.</p>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Set Person.Street while Locality.Street is empty</td><td>Clear Locality.Street; manually type a value in Person.Street</td><td>Person.Street updated as desired (TC empty so template allowed, SC also empty so manual value kept)</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Set Person.Street while Locality.Street has a value</td><td>Set Locality.Street to a value; try setting Person.Street manually</td><td>Person.Street gets Locality.Street value — Locality.Street acts as the source even with Overwrite OFF when TC would otherwise be empty</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Clear Locality.Street after Person.Street is set</td><td>Clear Locality.Street; observe Person.Street</td><td>Person.Street is NOT updated after clearing Locality.Street</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TPL-5 -->
+    <section id="ex5">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-5</div>
+          <h3>BirthDate — Set Once on Creation</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Template on the <code>BirthDate</code> field. Populate BirthDate when a new identity is created. Do NOT overwrite if a value already exists. Do NOT change the value on subsequent template re-applications.</p>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Create new identity</td><td>Click "Add" to create a new identity in OIM Manager</td><td>BirthDate is populated as soon as the Add form opens (before saving) — template fires on INSERT trigger</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Re-apply templates — SC has a value</td><td>On an identity with an existing BirthDate, trigger re-apply templates</td><td>BirthDate is NOT changed</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Re-apply templates — SC has no value</td><td>On identity where SC is empty, re-apply templates</td><td>BirthDate is NOT changed (set-once behaviour)</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TPL-6 -->
+    <section id="ex6">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-6</div>
+          <h3>BirthDate — Set to Today if Empty</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Template on <code>BirthDate</code> — if BirthDate is currently empty, set it to today's date. If BirthDate already has a value, do not overwrite. Allow manual updates.</p>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Re-apply templates on identity with empty BirthDate</td><td>Clear BirthDate; trigger re-apply templates</td><td>BirthDate is set to today's date</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Re-apply templates on identity with existing BirthDate</td><td>BirthDate has a value; trigger re-apply templates</td><td>BirthDate is NOT updated (Overwrite OFF protects existing value)</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Set BirthDate manually</td><td>Directly type a date into BirthDate and save</td><td>BirthDate takes the manually entered value</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TPL-7 -->
+    <section id="ex7">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-7</div>
+          <h3>ExitDate = EntryDate + 2 Months (with Validation)</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Template on <code>ExitDate</code>. Calculated value = EntryDate + 2 months. Overwrite only if the current ExitDate is less than EntryDate + 2 months. If ExitDate is already beyond the 2-month threshold, keep it.</p>
+
+        <div class="section-label">Logic Explained</div>
+        <div class="callout callout-tip">
+          <b>Date Boundary Logic</b>
+          The threshold is <code>DateAdd(DateInterval.Month, 2, EntryDate)</code>. If ExitDate &lt; threshold → overwrite with threshold. If ExitDate &gt;= threshold → keep the manually set value. This prevents OIM from "pulling back" a far-future exit date.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Set EntryDate</td><td>Set a new EntryDate on the identity</td><td>ExitDate = EntryDate + 2 months</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Set ExitDate to EntryDate minus 1 month</td><td>Set ExitDate to a date BEFORE the 2-month threshold</td><td>ExitDate is overwritten back to EntryDate + 2 months</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Set ExitDate to EntryDate + 1 month</td><td>Set ExitDate to 1 month after EntryDate (within the 2-month range)</td><td>ExitDate takes the inserted value (within the allowed range)</td><td class="pass">PASS</td></tr>
+            <tr><td>4</td><td>Set ExitDate to EntryDate + 3 months</td><td>Set ExitDate to 3 months after EntryDate (beyond threshold)</td><td>ExitDate = EntryDate + 2 months (overwritten back — exceeds the maximum)</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          Walk through the date arithmetic on a whiteboard first. EntryDate + 2 months = the boundary. Below boundary → overwrite. Above → keep. Trainees often confuse &lt; and &gt; here — the whiteboard prevents errors.
+        </div>
+      </div>
+    </section>
+
+    <!-- TPL-8 -->
+    <section id="ex8">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-8</div>
+          <h3>ExitDate Variation / Revision Exercise</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">A variation/revision of TPL-7. Trainees apply the same date-boundary template pattern independently to consolidate understanding of date arithmetic and conditional overwrite logic.</p>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Set EntryDate</td><td>Set a new EntryDate</td><td>ExitDate = EntryDate + 2 months</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Set ExitDate below threshold</td><td>Set ExitDate to EntryDate minus 1 month</td><td>ExitDate overwritten to EntryDate + 2 months</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Set ExitDate within range</td><td>Set ExitDate to EntryDate + 1 month</td><td>ExitDate takes inserted value</td><td class="pass">PASS</td></tr>
+            <tr><td>4</td><td>Set ExitDate beyond 2 months</td><td>Set ExitDate to EntryDate + 3 months</td><td>ExitDate overwritten back to EntryDate + 2 months</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TPL-9 -->
+    <section id="ex9">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-9</div>
+          <h3>Track Previous ExitDate in BirthDate (Staging Field)</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Template on <code>BirthDate</code> (TC) that tracks the previous value of <code>ExitDate</code>. When ExitDate changes, BirthDate stores the OLD ExitDate value — effectively a "last known ExitDate" staging field.</p>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Set ExitDate initially</td><td>Set ExitDate to 13/08/2025</td><td>ExitDate updated; BirthDate unchanged (no previous value to store)</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Update ExitDate</td><td>Update ExitDate from 13/08/2025 to 14/08/2025</td><td>ExitDate updated to 14/08/2025; BirthDate updated to OLD value: 13/08/2025</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          BirthDate here is used as a "staging" field — a clever workaround for tracking history in OIM without custom audit tables. The <code>Value("ExitDate")</code> function returns the SAVED (pre-save) value, which is the "previous" value during an update.
+        </div>
+      </div>
+    </section>
+
+    <!-- TPL-10 -->
+    <section id="ex10">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-10</div>
+          <h3>Unique Identifier with Numeric Suffix — CustomProperty03</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Template on <code>CustomProperty03</code> — generates a unique identifier. If "BAS" already exists → use "BAS1". If "BAS1" already exists → use "BAS2". Continues incrementing until a free suffix is found.</p>
+
+        <div class="section-label">Logic</div>
+        <div class="callout callout-tip">
+          <b>Uniqueness Loop Pattern</b>
+          The template checks whether the candidate value already exists in the table. If it does, increment the suffix counter and check again. Loop until a free value is found. This pattern is extremely common in production OIM templates for generating unique account names, email addresses, etc.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Apply template when "BAS" already exists</td><td>Create a user with CustomProperty03 = "BAS"; create another user and apply templates</td><td>Second user gets "BAS1"</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Apply template when both "BAS" and "BAS1" exist</td><td>Create another user with base value "BAS"</td><td>New user gets "BAS2"</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Change "BAS1" to "BAS3", re-apply on "BAS3"</td><td>Update the "BAS1" user to "BAS3"; re-apply templates on that user</td><td>"BAS3" updated to "BAS1" (BAS1 is now free again)</td><td class="pass">PASS</td></tr>
+            <tr><td>4</td><td>Create user that would naturally become "BAS2"</td><td>Create new user with base "BAS" — BAS, BAS1 taken; BAS2 available</td><td>New user gets "BAS4" (BAS2 was created in step 2; BAS3 now exists from step 3)</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note</b>
+          The uniqueness suffix loop is used constantly in production for generating account names and email addresses. Make sure trainees understand the loop logic: generate candidate → check if exists → if yes, increment and repeat → if no, use it.
+        </div>
+      </div>
+    </section>
+
+    <!-- TPL-11 -->
+    <section id="ex11">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-11</div>
+          <h3>Last Assigned Business Role Name — CustomProperty1</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Template on <code>CustomProperty1</code> that stores the name of the most recently assigned Business Role. Every time a new BR is assigned, CustomProperty1 is overwritten with the new BR's name. When a BR is unassigned, CustomProperty1 reverts to the previous BR's name.</p>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Assign BR1</td><td>Assign Business Role 1 to the identity</td><td>CustomProperty1 = name of BR1</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Assign BR2</td><td>Assign Business Role 2 to the same identity</td><td>CustomProperty1 = name of BR2 (overwritten)</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Assign BR3</td><td>Assign Business Role 3 to the identity</td><td>CustomProperty1 = name of BR3 (overwritten again)</td><td class="pass">PASS</td></tr>
+            <tr><td>4</td><td>Unassign BR3</td><td>Remove Business Role 3 from the identity</td><td>CustomProperty1 = name of BR2 (reverts to previous last-assigned)</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-tip">
+          <b>Pattern Note</b>
+          This is the "last assigned" pattern — the template runs on EVERY Business Role assignment event and overwrites CustomProperty1. Unassignment triggers the template again, and the query selects the most recently remaining assignment.
+        </div>
+      </div>
+    </section>
+
+    <!-- TPL-12 -->
+    <section id="ex12">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-12</div>
+          <h3>MultiValueProperty — Add Values — CCC_CustomMulti</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Create a new custom multi-value column <code>CCC_CustomMulti</code>, then configure a template that adds values to it from <code>CustomProperty05</code>.</p>
+
+        <div class="section-label">Solution — Steps</div>
+        <ul class="steps">
+          <li><strong>Step 1:</strong> Open Designer → Schema Extension → Extend Table (Person). Add new column <code>CCC_CustomMulti</code> with type <strong>MultiValueProperty</strong>. Deploy the schema change and restart services.</li>
+          <li><strong>Step 2:</strong> Create a template: TC = <code>CCC_CustomMulti</code>, SC = <code>CustomProperty05</code>.</li>
+          <li><strong>Step 3:</strong> Enable Overwrite on the template.</li>
+        </ul>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Set first value on SC</td><td>Set CustomProperty05 = "multiValue1"</td><td>"multiValue1" is added to the CCC_CustomMulti dropdown list</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Set another value on SC</td><td>Set CustomProperty05 = "multiValue2"</td><td>"multiValue2" is added to the dropdown list (CCC_CustomMulti now contains both)</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-warn">
+          <b>Schema Extension Note</b>
+          CCC_CustomMulti must be deployed via Designer before it is visible in OIM Manager. After deployment, a service restart may be required. If the column is not visible, check that the schema extension was compiled and deployed.
+        </div>
+      </div>
+    </section>
+
+    <!-- TPL-13 -->
+    <section id="ex13">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-13</div>
+          <h3>MultiValueProperty — First Value Only — CustomProperty06</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Template on <code>CustomProperty06</code> that reads from <code>CCC_CustomMulti</code>. The template captures only the FIRST value added and does not update when subsequent values are added.</p>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Set first value on SC</td><td>Set CCC_CustomMulti = "multiValue1"</td><td>"multiValue1" added to CustomProperty06</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Update SC with second value</td><td>Add "multiValue2" to CCC_CustomMulti</td><td>"multiValue1" REMAINS the only value in CustomProperty06 — first-value-only template does not overwrite</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TPL-14 -->
+    <section id="ex14">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-14</div>
+          <h3>MultiValueProperty — Last Value — CustomProperty02</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Template on TC = <code>CustomProperty02</code> with SC = <code>CCC_CustomMulti</code>. The template always reads the LAST (most recently added) value from the multi-value list.</p>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Set first value on SC</td><td>Add "multiValue1" to CCC_CustomMulti</td><td>CustomProperty02 = "multiValue1"</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Update SC with second value</td><td>Add "multiValue2" to CCC_CustomMulti</td><td>CustomProperty02 is updated to "multiValue2" (last value)</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TPL-15 -->
+    <section id="ex15">
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">TPL-15</div>
+          <h3>MultiValueProperty — Second Value — CustomProperty04</h3>
+        </div>
+        <div class="section-label">Requirements</div>
+        <p style="font-size:.9rem">Template on TC = <code>CustomProperty04</code> with SC = <code>CCC_CustomMulti</code>. The template reads specifically the SECOND value in the multi-value list. Overwrite is enabled.</p>
+
+        <div class="section-label">Solution — Steps</div>
+        <ul class="steps">
+          <li><strong>Step 1:</strong> Create template: TC = <code>CustomProperty04</code>, SC = <code>CCC_CustomMulti</code>. Configure to read the second index of the MultiValueProperty.</li>
+          <li><strong>Step 2:</strong> Enable Overwrite.</li>
+        </ul>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead><tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Set one value</td><td>Add "multiValue1" to CCC_CustomMulti</td><td>CustomProperty04 = "multiValue1" (only one value; second position falls back to first)</td><td class="pass">PASS</td></tr>
+            <tr><td>2</td><td>Add second value</td><td>Add "multiValue2" to CCC_CustomMulti</td><td>CustomProperty04 = "multiValue2" (second value now available)</td><td class="pass">PASS</td></tr>
+            <tr><td>3</td><td>Add "multiValue2" again</td><td>Attempt to add "multiValue2" a second time to CCC_CustomMulti</td><td>CustomProperty04 REMAINS "multiValue2" — no duplicate entry is added to the list</td><td class="pass">PASS</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor Note — MultiValueProperty Sequence</b>
+          TPL-12 through TPL-15 form an intentional sequence. TPL-12 CREATES the multi-value column and adds values. TPL-13 reads the FIRST value. TPL-14 reads the LAST value. TPL-15 reads the SECOND value. Always do them in this order — each exercise depends on CCC_CustomMulti having appropriate content.
+        </div>
+      </div>
+    </section>
+
+    <!-- TROUBLESHOOTING -->
+    <section id="troubleshoot">
+      <h2>Troubleshooting Reference</h2>
+      <table>
+        <thead><tr><th>Problem</th><th>Cause</th><th>Solution</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Template not running on update</td>
+            <td>Wrong trigger — "OnUpdate" not checked</td>
+            <td>Check all 3 trigger checkboxes (Insert, Update, Save) in the template editor</td>
+          </tr>
+          <tr>
+            <td>Overwrite not working</td>
+            <td>Overwrite checkbox not ticked</td>
+            <td>Enable Overwrite in the template's main data settings</td>
+          </tr>
+          <tr>
+            <td>Template runs but value stays the same</td>
+            <td>Return value equals current value — no DB write occurs</td>
+            <td>Add <code>Debug.Print</code> statements to trace; check logic produces a different value</td>
+          </tr>
+          <tr>
+            <td>CCC_CustomMulti not visible in OIM Manager</td>
+            <td>Schema extension not compiled and deployed</td>
+            <td>Deploy Designer changes (Compile → Deploy) and restart OIM services</td>
+          </tr>
+          <tr>
+            <td>MultiValueProperty template not adding values</td>
+            <td>Wrong column type — not configured as MultiValue in schema</td>
+            <td>Verify the column is configured as VB.NET MultiValueProperty type in the schema extension</td>
+          </tr>
+          <tr>
+            <td>Date calculation gives wrong result</td>
+            <td>Month arithmetic handled incorrectly in VB.NET</td>
+            <td>Use <code>DateAdd(DateInterval.Month, 2, EntryDate)</code> — do not use manual arithmetic (e.g., adding 60 days)</td>
+          </tr>
+          <tr>
+            <td>Suffix not unique (TPL-10)</td>
+            <td>Uniqueness check queries wrong table or column</td>
+            <td>Ensure the WHERE clause in the uniqueness loop references the correct table and column name</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+  INTRAGEN<span class="footer-dot">.</span> Academy &mdash; Mentoring Documentation &mdash;
+  &copy; Intragen International. This document remains strictly private and confidential.
+</footer>
+  </main>
+</div>
+</body>
+</html>

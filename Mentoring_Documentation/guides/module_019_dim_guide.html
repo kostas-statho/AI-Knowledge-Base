@@ -1,0 +1,704 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 019 &#8212; Data Importer | Intragen OIM Academy | Intragen Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"><style>
+:root {
+  --purple:      #7B2D8B;
+  --purple-dark: #5C1F6B;
+  --teal:        #007B77;
+  --golden:      #F0A800;
+  /* Legacy variable overrides â€” keeps existing HTML class references working */
+  --navy:  #7B2D8B;
+  --blue:  #007B77;
+  --green: #27AE60;
+  --orange:#E67E22;
+  --red:   #E74C3C;
+  --bg:    #F0EDE8;
+  /* New tokens */
+  --body-bg:  #FAF8F5;
+  --code-bg:  #1E1E1E;
+  --border:   #DDD;
+  --text:     #2C2C2C;
+  --muted:    #6B6B6B;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+}
+/* â”€â”€ Layout â”€â”€ */
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+/* â”€â”€ Sidebar â”€â”€ */
+.sidebar {
+  background: var(--purple);
+  color: #fff;
+  width: 260px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.logo, .intragen-logo {
+  padding: 1.25rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+}
+.logo-dot { color: var(--golden); }
+.module-title, .module-title-sidebar {
+  padding: 0.6rem 1rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--golden);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.nav-label, .nav-section-label, .module-label {
+  padding: 0.75rem 1rem 0.2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+.sidebar a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.82rem;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a:hover {
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--teal);
+  color: #fff;
+}
+/* â”€â”€ Main â”€â”€ */
+main { padding: 2rem; max-width: 1080px; }
+/* â”€â”€ Module header â”€â”€ */
+.module-header {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+  color: #fff;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.module-header::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.module-header .intragen-watermark {
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.mod-num { display: inline-block; font-size: 2.5rem; font-weight: 900; opacity: 0.2; float: right; line-height: 1; }
+.module-header h1 { font-size: 1.55rem; margin-bottom: 0.4rem; }
+.module-header p  { opacity: 0.85; font-size: 0.9rem; }
+/* â”€â”€ Badges â”€â”€ */
+.badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.beginner    { background: #d4edda; color: #155724; }
+.intermediate{ background: #fff3cd; color: #856404; }
+.advanced    { background: #f8d7da; color: #721c24; }
+/* â”€â”€ Overview grid â”€â”€ */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+.info-card {
+  background: #fff;
+  border-left: 4px solid var(--teal);
+  padding: 1.1rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.info-card h3 { color: var(--purple-dark); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.info-card ul { padding-left: 1.2rem; }
+.info-card li { font-size: 0.9rem; margin-bottom: 0.25rem; }
+/* â”€â”€ Sections â”€â”€ */
+section { margin-bottom: 2.5rem; }
+section > h2 {
+  color: var(--purple-dark);
+  font-size: 1.15rem;
+  border-bottom: 2px solid var(--teal);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+.section-banner {
+  background: var(--purple-dark);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 1.25rem;
+  border-radius: 3px;
+}
+/* â”€â”€ Exercise cards â”€â”€ */
+.exercise-card {
+  background: #fff;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  padding: 1.4rem;
+  margin-bottom: 1.4rem;
+  border-left: 4px solid var(--teal);
+}
+.ex-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.ex-num {
+  background: var(--purple-dark);
+  color: #fff;
+  min-width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+}
+.ex-header h3 { color: var(--purple-dark); font-size: 1rem; margin: 0; }
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  margin: 0.9rem 0 0.3rem;
+}
+/* â”€â”€ Callouts â”€â”€ */
+.callout {
+  padding: 0.85rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 0.8rem 0;
+  font-size: 0.9rem;
+}
+.callout b, .callout strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.callout-mentor, .callout-note  { border-left: 4px solid #2D6DB5; background: #E8F4FF; }
+.callout-tip                    { border-left: 4px solid #22C55E; background: #F0FDF4; }
+.callout-warn                   { border-left: 4px solid #F59E0B; background: #FFF8E1; }
+.callout-error, .callout-important { border-left: 4px solid var(--purple); background: #F5EFF8; }
+/* â”€â”€ Steps / Lists â”€â”€ */
+.steps { padding-left: 1.4rem; margin: 0.4rem 0; }
+.steps li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+li::marker { color: var(--purple); }
+/* â”€â”€ Code â”€â”€ */
+pre, .code-block {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  padding: 1rem 1.1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0.8rem 0;
+  font-family: 'Cascadia Code','Fira Code', Consolas, 'Courier New', monospace;
+  white-space: pre;
+}
+code {
+  background: #EDE8F0;
+  color: #8B2080;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+  font-size: 0.82rem;
+}
+pre code { background: none; color: inherit; padding: 0; }
+/* â”€â”€ Tables â”€â”€ */
+table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; }
+thead tr, th { background: var(--purple-dark); color: #fff; }
+th { padding: 0.55rem 0.9rem; text-align: left; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.4px; }
+td { padding: 0.55rem 0.9rem; border: 1px solid var(--border); vertical-align: top; }
+tbody tr:nth-child(even), tr:nth-child(even) td { background: #F8F5FB; }
+td.pass { color: #155724; font-weight: 600; }
+td.fail { color: #721c24; font-weight: 600; }
+/* â”€â”€ Footer â”€â”€ */
+footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  border-top: 2px solid #EDE8F0;
+  margin-top: 2rem;
+  background: #F5EFF8;
+}
+.footer-dot { color: var(--golden); }
+h3 { color: var(--purple); }
+h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════ -->
+<aside>
+  <div class="sidebar-header">
+    <div class="academy-name">Intragen OIM Academy</div>
+    <div class="module-title">Module 019</div>
+    <div class="module-code">DIM &mdash; Data Importer</div>
+  </div>
+
+  <div class="sidebar-section">On This Page</div>
+  <nav>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#concepts">Key Concepts</a>
+    <a href="#exercises">Exercises</a>
+    <a href="#dim1">DIM-1: Import Identities (CSV)</a>
+    <a href="#dim2">DIM-2: Update Identities (CSV)</a>
+    <a href="#dim3">DIM-3: DB Connection</a>
+    <a href="#dim4">DIM-4: Advanced Connection</a>
+    <a href="#dim5">DIM-5: Connection Variables</a>
+    <a href="#mentor-tips">Mentor Tips</a>
+  </nav>
+
+  <div class="sidebar-meta">
+    <div class="meta-row">
+      <span class="meta-label">Code</span>
+      <span>DIM</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Level</span>
+      <span>Intermediate</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Exercises</span>
+      <span>5</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Tool</span>
+      <span>OIM Data Importer</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════ -->
+<main>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header" id="overview">
+    <div class="breadcrumb">Intragen OIM Academy &rsaquo; Mentor Guides &rsaquo; Module 019</div>
+    <h1>Module 019 &mdash; <span>Data Importer</span></h1>
+    <p class="subtitle">OIM's Data Importer (DIM) tool allows bulk loading of identity and object data from CSV files or SQL-connected databases. This module covers CSV file structure, key column selection, handling options, database connections, and reusable import definition files.</p>
+    <div class="badge-row">
+      <span class="badge badge-intermediate">Intermediate</span>
+      <span class="badge badge-info">5 Exercises</span>
+      <span class="badge badge-info">CSV + SQL Import</span>
+    </div>
+  </div>
+
+  <!-- INFO GRID -->
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ic-label">Module Code</div>
+      <div class="ic-value">DIM</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Exercises</div>
+      <div class="ic-value">5</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Level</div>
+      <div class="ic-value">Intermediate</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Tool</div>
+      <div class="ic-value">OIM Data Importer</div>
+    </div>
+  </div>
+
+  <!-- KEY CONCEPTS -->
+  <div class="content-section" id="concepts">
+    <h2><span class="section-icon">01</span> Key Concepts</h2>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <strong>CSV File Settings</strong>
+        Encoding: UTF-8. Delimiter: semicolon (preferred). Use a text qualifier for values that contain commas. Key column selection can be composite (multiple columns form the unique key).
+      </div>
+      <div class="concept-card">
+        <strong>SQL Import Path</strong>
+        Object Browser &rarr; write SELECT &rarr; copy to Data Importer &rarr; Import from Database &rarr; SQLClient Data Provider. Connection string and query are saved in the definition file.
+      </div>
+      <div class="concept-card">
+        <strong>Definition File</strong>
+        Save the entire import definition as a <code>.xml</code> file immediately after the first successful import. Rebuilding the full column mapping is very time-consuming.
+      </div>
+      <div class="concept-card">
+        <strong>Handling Options</strong>
+        Controls what the importer does when it finds a match or no match: Insert (create new), Update (modify existing), or Delete (remove matching records). Options can be combined.
+      </div>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Handling Options Reference</h3>
+    <table class="handling-table">
+      <thead>
+        <tr>
+          <th>Option</th>
+          <th>Behaviour</th>
+          <th>Safe to Use?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Insert</td>
+          <td>Creates new records for rows in the source that have no match in OIM</td>
+          <td>Yes &mdash; safe default for initial loads</td>
+        </tr>
+        <tr>
+          <td>Update</td>
+          <td>Updates existing OIM records when a key match is found</td>
+          <td>Yes &mdash; safe for subsequent re-imports</td>
+        </tr>
+        <tr>
+          <td class="danger">Delete</td>
+          <td class="danger">Deletes OIM records that match rows in the source file</td>
+          <td class="danger">DANGEROUS &mdash; only use when you explicitly intend to delete records</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-critical">
+      <div class="callout-title">Critical Warning &mdash; Delete Option</div>
+      <strong>NEVER</strong> select the Delete option in Handling Options unless you explicitly and intentionally want to delete records from OIM. There is no undo. Always verify which option is selected before clicking Import.
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Prerequisites</h3>
+    <ul class="prereq-list" style="margin-top:0.5rem;">
+      <li class="prereq-tag">OIM Designer access</li>
+      <li class="prereq-tag">OIM Manager access</li>
+      <li class="prereq-tag">Access to OIM Data Importer tool</li>
+      <li class="prereq-tag">Basic CSV knowledge</li>
+      <li class="prereq-tag">Basic SQL SELECT knowledge (DIM-3 onwards)</li>
+    </ul>
+  </div>
+
+  <!-- EXERCISES -->
+  <div class="content-section" id="exercises">
+    <h2><span class="section-icon">02</span> Exercises</h2>
+
+    <!-- DIM-1 -->
+    <div class="exercise-card" id="dim1">
+      <div class="exercise-header">
+        <span class="exercise-id">DIM-1</span>
+        <span class="exercise-title">Import Identities from CSV</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create a CSV file containing identity data and use the Data Importer to load new Person records into OIM. Configure all required import wizard sections and save the definition for reuse.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>CSV file must be UTF-8 encoded with semicolon delimiter</li>
+        <li><span class="step-dot"></span>All mandatory Person fields must be present in the CSV (FirstName, LastName, at minimum)</li>
+        <li><span class="step-dot"></span>Correct key column selected in the Match Target step</li>
+        <li><span class="step-dot"></span>Handling option set to Insert only (no Update, no Delete)</li>
+        <li><span class="step-dot"></span>Import definition saved as <code>.xml</code> after successful import</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Create a properly structured CSV file with all mandatory Person fields and at least 2-3 test rows</li>
+        <li><span class="step-num">2</span>Open Data Importer and load the CSV file</li>
+        <li><span class="step-num">3</span>File Structure: set encoding (UTF-8), delimiter (semicolon), and text qualifier as needed</li>
+        <li><span class="step-num">4</span>Line Structure: confirm column mapping matches CSV headers</li>
+        <li><span class="step-num">5</span>Line Condition: leave as-is (no filter needed for this exercise)</li>
+        <li><span class="step-num">6</span>Match Target: select target table (Person), map columns, and set the Primary Key column</li>
+        <li><span class="step-num">7</span>Hierarchy: leave as-is</li>
+        <li><span class="step-num">8</span>Options: select Insert only &mdash; do NOT select Update or Delete at this stage</li>
+        <li><span class="step-num">9</span>Connection Variables: leave as-is</li>
+        <li><span class="step-num">10</span>Save the import definition as a <code>.xml</code> file for use in DIM-2</li>
+      </ol>
+
+      <div class="sub-label">Test Cases</div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>CSV missing mandatory fields</td>
+            <td>Attempt to import a CSV that is missing one or more mandatory Person columns</td>
+            <td class="expected error">Error on saving / validation failure before import runs</td>
+            <td>Helps trainee understand which fields are mandatory; check OIM Designer for mandatory column flags on Person</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>CSV with all mandatory fields</td>
+            <td>Import a complete, correctly structured CSV</td>
+            <td class="expected">Import runs successfully; new Person records visible in OIM Manager</td>
+            <td>Verify each row in the CSV has a corresponding Person record; also confirm the definition XML was saved</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Wrong key column causes duplicate Person records instead of updates &mdash; verify key selection before import; a unique business identifier (e.g., employee number) is a better key than FirstName</li>
+          <li>Always test with 2-3 rows first before importing a large dataset &mdash; much easier to clean up if something goes wrong</li>
+          <li>Save the definition XML immediately after the first successful import &mdash; rebuilding the mapping is time-consuming</li>
+          <li>If delimiter errors appear, open the CSV in a text editor (not Excel) to verify the actual delimiter character</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DIM-2 -->
+    <div class="exercise-card" id="dim2">
+      <div class="exercise-header">
+        <span class="exercise-id">DIM-2</span>
+        <span class="exercise-title">Update Identities via CSV</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Re-use the DIM-1 definition file to update existing Person records. The ONLY change from DIM-1 is switching the Handling Option from Insert to Update.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Updated CSV with modified values on existing records (same key column values)</li>
+        <li><span class="step-dot"></span>DIM-1 definition file loaded</li>
+        <li><span class="step-dot"></span>Handling option changed from Insert to Update &mdash; this is the only required change</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Update the CSV: modify field values on existing rows (keep key column values the same)</li>
+        <li><span class="step-num">2</span>Open Data Importer, load the DIM-1 definition file, change Handling Option to Update, then run the import</li>
+      </ol>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">Key Teaching Point</div>
+        The <strong>only</strong> change between DIM-1 and DIM-2 is the Handling Option (Insert &rarr; Update). Every other setting &mdash; file structure, column mapping, key column, connection variables &mdash; stays identical. This is why saving the definition file in DIM-1 matters.
+      </div>
+
+      <div class="sub-label">Test Cases</div>
+      <table class="test-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Test Steps</th>
+            <th>Expected Results</th>
+            <th>Mentor Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>CSV missing mandatory fields</td>
+            <td>Attempt to import with Update option but CSV is missing mandatory fields</td>
+            <td class="expected error">Error on saving / validation failure</td>
+            <td>Same validation applies to Update as to Insert; mandatory fields are always required</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>CSV with all mandatory fields</td>
+            <td>Import complete updated CSV with Update handling option</td>
+            <td class="expected">Import runs successfully; updated values visible on Person records in OIM Manager</td>
+            <td>Spot-check 2-3 records in OIM Manager to confirm values were changed &mdash; particularly fields that were intentionally modified in the CSV</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>If records are created as new (Insert behaviour) instead of updated, the key column values in the CSV do not match existing OIM records &mdash; check for whitespace or encoding differences in the key field</li>
+          <li>If records are not updated (silently skipped), verify the Handling Option was actually changed to Update before running</li>
+          <li>Remind trainees: never select Delete unless explicitly intentional &mdash; re-emphasise the warning from the Key Concepts section</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DIM-3 -->
+    <div class="exercise-card" id="dim3">
+      <div class="exercise-header">
+        <span class="exercise-id">DIM-3</span>
+        <span class="exercise-title">DB Connection Configuration</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Configure a database connection in Data Importer using the SQLClient Data Provider. Use the Object Browser to write and validate a SELECT query, then copy it into Data Importer for a database-sourced import.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Object Browser accessible in OIM Designer for query development</li>
+        <li><span class="step-dot"></span>Valid SELECT query targeting an OIM table or view</li>
+        <li><span class="step-dot"></span>SQLClient Data Provider configured with correct connection string</li>
+        <li><span class="step-dot"></span>Connection succeeds and query returns expected rows</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Configure the database connection in Data Importer: select Import from Database, choose SQLClient Data Provider, enter connection string</li>
+        <li><span class="step-num">2</span>Write the SELECT query in Object Browser, verify results, then copy the query into Data Importer</li>
+        <li><span class="step-num">3</span>Complete remaining wizard steps (column mapping, key, options) and verify the connection succeeds</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        Connection is confirmed successful when Data Importer returns the expected rows from the database without connection errors. Save the definition file after confirming.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Connection string format: <code>Server=HOSTNAME;Database=OIM_DB;Integrated Security=True;</code> or with username/password depending on environment</li>
+          <li>If "Login failed" errors occur, verify SQL Server authentication mode and that the connecting account has db_datareader rights</li>
+          <li>Always test the SELECT query in Object Browser first &mdash; confirmed row results there means the query is valid before pasting into Data Importer</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DIM-4 -->
+    <div class="exercise-card" id="dim4">
+      <div class="exercise-header">
+        <span class="exercise-id">DIM-4</span>
+        <span class="exercise-title">Advanced Connection Configuration</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Extend the DIM-3 database connection with additional configuration options. Explores more advanced Data Importer connection features for handling complex import scenarios.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Builds on the DIM-3 connection setup</li>
+        <li><span class="step-dot"></span>Additional configuration steps as directed by mentor</li>
+        <li><span class="step-dot"></span>Connection and import must succeed without errors</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Start from the DIM-3 connection; apply advanced configuration options as directed</li>
+        <li><span class="step-num">2</span>Additional configuration steps (mentor-guided per environment)</li>
+        <li><span class="step-num">3</span>Verify connection and import succeed</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        Configuration is valid and no errors occur on the import run. Confirm data loaded matches the source query results.
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Advanced options vary by environment &mdash; mentor should tailor this exercise to the specific connection requirements of the training lab</li>
+          <li>If the connection worked in DIM-3 but fails with advanced options, isolate which specific option was added last and revert to identify the cause</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DIM-5 -->
+    <div class="exercise-card" id="dim5">
+      <div class="exercise-header">
+        <span class="exercise-id">DIM-5</span>
+        <span class="exercise-title">Connection Variable Configuration</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Use Connection Variables in Data Importer to parameterise the import definition. Connection Variables allow the same definition file to be run against different targets without editing the XML directly.
+      </div>
+
+      <div class="sub-label">Requirements</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Import definition uses at least one Connection Variable</li>
+        <li><span class="step-dot"></span>Variable is referenced in the import configuration (e.g., in a WHERE clause or connection string)</li>
+        <li><span class="step-dot"></span>Import runs successfully using the variable value</li>
+      </ul>
+
+      <div class="sub-label">Solution Steps</div>
+      <ol class="numbered-steps">
+        <li><span class="step-num">1</span>Configure Connection Variables in the Data Importer Connection Variables wizard step</li>
+        <li><span class="step-num">2</span>Reference the variable in the appropriate location (query, connection string, or filter)</li>
+        <li><span class="step-num">3</span>Run the import and verify the variable value is applied correctly</li>
+      </ol>
+
+      <div class="verification-box">
+        <div class="verify-label">Verification</div>
+        Import runs using the variable value. Change the variable value and re-run; confirm the different value produces different results (e.g., different filtered row set).
+      </div>
+
+      <div class="mentor-tips">
+        <div class="tips-header">Mentor Tips / Troubleshooting</div>
+        <ul>
+          <li>Connection Variables make definition files reusable across environments (dev/test/prod) &mdash; emphasise this as a best practice</li>
+          <li>Variable name syntax must match exactly between the declaration and the reference; a mismatch is a common error and produces no obvious error message</li>
+          <li>After adding variables, always re-save the definition XML so the variables are persisted in the file</li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /exercises -->
+
+  <!-- MENTOR TIPS SUMMARY -->
+  <div class="content-section" id="mentor-tips">
+    <h2><span class="section-icon">03</span> Mentor Tips &amp; Key Concepts</h2>
+
+    <div class="callout callout-critical">
+      <div class="callout-title">Delete Option &mdash; Critical Warning (Repeat)</div>
+      The Delete handling option WILL DELETE records from OIM that match the import source. This is permanent and cannot be undone via Data Importer. Always verify the Handling Options panel before clicking Import. Repeat this warning at the start of every DIM session.
+    </div>
+
+    <div class="callout callout-warning">
+      <div class="callout-title">Key Column Selection</div>
+      Selecting the wrong key column is the most common mistake. A wrong key causes Data Importer to treat every row as a new record (all inserts instead of updates). Always pick a column that uniquely identifies each identity in the source system &mdash; employee number, email, or similar.
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Test Small First</div>
+      Always test with 2-3 rows before importing a full dataset. If something is misconfigured (wrong key, wrong handling option, missing fields), it is far easier to clean up 3 records than 3,000.
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Save Definition XML Immediately</div>
+      Save the <code>.xml</code> definition file after every successful import configuration. Rebuilding the full wizard from scratch &mdash; file structure, column mapping, key, options &mdash; takes significant time. The XML file is the single most valuable artefact from each exercise.
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">DIM-1 to DIM-2 is a Single Change</div>
+      The only difference between a CSV insert import and a CSV update import is the Handling Option toggle. Everything else (column mapping, key, file structure, definition file) stays the same. This is intentional &mdash; it demonstrates how reusable the definition file is.
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>Intragen OIM Academy &mdash; Module 019 &mdash; Data Importer</span>
+    <span>Last updated: 2026-03-27</span>
+  </div>
+
+</main>
+<footer>
+  INTRAGEN<span class="footer-dot">.</span> Academy &mdash; Mentoring Documentation &mdash;
+  &copy; Intragen International. This document remains strictly private and confidential.
+</footer>
+</body>
+</html>

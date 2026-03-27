@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 008 — TSA Mentor Guide | Intragen Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --purple: #7B2D8B;
+      --purple-dark: #5C1F6B;
+      --teal: #007B77;
+      --golden: #F0A800;
+      --body-bg: #FAF8F5;
+      --code-bg: #1E1E1E;
+      --border: #DDD;
+      --text: #2C2C2C;
+      --muted: #6B6B6B;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; font-size: 15px; color: var(--text); background: #F0EDE8; line-height: 1.6; }
+    .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--purple);
+      color: #fff;
+      width: 260px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .intragen-logo {
+      padding: 1.25rem 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    .logo-dot { color: var(--golden); }
+    .module-title-sidebar {
+      padding: 0.5rem 1rem 0.75rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--golden);
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+    .sidebar .section-label {
+      padding: 0.75rem 1rem 0.25rem;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .sidebar a {
+      display: block;
+      padding: 0.4rem 1rem;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.82rem;
+      border-left: 3px solid transparent;
+    }
+    .sidebar a:hover {
+      background: rgba(255,255,255,0.08);
+      border-left-color: var(--teal);
+      color: #fff;
+    }
+    .sidebar a.sub { padding-left: 1.75rem; font-size: 0.78rem; }
+
+    /* Main content */
+    main { padding: 2.25rem 3rem; max-width: 1000px; background: var(--body-bg); }
+
+    /* Module header */
+    .module-header {
+      background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+      color: #fff;
+      padding: 2rem 2rem 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .module-header .watermark {
+      position: absolute;
+      top: 1rem;
+      right: 1.25rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+    }
+    .module-header .watermark span { color: rgba(240,168,0,0.35); }
+    .module-header .badges { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .badge-code { background: rgba(255,255,255,0.15); color: #fff; }
+    .badge-level { background: var(--golden); color: #fff; }
+    .badge-duration { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); }
+    .module-header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .module-header .subtitle { color: rgba(255,255,255,0.78); font-size: 0.9rem; line-height: 1.55; }
+
+    /* Section headers */
+    section { margin-bottom: 3rem; }
+    .section-banner {
+      background: var(--purple-dark);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 0.55rem 0.9rem;
+      margin-bottom: 1.25rem;
+      border-radius: 3px;
+    }
+    section > h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--purple-dark);
+      border-bottom: 2px solid var(--purple);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.25rem;
+    }
+    section h3 { font-size: 0.95rem; font-weight: 600; color: var(--purple-dark); margin-bottom: 0.6rem; }
+
+    /* Info grid */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    .info-card {
+      background: #fff;
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.2rem;
+      border-left: 4px solid var(--teal);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    }
+    .info-card h4 { font-size: 0.78rem; font-weight: 700; color: var(--purple-dark); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .info-card ul { padding-left: 1.1rem; }
+    .info-card li { font-size: 0.88rem; margin-bottom: 0.25rem; }
+
+    /* Objectives */
+    .objectives-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; counter-reset: obj; }
+    .objectives-list li {
+      background: #fff;
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      border-left: 3px solid var(--teal);
+      font-size: 0.88rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      counter-increment: obj;
+    }
+    .objectives-list li::before {
+      content: counter(obj);
+      background: var(--purple);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    /* Prerequisites */
+    .prereqs { background: #fff; border-radius: 0 8px 8px 0; padding: 1rem 1.2rem; border-left: 4px solid var(--golden); margin-top: 1rem; }
+    .prereqs h3 { color: var(--golden); margin-bottom: 0.5rem; }
+    .prereqs ul { padding-left: 1.1rem; }
+    .prereqs ul li { font-size: 0.88rem; margin-bottom: 4px; }
+
+    /* Exercise cards */
+    .exercise-grid { display: flex; flex-direction: column; gap: 1.5rem; }
+    .exercise-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--teal);
+      border-radius: 0 8px 8px 0;
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    }
+    .exercise-card h2 { color: var(--purple-dark); }
+    .exercise-card-header { display: flex; align-items: center; gap: 14px; padding-bottom: 0.9rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+    .exercise-id { background: var(--purple-dark); color: #fff; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 6px; white-space: nowrap; }
+    .exercise-card-header h3 { font-size: 1rem; font-weight: 700; color: var(--purple-dark); flex: 1; }
+    .difficulty { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .beginner { background: #E6F9F0; color: #1A6640; }
+    .intermediate { background: #FFF8E1; color: #8B6000; }
+    .advanced { background: #F9E8F8; color: var(--purple-dark); }
+    .exercise-card-body { }
+    .exercise-goal { font-size: 0.9rem; color: var(--text); margin-bottom: 0.75rem; }
+    .steps-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--teal); margin: 0.75rem 0 0.4rem; }
+    .steps-list { padding-left: 1.25rem; margin-bottom: 0.75rem; }
+    .steps-list li { font-size: 0.88rem; margin-bottom: 0.35rem; }
+
+    /* Callouts */
+    .callout-mentor { background: #E8F4FF; border-left: 4px solid #2D6DB5; border-radius: 0 8px 8px 0; padding: 0.85rem 1rem; margin: 0.75rem 0; font-size: 0.88rem; }
+    .callout-mentor::before { content: "Mentor: "; font-weight: 700; color: #2D6DB5; }
+    .callout-warn { background: #FFF8E1; border-left: 4px solid #F59E0B; border-radius: 0 8px 8px 0; padding: 0.85rem 1rem; margin: 0.75rem 0; font-size: 0.88rem; }
+    .callout-warn::before { content: "Common Mistake: "; font-weight: 700; color: #B07000; }
+    .callout-tip { background: #F0FDF4; border-left: 4px solid #22C55E; border-radius: 0 8px 8px 0; padding: 0.85rem 1rem; margin: 0.75rem 0; font-size: 0.88rem; }
+    .callout-tip::before { content: "Expected Outcome: "; font-weight: 700; color: #15803D; }
+    .callout-error { background: #FDF2F2; border-left: 4px solid #E74C3C; border-radius: 0 8px 8px 0; padding: 0.85rem 1rem; margin: 0.75rem 0; font-size: 0.88rem; }
+    .callout-error::before { content: "Warning: "; font-weight: 700; color: #B91C1C; }
+    .callout-important { background: #F5EFF8; border-left: 4px solid var(--purple); border-radius: 0 8px 8px 0; padding: 0.85rem 1rem; margin: 0.75rem 0; font-size: 0.88rem; }
+
+    /* Code */
+    .code-block { background: #1E1E1E; color: #D4D4D4; border-radius: 8px; padding: 1rem 1.25rem; font-family: 'Courier New', Consolas, monospace; font-size: 0.82rem; line-height: 1.6; overflow-x: auto; margin: 0.75rem 0; white-space: pre; }
+    .code-block .comment { color: #6A9955; }
+    .code-block .keyword { color: #569CD6; }
+    .code-block .string { color: #CE9178; }
+    code { background: #EDE8F0; color: #8B2080; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+
+    /* Hierarchy levels */
+    .hierarchy-level { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 6px; margin-bottom: 6px; font-size: 0.88rem; }
+    .hierarchy-level .level-num { background: var(--purple-dark); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .hierarchy-level .level-name { font-weight: 700; color: var(--purple-dark); min-width: 100px; }
+    .hierarchy-level .level-desc { color: #555; font-size: 0.82rem; }
+    .hl-1 { background: #F5EFF8; border-left: 3px solid var(--purple); }
+    .hl-2 { background: #E6F9F6; border-left: 3px solid var(--teal); margin-left: 20px; }
+    .hl-3 { background: #FFF8E1; border-left: 3px solid var(--golden); margin-left: 40px; }
+
+    /* Deploy steps */
+    .deploy-steps { counter-reset: deploy; list-style: none; }
+    .deploy-steps li { counter-increment: deploy; display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+    .deploy-steps li::before { content: counter(deploy); background: var(--teal); color: #fff; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .deploy-steps li:last-child { border-bottom: none; }
+
+    /* Troubleshooting table */
+    .trouble-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.06); }
+    .trouble-table th { background: var(--purple-dark); color: #fff; padding: 0.7rem 1rem; text-align: left; font-size: 0.82rem; font-weight: 600; }
+    .trouble-table td { padding: 0.7rem 1rem; font-size: 0.85rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .trouble-table tr:last-child td { border-bottom: none; }
+    .trouble-table tr:nth-child(even) td { background: #F8F5FB; }
+    .trouble-table .symptom { font-weight: 600; color: #B91C1C; }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+    <div class="module-title-sidebar">Module 008 &mdash; Target Systems (TSA)</div>
+    <span class="section-label">Contents</span>
+    <a href="#overview">Overview</a>
+    <a href="#objectives">Learning Objectives</a>
+    <a href="#concepts">Key Concepts</a>
+    <a href="#exercises">Exercises</a>
+    <a href="#ex-tsa1" class="sub">TSA-1: Exploring Target Systems</a>
+    <a href="#ex-tsa2" class="sub">TSA-2: Register New Target System</a>
+    <a href="#ex-tsa3" class="sub">TSA-3: Account Schema</a>
+    <a href="#ex-tsa4" class="sub">TSA-4: Provisioning Rules</a>
+    <a href="#ex-tsa5" class="sub">TSA-5: Outstanding Objects</a>
+    <a href="#ex-tsa6" class="sub">TSA-6: End-to-End Test</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+  </aside>
+
+  <main>
+    <div class="module-header">
+      <div class="watermark">INTRAGEN<span>.</span></div>
+      <div class="badges">
+        <span class="badge badge-code">TSA</span>
+        <span class="badge badge-level">Intermediate</span>
+        <span class="badge badge-duration">~2 Days</span>
+        <span class="badge badge-duration">6 Exercises</span>
+      </div>
+      <h1>Module 008 &mdash; Target Systems</h1>
+      <div class="subtitle">Target systems are the external directories and applications that OIM provisions and manages. This module covers registering target systems, defining account schemas, configuring provisioning rules, and managing the full account lifecycle including outstanding objects.</div>
+    </div>
+
+    <section id="overview">
+      <h2>Overview</h2>
+      <p style="font-size:0.9rem;line-height:1.7;margin-bottom:1rem;">A <strong>target system</strong> in OIM is the metadata definition that describes an external directory or application. OIM stores its own representation of the accounts, groups, and containers in that external system, then uses provisioning rules to keep the two in sync. This module focuses on the OIM side of that relationship &mdash; how the target system record is structured, how accounts are represented, how names are generated, and how OIM handles discrepancies (outstanding objects) when the external system changes without OIM knowing.</p>
+      <p style="font-size:0.9rem;line-height:1.7;margin-bottom:1rem;">The built-in Active Directory connector serves as the gold-standard reference throughout this module. Before building anything new, trainees should spend time deeply exploring an existing, fully-configured AD target system to understand what a complete implementation looks like at every level.</p>
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>What OIM Stores</h4>
+          <ul>
+            <li>Target system definition (metadata)</li>
+            <li>Container hierarchy (OUs, folders, etc.)</li>
+            <li>Account objects (one per person per system)</li>
+            <li>Schema definition (columns and types)</li>
+            <li>Provisioning rules (naming, defaults)</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Key Designer / Manager Locations</h4>
+          <ul>
+            <li>Manager &rarr; Target Systems (browse tree)</li>
+            <li>Designer &rarr; Target Systems (define structure)</li>
+            <li>Designer &rarr; Schema (add custom columns)</li>
+            <li>Designer &rarr; Provisioning Rules</li>
+            <li>Manager &rarr; Persons &rarr; Accounts (view accounts)</li>
+          </ul>
+        </div>
+      </div>
+      <div id="objectives">
+        <h3>Learning Objectives</h3>
+        <ul class="objectives-list">
+          <li>Understand the target system hierarchy (System &rarr; Container &rarr; Account)</li>
+          <li>Register a new target system definition</li>
+          <li>Define account schema (columns, data types, mandatory fields)</li>
+          <li>Configure provisioning rules (account naming, default values)</li>
+          <li>Assign target systems to departments and IT shop</li>
+          <li>Handle outstanding objects (XMarkedForDeletion)</li>
+          <li>Configure account deletion behaviour</li>
+          <li>Run end-to-end provisioning test</li>
+        </ul>
+      </div>
+      <div class="prereqs">
+        <h3>Prerequisites</h3>
+        <ul>
+          <li>Module BAS (005) completed</li>
+          <li>Basic understanding of directory structures (helpful: Active Directory or LDAP)</li>
+          <li>Access to OIM Manager &rarr; Target Systems</li>
+          <li>Designer access with Target System permissions</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="concepts">
+      <h2>Key Concepts</h2>
+      <h3 style="margin-bottom:0.75rem;">Target System Object Hierarchy</h3>
+      <div style="background:#fff;border-radius:8px;padding:1.25rem 1.5rem;box-shadow:0 1px 6px rgba(0,0,0,0.06);margin:1rem 0;">
+        <div class="hierarchy-level hl-1">
+          <div class="level-num">1</div>
+          <div class="level-name">Target System</div>
+          <div class="level-desc">Top-level definition object &mdash; identifies the external system type, connector, and display name</div>
+        </div>
+        <div class="hierarchy-level hl-2">
+          <div class="level-num">2</div>
+          <div class="level-name">Container</div>
+          <div class="level-desc">Represents OUs, folders, or organisational groupings within the external system</div>
+        </div>
+        <div class="hierarchy-level hl-3">
+          <div class="level-num">3</div>
+          <div class="level-name">Account</div>
+          <div class="level-desc">An individual user account in the target system &mdash; linked to an OIM Person record via UID_Person</div>
+        </div>
+      </div>
+      <div class="callout-error">A "Target System" in OIM is the metadata record describing the external system &mdash; NOT the external system itself. You could delete the OIM target system record with zero impact on the actual Active Directory. Make this distinction explicit early; it confuses almost every new trainee.</div>
+      <h3 style="margin-top:1.5rem;margin-bottom:0.75rem;">Schema Change Deploy Cycle</h3>
+      <p style="font-size:0.88rem;line-height:1.7;margin-bottom:0.75rem;">Any schema change &mdash; adding columns, changing data types, updating display labels &mdash; requires a full deploy cycle. Trainees who skip any step will encounter confusing "column not found" errors.</p>
+      <ul class="deploy-steps">
+        <li>Make schema changes in Designer (add column, set type, set display label)</li>
+        <li>Save the changes in Designer</li>
+        <li>Compile the schema: Designer &rarr; Database &rarr; Compile</li>
+        <li>Deploy the compiled schema: Designer &rarr; Database &rarr; Deploy</li>
+        <li>Restart the OIM API Web Service (or full IIS reset in test environments)</li>
+        <li>Verify the new column appears in OIM Manager under the account object</li>
+      </ul>
+      <h3 style="margin-top:1.5rem;margin-bottom:0.75rem;">Outstanding Objects &mdash; XMarkedForDeletion</h3>
+      <p style="font-size:0.88rem;line-height:1.7;margin-bottom:0.5rem;">When a sync runs and an account previously known to OIM can no longer be found in the target system, OIM sets <code>XMarkedForDeletion = 1</code>. This is an <strong>outstanding object</strong>. OIM does not automatically delete these &mdash; it waits for a human or a configured rule to decide.</p>
+      <div class="info-grid" style="margin-top:0.5rem;">
+        <div class="info-card">
+          <h4>Resolution Options</h4>
+          <ul>
+            <li><strong>Republish</strong> &mdash; re-create the account in the target system</li>
+            <li><strong>Delete from OIM</strong> &mdash; remove the OIM record entirely</li>
+            <li><strong>Ignore</strong> &mdash; leave the flag set (not recommended long-term)</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Why They Matter</h4>
+          <ul>
+            <li>Accumulate over time and pollute reports</li>
+            <li>May indicate provisioning failures needing attention</li>
+            <li>Can cause duplicate errors if republished incorrectly</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="exercises">
+      <h2>Exercises</h2>
+      <div class="exercise-grid">
+
+        <div class="exercise-card" id="ex-tsa1">
+          <div class="exercise-card-header">
+            <span class="exercise-id">TSA-1</span>
+            <h3>Exploring Existing Target Systems</h3>
+            <span class="difficulty beginner">Beginner</span>
+          </div>
+          <div class="exercise-card-body">
+            <p class="exercise-goal"><strong>Goal:</strong> Navigate the target system object tree in OIM Manager. Understand the System &rarr; Container &rarr; Account hierarchy by exploring a fully configured existing system.</p>
+            <div class="steps-label">Key Steps</div>
+            <ol class="steps-list">
+              <li>Open <strong>OIM Manager</strong> and navigate to <strong>Target Systems</strong></li>
+              <li>Expand the tree to find an Active Directory target system</li>
+              <li>Click the top-level target system node &mdash; examine properties (display name, connector type, UID)</li>
+              <li>Expand into a Container node &mdash; note the DN, parent container, and associated accounts</li>
+              <li>Click an Account node &mdash; examine mapped columns (account name, email, status, XMarkedForDeletion)</li>
+              <li>Navigate to Manager &rarr; Persons; find the Person linked to that account; observe the UID_Person link</li>
+            </ol>
+            <div class="callout-mentor">Use the built-in AD connector as the reference. Encourage trainees to spend at least 20 minutes clicking through the tree before asking questions &mdash; the structure becomes intuitive through exploration. Point out that every account has a UID_Person foreign key linking it back to the central Person record. This foreign key is the foundation of the entire provisioning model.</div>
+            <div class="callout-warn">Trainees frequently confuse the "Target System" object in OIM Manager (the metadata record) with the actual external Active Directory server. Make this explicit: deleting the OIM target system record does not affect the real AD. The OIM record is a mirror &mdash; a representation, not the master.</div>
+            <div class="callout-tip">Trainee can navigate from a Person record to their associated accounts across multiple target systems, and explain what each level of the hierarchy represents.</div>
+          </div>
+        </div>
+
+        <div class="exercise-card" id="ex-tsa2">
+          <div class="exercise-card-header">
+            <span class="exercise-id">TSA-2</span>
+            <h3>Registering a New Target System</h3>
+            <span class="difficulty intermediate">Intermediate</span>
+          </div>
+          <div class="exercise-card-body">
+            <p class="exercise-goal"><strong>Goal:</strong> Create a custom target system definition in Designer. This is a conceptual exercise &mdash; no real external system is connected. The goal is to understand the OIM metadata structure.</p>
+            <div class="steps-label">Key Steps</div>
+            <ol class="steps-list">
+              <li>Open <strong>OIM Designer</strong> and navigate to <strong>Target Systems</strong></li>
+              <li>Click <strong>New</strong>; provide a display name: <code>CCC Training System</code></li>
+              <li>Set connector type to <strong>Generic</strong> (no real connector)</li>
+              <li>Configure the container structure: add one root container named <code>Users</code></li>
+              <li>Save and compile; navigate to OIM Manager &rarr; Target Systems; verify the new system appears</li>
+              <li>Attempt to view accounts &mdash; confirm none exist yet (sync has not run)</li>
+            </ol>
+            <div class="callout-mentor">Emphasise clearly: the "connector" is the Sync Engine process that periodically exchanges data. The target system record in OIM is just metadata describing the structure. Creating the record does not connect to anything. Many trainees expect accounts to appear immediately &mdash; correct this misunderstanding now, before the sync module (CNR-010).</div>
+            <div class="callout-warn">Trainees often expect that saving the target system in Designer immediately makes it operational. Accounts will not appear until a Sync Project (Module 010 CNR) is configured and executed against a real data source. The target system record is the container; the sync project is what fills it.</div>
+          </div>
+        </div>
+
+        <div class="exercise-card" id="ex-tsa3">
+          <div class="exercise-card-header">
+            <span class="exercise-id">TSA-3</span>
+            <h3>Account Schema Definition</h3>
+            <span class="difficulty intermediate">Intermediate</span>
+          </div>
+          <div class="exercise-card-body">
+            <p class="exercise-goal"><strong>Goal:</strong> Add custom columns to the account schema. Set data types, mandatory flags, and display labels. Complete the full deploy cycle and verify the columns appear in OIM Manager.</p>
+            <div class="steps-label">Key Steps</div>
+            <ol class="steps-list">
+              <li>In Designer, navigate to <strong>Schema</strong> and find the account class for the CCC Training System</li>
+              <li>Add <code>CCC_LoginName</code>: type = String(50), mandatory = Yes, display label = "Login Name"</li>
+              <li>Add <code>CCC_AccountExpiry</code>: type = DateTime, mandatory = No, display label = "Account Expiry"</li>
+              <li>Add <code>CCC_IsAdmin</code>: type = Boolean, mandatory = No, display label = "Admin Account"</li>
+              <li>Save in Designer; compile (Database &rarr; Compile); deploy (Database &rarr; Deploy)</li>
+              <li>Restart the web service; verify the three columns appear in OIM Manager on the account schema</li>
+            </ol>
+            <div class="callout-mentor">Walk trainees through each step of the deploy cycle explicitly. This is the single most common source of "why don't I see my new column?" questions. The cycle is: Save &rarr; Compile &rarr; Deploy &rarr; Restart service. Skipping any step leaves the system in an intermediate state. In production, a service restart may require a change request &mdash; explain that this is why schema changes are batched into deployment windows.</div>
+            <div class="callout-warn">Adding columns without completing the full deploy cycle is the most common mistake in this exercise. The column exists in Designer's data model but the OIM runtime has not picked it up yet. A trainee who skips the service restart will insist "it's not working" when the issue is simply a stale service cache.</div>
+            <div class="callout-tip">Trainee can add a schema column, complete the deploy cycle independently, and verify the result in OIM Manager without assistance.</div>
+          </div>
+        </div>
+
+        <div class="exercise-card" id="ex-tsa4">
+          <div class="exercise-card-header">
+            <span class="exercise-id">TSA-4</span>
+            <h3>Provisioning Rules</h3>
+            <span class="difficulty intermediate">Intermediate</span>
+          </div>
+          <div class="exercise-card-body">
+            <p class="exercise-goal"><strong>Goal:</strong> Configure a naming rule that automatically generates an account name when OIM provisions a new account. The rule uses the Person's first and last name.</p>
+            <div class="steps-label">Key Steps</div>
+            <ol class="steps-list">
+              <li>In Designer, navigate to <strong>Provisioning Rules</strong> for the CCC Training System</li>
+              <li>Create a new rule targeting the <code>CCC_LoginName</code> column on the account object</li>
+              <li>Set rule type to <strong>Template</strong>; enter the VB.NET expression below</li>
+              <li>Save and compile; create a test Person with first name "Jane" and last name "Smith"</li>
+              <li>Trigger provisioning (assign the target system to a role; assign the role to the Person)</li>
+              <li>Verify the generated account has <code>CCC_LoginName = "jane.smith"</code></li>
+            </ol>
+            <div class="steps-label">Provisioning Rule Expression</div>
+            <div class="code-block"><span class="comment">' AccountName template — generates firstname.lastname in lowercase</span>
+Value(<span class="string">"Person"</span>, <span class="string">"FirstName"</span>).ToLower() &amp; <span class="string">"."</span> &amp; Value(<span class="string">"Person"</span>, <span class="string">"LastName"</span>).ToLower()</div>
+            <div class="callout-mentor">Connect this explicitly to Module 006 (TPL). Provisioning rules ARE templates &mdash; the exact same VB.NET template engine runs them. Trainees who have mastered TPL will immediately recognise the syntax. The <code>Value("Person", "ColumnName")</code> form crosses the foreign key from the account object to the linked Person record &mdash; identical to cross-table TPL templates.</div>
+            <div class="callout-warn">The account name column name differs between target systems &mdash; in AD it is <code>sAMAccountName</code>; in a generic system it may be <code>CCC_LoginName</code>. Always check the actual column name in the schema editor before writing the rule. Targeting the wrong column results in the rule silently doing nothing to the intended field.</div>
+          </div>
+        </div>
+
+        <div class="exercise-card" id="ex-tsa5">
+          <div class="exercise-card-header">
+            <span class="exercise-id">TSA-5</span>
+            <h3>Outstanding Objects</h3>
+            <span class="difficulty intermediate">Intermediate</span>
+          </div>
+          <div class="exercise-card-body">
+            <p class="exercise-goal"><strong>Goal:</strong> Simulate the outstanding objects scenario. Create an account, simulate its external deletion, observe the <code>XMarkedForDeletion</code> flag, and work through the resolution options.</p>
+            <div class="steps-label">Key Steps</div>
+            <ol class="steps-list">
+              <li>Manually create a test account record in OIM Manager under the CCC Training System</li>
+              <li>Verify the account has <code>XMarkedForDeletion = 0</code></li>
+              <li>Simulate an external deletion: manually set <code>XMarkedForDeletion = 1</code> on the record (demo mode)</li>
+              <li>Open the account in OIM Manager &mdash; observe the outstanding object indicator</li>
+              <li>Walk through all three resolution options: <strong>Republish</strong>, <strong>Delete from OIM</strong>, <strong>Ignore</strong></li>
+              <li>Choose Delete from OIM; confirm the account record is removed</li>
+            </ol>
+            <div class="callout-mentor">Outstanding objects are OIM's way of saying: "I had a record for this, but I can't find it in the target system any more." Republish recreates the account in the target &mdash; only appropriate if the deletion was accidental. Delete from OIM removes the local mirror &mdash; correct if the account was legitimately deleted. Ignore is almost never the right long-term choice; use it only as a temporary hold while investigating.</div>
+            <div class="callout-warn">Ignoring outstanding objects is the most common mistake in production environments. They accumulate silently over months, then appear in compliance reports and cause confusion. Configure an automated cleanup rule for old outstanding objects rather than letting them pile up indefinitely.</div>
+            <div class="callout-tip">Trainee can explain what XMarkedForDeletion means, identify outstanding objects in OIM Manager, and select the appropriate resolution strategy for a given scenario.</div>
+          </div>
+        </div>
+
+        <div class="exercise-card" id="ex-tsa6">
+          <div class="exercise-card-header">
+            <span class="exercise-id">TSA-6</span>
+            <h3>End-to-End Provisioning Test</h3>
+            <span class="difficulty advanced">Advanced</span>
+          </div>
+          <div class="exercise-card-body">
+            <p class="exercise-goal"><strong>Goal:</strong> Complete the full provisioning lifecycle: assign a role &rarr; DBQueue processes &rarr; account created. Then remove the role &rarr; account disabled or deleted. Trace every step in the chain.</p>
+            <div class="steps-label">Key Steps</div>
+            <ol class="steps-list">
+              <li>Create a test Person in OIM with a known first and last name</li>
+              <li>Assign a role configured to provision to the CCC Training System</li>
+              <li>Wait for DBQueue to process (or trigger manually via Job Queue)</li>
+              <li>Navigate to the test Person &rarr; Accounts &mdash; verify a new account with the correct generated name</li>
+              <li>Check <code>CCC_LoginName</code> matches the template rule from TSA-4</li>
+              <li>Remove the role from the Person; wait for DBQueue; verify account disabled or deleted per the deprovisioning rule</li>
+              <li>Document the full lifecycle in the trainee's notes</li>
+            </ol>
+            <div class="callout-mentor">This exercise ties together everything from TSA-1 through TSA-5. Run it as a live walkthrough the first time &mdash; then ask the trainee to repeat it independently with a different test Person. The ability to trace the provisioning chain (role assignment &rarr; process &rarr; DBQueue &rarr; account creation) is a fundamental skill used daily in OIM consulting work.</div>
+            <div class="callout-tip">Trainee can independently trace the full provisioning lifecycle from role assignment through account creation to deprovisioning, and explain each step in the chain without assistance.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="troubleshooting">
+      <h2>Troubleshooting Reference</h2>
+      <table class="trouble-table">
+        <thead><tr><th style="width:30%">Symptom</th><th>Diagnosis &amp; Resolution</th></tr></thead>
+        <tbody>
+          <tr><td class="symptom">Account not created after role assignment</td><td>Check Job Queue Info for errors on the provisioning job. Verify that a provisioning rule exists for this target system and that DBQueue is actively processing. Check Job Service status in Windows Services.</td></tr>
+          <tr><td class="symptom">Wrong account name generated</td><td>Inspect the AccountName provisioning rule expression in Designer. Trace the VB.NET logic manually with the actual Person column values. Verify the column name in the expression matches the schema column name exactly (case-sensitive).</td></tr>
+          <tr><td class="symptom">Target system not visible in OIM Manager</td><td>Designer save was not followed by a compile and deploy. Check the deploy log in Designer &rarr; Database &rarr; Deploy Log for errors. A failed deploy leaves the system in the pre-change state.</td></tr>
+          <tr><td class="symptom">Schema columns missing in OIM Manager</td><td>The OIM web service or API service needs a restart after a schema deploy. Restart the relevant Windows service or IIS application pool. In test environments, an IIS Reset is sufficient.</td></tr>
+          <tr><td class="symptom">Outstanding objects not clearing after sync</td><td>The sync project is not configured to handle deletions. Check the sync project's Provisioning Rules and Synchronization Rules for deletion handling configuration. See Module 010 CNR for detailed sync troubleshooting.</td></tr>
+          <tr><td class="symptom">Provisioning to wrong container</td><td>The container assignment on the target system definition is missing or incorrect. Check the provisioning rule for container selection logic. In AD, verify the target OU is correctly specified in the provisioning rule's container template.</td></tr>
+          <tr><td class="symptom">Account stays enabled after role removal</td><td>The deprovisioning rule is not configured. Navigate to Designer &rarr; Provisioning Rules for the target system and verify a rule exists for the deletion/disable action when the assignment is removed.</td></tr>
+          <tr><td class="symptom">Test Person not visible in provisioning</td><td>Person type filter or active flag excludes the test Person. Check Person.IsInactive and Person.XIsInEffect. Some provisioning rules filter by PersonType or employment status &mdash; verify the test Person meets all filter criteria.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer style="margin-top:3rem;padding:1.25rem 2rem;background:#F5EFF8;border-top:2px solid #EDE8F0;font-size:0.78rem;color:var(--muted);text-align:center;">
+      INTRAGEN<span style="color:#F0A800">.</span> Academy &mdash; Mentoring Documentation &mdash;
+      &copy; Intragen International. This document remains strictly private and confidential.
+    </footer>
+  </main>
+</div>
+</body>
+</html>

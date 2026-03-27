@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 009 &mdash; Scenarios (SCN) | Intragen Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --purple: #7B2D8B;
+      --purple-dark: #5C1F6B;
+      --teal: #007B77;
+      --golden: #F0A800;
+      --body-bg: #FAF8F5;
+      --code-bg: #1E1E1E;
+      --border: #DDD;
+      --text: #2C2C2C;
+      --muted: #6B6B6B;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; font-size: 15px; color: var(--text); background: #F0EDE8; line-height: 1.6; }
+    .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--purple);
+      color: #fff;
+      width: 260px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .intragen-logo {
+      padding: 1.25rem 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    .logo-dot { color: var(--golden); }
+    .module-title-sidebar {
+      padding: 0.5rem 1rem 0.75rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--golden);
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+    .nav-label {
+      padding: 0.75rem 1rem 0.25rem;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .sidebar a {
+      display: block;
+      padding: 0.4rem 1rem;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.82rem;
+      border-left: 3px solid transparent;
+    }
+    .sidebar a:hover {
+      background: rgba(255,255,255,0.08);
+      border-left-color: var(--teal);
+      color: #fff;
+    }
+
+    /* Main */
+    main { padding: 2rem; max-width: 1080px; background: var(--body-bg); }
+
+    /* Module header */
+    .module-header {
+      background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+      color: #fff;
+      padding: 2rem 2rem 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .module-header .watermark {
+      position: absolute;
+      top: 1rem;
+      right: 1.25rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+    }
+    .module-header .watermark span { color: rgba(240,168,0,0.35); }
+    .mod-num { display: inline-block; font-size: 2.5rem; font-weight: 900; opacity: 0.25; float: right; line-height: 1; }
+    .module-header h1 { font-size: 1.6rem; margin-bottom: 0.4rem; }
+    .module-header p { opacity: 0.85; font-size: 0.9rem; }
+
+    /* Badges */
+    .badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+    .beginner { background: #E6F9F0; color: #1A6640; }
+    .intermediate { background: #FFF8E1; color: #8B6000; }
+    .advanced { background: #F9E8F8; color: var(--purple-dark); }
+
+    /* Overview grid */
+    .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+    .info-card {
+      background: #fff;
+      border-left: 4px solid var(--teal);
+      padding: 1.1rem 1.2rem;
+      border-radius: 0 8px 8px 0;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    }
+    .info-card h3 { color: var(--purple-dark); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .info-card ul { padding-left: 1.2rem; }
+    .info-card li { font-size: 0.9rem; margin-bottom: 0.25rem; }
+
+    /* Sections */
+    section { margin-bottom: 2.5rem; }
+    section > h2 { color: var(--purple-dark); font-size: 1.1rem; border-bottom: 2px solid var(--purple); padding-bottom: 0.4rem; margin-bottom: 1.2rem; }
+
+    /* Exercise cards */
+    .exercise-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--teal);
+      border-radius: 0 8px 8px 0;
+      padding: 1.4rem;
+      margin-bottom: 1.4rem;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    }
+    .exercise-card h2 { color: var(--purple-dark); }
+    .ex-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .ex-num {
+      background: var(--purple-dark);
+      color: #fff;
+      min-width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+    .ex-header h3 { color: var(--purple-dark); font-size: 1rem; margin: 0; }
+    .section-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--teal); margin: 0.9rem 0 0.3rem; }
+
+    /* Callouts */
+    .callout { padding: 0.85rem 1rem; border-radius: 0 8px 8px 0; margin: 0.8rem 0; font-size: 0.9rem; }
+    .callout-mentor { border-left: 4px solid #2D6DB5; background: #E8F4FF; }
+    .callout-tip { border-left: 4px solid #22C55E; background: #F0FDF4; }
+    .callout-warn { border-left: 4px solid #F59E0B; background: #FFF8E1; }
+    .callout-error { border-left: 4px solid #E74C3C; background: #FDF2F2; }
+    .callout-important { border-left: 4px solid var(--purple); background: #F5EFF8; }
+    .callout b { display: block; margin-bottom: 0.2rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Steps */
+    .steps { padding-left: 1.4rem; margin: 0.4rem 0; }
+    .steps li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+
+    /* Code */
+    pre { background: #1E1E1E; color: #D4D4D4; padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.8rem; margin: 0.8rem 0; font-family: 'Courier New', monospace; }
+    code { background: #EDE8F0; color: #8B2080; padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.82rem; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; }
+    thead tr { background: var(--purple-dark); color: #fff; }
+    th, td { padding: 0.6rem 0.9rem; border: 1px solid var(--border); text-align: left; }
+    tbody tr:nth-child(even) td { background: #F8F5FB; }
+    .pass { color: #155724; font-weight: 700; }
+    .fail { color: #721C24; font-weight: 700; }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+    <div class="module-title-sidebar">Module 009 &mdash; SCN</div>
+    <div class="nav-label">Exercises</div>
+    <a href="#scn1">SCN-1: Create Employee via IT Shop</a>
+    <a href="#scn2">SCN-2: Email on Account Creation</a>
+    <a href="#scn3">SCN-3: Email 15 Days Before Expiry</a>
+    <a href="#scn4">SCN-4: Update External Employee</a>
+    <a href="#scn5">SCN-5: AD Provisioning via IT Shop</a>
+    <div class="nav-label">Reference</div>
+    <a href="#tips">Mentor Tips</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+  </nav>
+
+  <main>
+    <div class="module-header">
+      <div class="watermark">INTRAGEN<span>.</span></div>
+      <span class="mod-num">009</span>
+      <div style="margin-bottom:0.6rem">
+        <span class="badge intermediate">Intermediate</span>
+        &nbsp;<span style="font-size:0.8rem;opacity:0.75">5 Exercises &nbsp;|&nbsp; ~3 Days</span>
+      </div>
+      <h1>Scenarios (SCN)</h1>
+      <p>Real-world identity lifecycle scenarios using IT Shop custom request properties, process chains, mail templates, and AD provisioning. These exercises build a complete "create employee via IT Shop" scenario end-to-end.</p>
+    </div>
+
+    <div class="overview-grid">
+      <div class="info-card">
+        <h3>Key Concepts</h3>
+        <ul>
+          <li>Request Properties (custom fields on IT Shop request forms)</li>
+          <li>ShoppingCartItem / PersonWantsOrg tables</li>
+          <li>Multi-request resource</li>
+          <li>CentralAccount generation via script</li>
+          <li>Process Automation (scheduled jobs)</li>
+          <li>Mail Templates &amp; Pre-Scripts</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Exercise Overview</h3>
+        <ul>
+          <li><strong>SCN-1:</strong> Create Employee via IT Shop (Custom Request Property)</li>
+          <li><strong>SCN-2:</strong> Email Notification on External Employee Account Creation</li>
+          <li><strong>SCN-3:</strong> Email 15 Days Before Identity Expiry</li>
+          <li><strong>SCN-4:</strong> Update External Employee via IT Shop</li>
+          <li><strong>SCN-5:</strong> AD Account Provisioning via IT Shop (System Role)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SCN-1 -->
+    <section id="scn1">
+      <h2>SCN-1: Create Employee via IT Shop (Custom Request Property)</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">1</div>
+          <h3>Create Employee via IT Shop</h3>
+        </div>
+
+        <p style="font-size:0.9rem;margin-bottom:0.8rem">Build a complete "create identity" workflow through the IT Shop, collecting entry/exit dates and company information on the request form itself. This is the foundational exercise for the entire module.</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 &mdash; Extend Tables:</strong> Extend both <code>ShoppingCartItem</code> (items added to cart) and <code>PersonWantsOrg</code> (requested items) to add custom columns for Entry/Exit Date and Company fields.</li>
+          <li><strong>Step 2 &mdash; Create Request Property "SCN1":</strong> Create a new Request Property named <code>SCN1</code> using the extended fields. Configure "Obsolete parameters" so fields become read-only after the request is approved.</li>
+          <li><strong>Step 3 &mdash; Multi-request Resource:</strong> Create a Multi-request resource for the IT Shop. Add it to the IT Shop with a new Service Item named <code>Create_Employee_SCN1</code>.</li>
+          <li><strong>Step 4 &mdash; Apply Request Property:</strong> Assign the <code>SCN1</code> request property to the Service Item <code>Create_Employee_SCN1</code>.</li>
+          <li><strong>Step 5 &mdash; Script for CentralAccount:</strong> Create a script to generate a random Central Account value for new identities.</li>
+          <li><strong>Step 6 &mdash; Create Process:</strong> Build the process that ties all previous steps together. Configure the trigger event. Add and configure the process step <strong>Insert Person</strong> to create the identity.</li>
+        </ol>
+
+        <div class="callout callout-warn">
+          <b>Important &mdash; Obsolete Parameters</b>
+          The "Obsolete parameters" setting on the Request Property means the custom fields become read-only once the request is approved. This is the standard production pattern for data that must only be set at request time and must not be changed afterwards.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Happy Flow</td>
+              <td>Request via IT Shop with all parameters properly filled</td>
+              <td>Identity created correctly in the system</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>False email format</td>
+              <td>Use email value <code>wrong_format</code> in the request form</td>
+              <td>Process freezes on Insert step (implementation for error on request might be needed)</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Missing property</td>
+              <td>Request without filling all required fields</td>
+              <td>Request does NOT go to Cart &mdash; form validation prevents submission</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-tip">
+          <b>Mentor Note</b>
+          Test case 2 is worth discussing with trainees: the error occurs at the process step level (Insert Person), not at the form level. This is because email format validation is not enforced by the Request Property itself. A production-ready implementation would add a Pre-Script on the process step to validate email format before attempting the insert.
+        </div>
+      </div>
+    </section>
+
+    <!-- SCN-2 -->
+    <section id="scn2">
+      <h2>SCN-2: Email Notification on External Employee Account Creation</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">2</div>
+          <h3>Email Notification on External Employee Account Creation</h3>
+        </div>
+
+        <p style="font-size:0.9rem;margin-bottom:0.8rem">Notify the responsible manager by email when an account is created for an external employee. Introduces mail templates and Pre-Script conditions on process steps.</p>
+
+        <div class="section-label">Requirements</div>
+        <p style="font-size:0.9rem">When an external employee account is created, send an automated email to the employee's manager containing the newly generated <code>CentralAccount</code> value. The notification should only be sent if the manager has a default email address configured.</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 &mdash; Create Mail Template:</strong> Create a new mail template that includes the external employee's name and generated CentralAccount in the email body.</li>
+          <li><strong>Step 2 &mdash; Set Pre-Script on Process Step:</strong> Add a Pre-Script condition to the notification process step. The script must check that the employee's manager exists AND has a default email address. If not, the step is skipped.</li>
+          <li><strong>Step 3 &mdash; Add Process Step:</strong> Add the email notification step to the existing process (from SCN-1 or a new process). Wire the mail template to the step and configure the recipient as the manager's default email.</li>
+        </ol>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>External employee with manager having a default email</td>
+              <td>Request for external employee whose manager has a default email address configured</td>
+              <td>Manager receives email containing the CentralAccount of the newly created employee</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>External employee &mdash; manager has no default email</td>
+              <td>Request for external employee whose manager does NOT have a default email address</td>
+              <td>Email is NOT sent; process continues normally without error</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor &mdash; Pre-Script Pattern</b>
+          The Pre-Script on a process step is a VB.NET or C# code block that returns <code>True</code> to execute the step or <code>False</code> to skip it. This is the standard OIM mechanism for conditional process steps. Show trainees the difference between a step with no Pre-Script (always runs) vs. one with a Pre-Script gate.
+        </div>
+      </div>
+    </section>
+
+    <!-- SCN-3 -->
+    <section id="scn3">
+      <h2>SCN-3: Email 15 Days Before Identity Expiry</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">3</div>
+          <h3>Automated Email 15 Days Before Identity Expiry</h3>
+        </div>
+
+        <p style="font-size:0.9rem;margin-bottom:0.8rem">An automated daily check that finds identities expiring within 15 days and notifies their manager. Introduces Process Automation (scheduled jobs) &mdash; fundamentally different from event-driven processes.</p>
+
+        <div class="section-label">Requirements</div>
+        <p style="font-size:0.9rem">Run a daily scheduled automation that identifies identities expiring within 15 days, sends one email to the responsible manager, and sets a flag to prevent duplicate notifications.</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 &mdash; Extend Person Table:</strong> Add a new custom boolean field <code>CCC_IsManagerNotifiedForExpire</code> to the <code>Person</code> table via schema extension. This flag prevents the same notification from being sent more than once per identity.</li>
+          <li><strong>Step 2 &mdash; Create Process Automation "CCC_SendMailBeforeExpire":</strong> Create a new Process Automation (not a regular process) configured to run on a daily schedule. The automation queries for identities where expiry is within 15 days AND <code>CCC_IsManagerNotifiedForExpire = 0</code>.</li>
+          <li><strong>Step 3 &mdash; Create Process "CCC_SentMail15daysBeforeExpire":</strong> Create the process that is triggered when the automation returns matching identities. This process sends the notification email and sets <code>CCC_IsManagerNotifiedForExpire = 1</code> on the identity.</li>
+          <li><strong>Step 4 &mdash; Create Mail Template "CCC_15daysBeforeExpire":</strong> Create the email template used by the process, including the identity's name and expiry date.</li>
+        </ol>
+
+        <div class="callout callout-warn">
+          <b>Critical &mdash; The Flag Mechanism</b>
+          The <code>CCC_IsManagerNotifiedForExpire</code> flag is essential. Without it, the daily automation would send a new email every single day for 15 days. The flag ensures only one notification is ever sent per expiring identity. Make sure trainees understand this pattern &mdash; it applies to any "send once" automation.
+        </div>
+
+        <div class="callout callout-mentor">
+          <b>Mentor &mdash; Process Automation vs. Regular Process</b>
+          A regular Process fires on a table event (INSERT, UPDATE, DELETE). A Process Automation fires on a SCHEDULE (daily, hourly, etc.) and runs a query to collect objects. Show trainees the Schedules section in Designer. The automation produces a list of objects, and then for each object, the associated process runs.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Happy Flow</td>
+              <td>Create a user configured to be deactivated within 15 days (not yet notified)</td>
+              <td>Manager receives email at their default email address</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Run automation again after notification sent</td>
+              <td>Run the automation a second time without changing anything</td>
+              <td>Automation does NOT gather any identity &mdash; the flag (<code>CCC_IsManagerNotifiedForExpire = 1</code>) prevents re-collection</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Run automation after identities have expired</td>
+              <td>Allow the identities to pass their expiry date, then run the automation</td>
+              <td>Automation does NOT gather any identity &mdash; expired identities are outside the 15-day window</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SCN-4 -->
+    <section id="scn4">
+      <h2>SCN-4: Update External Employee via IT Shop</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">4</div>
+          <h3>Update External Employee via IT Shop</h3>
+        </div>
+
+        <p style="font-size:0.9rem;margin-bottom:0.8rem">A custom request property that allows a manager to update data on an external employee they are responsible for. Introduces UID-type fields in request properties with filtered lookup conditions.</p>
+
+        <div class="section-label">Requirements</div>
+        <p style="font-size:0.9rem">The request form must let a manager select: (1) the external employee to update (filtered to only show external employees they manage), and (2) a new internal manager/value (filtered to active internal users). Updates are then applied via a process.</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 &mdash; Extend Tables:</strong> Extend both <code>PersonWantsOrg</code> and <code>ShoppingCartItem</code> with 2 new UID fields to hold the person selections.</li>
+          <li><strong>Step 2 &mdash; Create Request Property "CCC_UpdateExternalEmployee":</strong> Create the request property with the following WHERE conditions on each field:
+            <ul style="padding-left:1.2rem;margin-top:0.3rem">
+              <li><code>CCC_UID_Person01</code>: <code>{ isExternal = 1 AND UID_PersonHead = '%USERUID%' }</code> &mdash; only external employees managed by the current user</li>
+              <li><code>CCC_UID_Person02</code>: <code>{ isExternal = 0 AND isInActive = 0 }</code> &mdash; only active internal users</li>
+            </ul>
+          </li>
+          <li><strong>Step 3 &mdash; Create MultiRequest Resource &amp; Service Item:</strong> Create the multi-request resource and corresponding service item for the IT Shop.</li>
+          <li><strong>Step 4 &mdash; Add to IT Shop:</strong> Add the resource to the IT Shop and assign the request property to the service item.</li>
+          <li><strong>Step 5 &mdash; Set Field Templates:</strong> Configure templates for the fields to be populated on the target identity when the request is processed.</li>
+        </ol>
+
+        <div class="callout callout-tip">
+          <b>Key Pattern &mdash; %USERUID% in Conditions</b>
+          The <code>%USERUID%</code> token in the WHERE condition dynamically substitutes the UID of the currently logged-in user. This is how you build "show me only the records I am responsible for" filters in request property fields.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Happy Flow</td>
+              <td>Request via IT Shop with all parameters properly filled</td>
+              <td>External employee's data is updated correctly</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>False email format</td>
+              <td>Enter email value <code>wrong_format</code> in the request form</td>
+              <td>Process freezes on Update step (same behaviour as SCN-1 Test #2)</td>
+              <td class="pass">PASS</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Missing property</td>
+              <td>Request without filling all required fields</td>
+              <td>Request does NOT go to Cart &mdash; form validation prevents submission</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SCN-5 -->
+    <section id="scn5">
+      <h2>SCN-5: AD Account Provisioning via IT Shop (System Role)</h2>
+      <div class="exercise-card">
+        <div class="ex-header">
+          <div class="ex-num">5</div>
+          <h3>AD Account Provisioning via IT Shop (System Role)</h3>
+        </div>
+
+        <p style="font-size:0.9rem;margin-bottom:0.8rem">Full Active Directory account provisioning via IT Shop using a System Role. Introduces AD Forest, Domain, and Account Definition configuration within OIM as a prerequisite to AD provisioning.</p>
+
+        <div class="section-label">Requirements</div>
+        <p style="font-size:0.9rem">When an identity requests a specific System Role via the IT Shop, an AD account is automatically created in the configured domain with an initial random password.</p>
+
+        <div class="section-label">Solution Steps</div>
+        <ol class="steps">
+          <li><strong>Step 1 &mdash; Create AD Forest "CCC_Forest01":</strong> Configure the AD Forest object in OIM Designer or Manager. This is the top-level container for the AD structure.</li>
+          <li><strong>Step 2 &mdash; Create AD Domain "CCC_Domain01":</strong> Create the AD Domain under the forest. Configure the domain connection parameters.</li>
+          <li><strong>Step 3 &mdash; Create AD Account Definition "CCC_AccDef01":</strong> Create the Account Definition that specifies how AD accounts are created (naming scheme, default OU, etc.).</li>
+          <li><strong>Step 4 &mdash; Create System Role "CCC_SR01" &amp; Service Item:</strong> Create a System Role and link it to the Account Definition. Create a Service Item for it and add it to the IT Shop.</li>
+          <li><strong>Step 5 &mdash; Set "InitialRandomPassword" Config Parameter:</strong> Configure the <code>InitialRandomPassword</code> parameter to ensure new AD accounts receive a randomly generated password on creation.</li>
+        </ol>
+
+        <div class="callout callout-warn">
+          <b>Config Parameter &mdash; InitialRandomPassword</b>
+          This parameter controls whether new AD accounts get a random password assigned at creation time. Without it, accounts may be created with no password or a default password, which is a security risk. Always verify this is set in the AD connector configuration.
+        </div>
+
+        <div class="section-label">Test Cases</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Test Scenario</th><th>Steps</th><th>Expected Result</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Happy Flow</td>
+              <td>Request System Role <code>CCC_SR01</code> via IT Shop for any identity</td>
+              <td>AD Account is created in <code>CCC_Domain01</code> with an initial random password</td>
+              <td class="pass">PASS</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-mentor">
+          <b>Mentor &mdash; System Role to AD Account Link</b>
+          The connection chain is: Service Item &rarr; System Role &rarr; Account Definition &rarr; AD Domain. Each link must be correctly configured. A common error is forgetting to link the Account Definition to the System Role's Target System tab. Always verify this in the test.
+        </div>
+      </div>
+    </section>
+
+    <!-- Mentor Tips -->
+    <section id="tips">
+      <h2>Mentor Tips</h2>
+
+      <div class="callout callout-mentor" style="margin-bottom:0.8rem">
+        <b>SCN-1 &mdash; Schema Extension First</b>
+        The ShoppingCartItem/PersonWantsOrg table extension is the key enabler for custom request forms. Show trainees the schema extension tool BEFORE starting this exercise. They need to understand that these are database-level changes before the Request Property can reference them.
+      </div>
+
+      <div class="callout callout-mentor" style="margin-bottom:0.8rem">
+        <b>SCN-1 &mdash; Obsolete Parameters Explained</b>
+        The "Obsolete parameters" setting in the Request Property means the fields expire and become read-only after the request is approved. This is a deliberate production pattern for data that should only be set at request time and never modified after approval.
+      </div>
+
+      <div class="callout callout-mentor" style="margin-bottom:0.8rem">
+        <b>SCN-3 &mdash; Process Automation vs. Regular Process</b>
+        Process Automation (Scheduler) is fundamentally different from a regular process. A regular process fires on a table event (INSERT, UPDATE, DELETE). A Process Automation fires on a SCHEDULE &mdash; daily, hourly, etc. Show trainees the Schedules section in Designer and contrast the two types side by side.
+      </div>
+
+      <div class="callout callout-mentor" style="margin-bottom:0.8rem">
+        <b>SCN-3 &mdash; The Flag Is Critical</b>
+        The <code>CCC_IsManagerNotifiedForExpire</code> flag prevents the same manager from receiving multiple emails for the same expiring identity. This is a recurring production pattern &mdash; any "notify once" automation requires a flag or timestamp to prevent re-notification. Test cases 2 and 3 both validate this flag works.
+      </div>
+
+      <div class="callout callout-mentor">
+        <b>SCN-5 &mdash; InitialRandomPassword Config Parameter</b>
+        The <code>InitialRandomPassword</code> config parameter controls whether new AD accounts get a random password on creation. Always verify this is configured before running SCN-5. Without it, the AD account may be created in a disabled or passwordless state.
+      </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section id="troubleshooting">
+      <h2>Troubleshooting Reference</h2>
+      <table>
+        <thead>
+          <tr><th>Problem</th><th>Likely Cause</th><th>Solution</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Request doesn't go to Cart</td>
+            <td>Required request property field is missing or not filled</td>
+            <td>Make the field mandatory in the Request Property definition; verify all required fields have values</td>
+          </tr>
+          <tr>
+            <td>Process freezes on Insert</td>
+            <td>Email validation fails at the process step level</td>
+            <td>Check validation in Pre-Script on the Insert Person step; add explicit error handling or validation before insert</td>
+          </tr>
+          <tr>
+            <td>Manager email not sent</td>
+            <td>Manager has no DefaultEmailAddress configured</td>
+            <td>Verify the manager's default email field in their identity record; confirm Pre-Script condition checks for null email</td>
+          </tr>
+          <tr>
+            <td>Daily automation not running</td>
+            <td>Schedule not configured correctly, or Job Service is stopped</td>
+            <td>Check the Schedule configuration in Designer; verify the OIM Job Service is running and not in a faulted state</td>
+          </tr>
+          <tr>
+            <td>AD account not created after SCN-5</td>
+            <td>Account Definition not linked to the System Role</td>
+            <td>Open System Role &rarr; navigate to Target System tab &rarr; verify <code>CCC_AccDef01</code> is linked</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer style="margin-top:3rem;padding:1.25rem 2rem;background:#F5EFF8;border-top:2px solid #EDE8F0;font-size:0.78rem;color:var(--muted);text-align:center;">
+      INTRAGEN<span style="color:#F0A800">.</span> Academy &mdash; Mentoring Documentation &mdash;
+      &copy; Intragen International. This document remains strictly private and confidential.
+    </footer>
+  </main>
+</div>
+</body>
+</html>

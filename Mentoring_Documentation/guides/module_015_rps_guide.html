@@ -1,0 +1,674 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 015 — Reports (RPS) | Intragen OIM Academy | Intragen Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"><style>
+:root {
+  --purple:      #7B2D8B;
+  --purple-dark: #5C1F6B;
+  --teal:        #007B77;
+  --golden:      #F0A800;
+  /* Legacy variable overrides â€” keeps existing HTML class references working */
+  --navy:  #7B2D8B;
+  --blue:  #007B77;
+  --green: #27AE60;
+  --orange:#E67E22;
+  --red:   #E74C3C;
+  --bg:    #F0EDE8;
+  /* New tokens */
+  --body-bg:  #FAF8F5;
+  --code-bg:  #1E1E1E;
+  --border:   #DDD;
+  --text:     #2C2C2C;
+  --muted:    #6B6B6B;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+}
+/* â”€â”€ Layout â”€â”€ */
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+/* â”€â”€ Sidebar â”€â”€ */
+.sidebar {
+  background: var(--purple);
+  color: #fff;
+  width: 260px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.logo, .intragen-logo {
+  padding: 1.25rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+}
+.logo-dot { color: var(--golden); }
+.module-title, .module-title-sidebar {
+  padding: 0.6rem 1rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--golden);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.nav-label, .nav-section-label, .module-label {
+  padding: 0.75rem 1rem 0.2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+.sidebar a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.82rem;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar a:hover {
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--teal);
+  color: #fff;
+}
+/* â”€â”€ Main â”€â”€ */
+main { padding: 2rem; max-width: 1080px; }
+/* â”€â”€ Module header â”€â”€ */
+.module-header {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+  color: #fff;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.module-header::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.module-header .intragen-watermark {
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.mod-num { display: inline-block; font-size: 2.5rem; font-weight: 900; opacity: 0.2; float: right; line-height: 1; }
+.module-header h1 { font-size: 1.55rem; margin-bottom: 0.4rem; }
+.module-header p  { opacity: 0.85; font-size: 0.9rem; }
+/* â”€â”€ Badges â”€â”€ */
+.badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.beginner    { background: #d4edda; color: #155724; }
+.intermediate{ background: #fff3cd; color: #856404; }
+.advanced    { background: #f8d7da; color: #721c24; }
+/* â”€â”€ Overview grid â”€â”€ */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+.info-card {
+  background: #fff;
+  border-left: 4px solid var(--teal);
+  padding: 1.1rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.info-card h3 { color: var(--purple-dark); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.info-card ul { padding-left: 1.2rem; }
+.info-card li { font-size: 0.9rem; margin-bottom: 0.25rem; }
+/* â”€â”€ Sections â”€â”€ */
+section { margin-bottom: 2.5rem; }
+section > h2 {
+  color: var(--purple-dark);
+  font-size: 1.15rem;
+  border-bottom: 2px solid var(--teal);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+.section-banner {
+  background: var(--purple-dark);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 1.25rem;
+  border-radius: 3px;
+}
+/* â”€â”€ Exercise cards â”€â”€ */
+.exercise-card {
+  background: #fff;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  padding: 1.4rem;
+  margin-bottom: 1.4rem;
+  border-left: 4px solid var(--teal);
+}
+.ex-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.ex-num {
+  background: var(--purple-dark);
+  color: #fff;
+  min-width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+}
+.ex-header h3 { color: var(--purple-dark); font-size: 1rem; margin: 0; }
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  margin: 0.9rem 0 0.3rem;
+}
+/* â”€â”€ Callouts â”€â”€ */
+.callout {
+  padding: 0.85rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 0.8rem 0;
+  font-size: 0.9rem;
+}
+.callout b, .callout strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.callout-mentor, .callout-note  { border-left: 4px solid #2D6DB5; background: #E8F4FF; }
+.callout-tip                    { border-left: 4px solid #22C55E; background: #F0FDF4; }
+.callout-warn                   { border-left: 4px solid #F59E0B; background: #FFF8E1; }
+.callout-error, .callout-important { border-left: 4px solid var(--purple); background: #F5EFF8; }
+/* â”€â”€ Steps / Lists â”€â”€ */
+.steps { padding-left: 1.4rem; margin: 0.4rem 0; }
+.steps li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+li::marker { color: var(--purple); }
+/* â”€â”€ Code â”€â”€ */
+pre, .code-block {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  padding: 1rem 1.1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0.8rem 0;
+  font-family: 'Cascadia Code','Fira Code', Consolas, 'Courier New', monospace;
+  white-space: pre;
+}
+code {
+  background: #EDE8F0;
+  color: #8B2080;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+  font-size: 0.82rem;
+}
+pre code { background: none; color: inherit; padding: 0; }
+/* â”€â”€ Tables â”€â”€ */
+table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; }
+thead tr, th { background: var(--purple-dark); color: #fff; }
+th { padding: 0.55rem 0.9rem; text-align: left; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.4px; }
+td { padding: 0.55rem 0.9rem; border: 1px solid var(--border); vertical-align: top; }
+tbody tr:nth-child(even), tr:nth-child(even) td { background: #F8F5FB; }
+td.pass { color: #155724; font-weight: 600; }
+td.fail { color: #721c24; font-weight: 600; }
+/* â”€â”€ Footer â”€â”€ */
+footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  border-top: 2px solid #EDE8F0;
+  margin-top: 2rem;
+  background: #F5EFF8;
+}
+.footer-dot { color: var(--golden); }
+h3 { color: var(--purple); }
+h4 { color: #444; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════ -->
+<aside>
+  <div class="sidebar-header">
+    <div class="academy-name">Intragen OIM Academy</div>
+    <div class="module-title">Module 015</div>
+    <div class="module-code">RPS &mdash; Reports</div>
+  </div>
+
+  <div class="sidebar-section">On This Page</div>
+  <nav>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#objectives">Learning Objectives</a>
+    <a href="#prerequisites">Prerequisites</a>
+    <a href="#concepts">Core Concepts</a>
+    <a href="#exercises">Exercises</a>
+    <a href="#rps1">RPS-1: First Report</a>
+    <a href="#rps2">RPS-2: Parameterized Report</a>
+    <a href="#rps3">RPS-3: Schedule &amp; Publish</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+  </nav>
+
+  <div class="sidebar-meta">
+    <div class="meta-row">
+      <span class="meta-label">Code</span>
+      <span>RPS</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Level</span>
+      <span>Intermediate</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Exercises</span>
+      <span>3</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Duration</span>
+      <span>~1.5 days</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════ -->
+<main>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header" id="overview">
+    <div class="breadcrumb">Intragen OIM Academy &rsaquo; Mentor Guides &rsaquo; Module 015</div>
+    <h1>Module 015 &mdash; Reports (RPS)</h1>
+    <p class="subtitle">OIM's reporting module generates business-ready reports on identity data. Reports query OIM views via SQL, render to PDF, Excel, or HTML, and can be scheduled for automatic delivery. This module covers building, parameterizing, scheduling, and publishing reports to the web portal.</p>
+    <div class="badge-row">
+      <span class="badge badge-intermediate">Intermediate</span>
+      <span class="badge badge-info">3 Exercises</span>
+      <span class="badge badge-info">~1.5 Days</span>
+      <span class="badge badge-info">RPS</span>
+    </div>
+  </div>
+
+  <!-- INFO GRID -->
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ic-label">Module Code</div>
+      <div class="ic-value">RPS</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Exercises</div>
+      <div class="ic-value">3</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Duration</div>
+      <div class="ic-value">~1.5 days</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Level</div>
+      <div class="ic-value">Intermediate</div>
+    </div>
+  </div>
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="content-section" id="objectives">
+    <h2><span class="section-icon">01</span> Learning Objectives</h2>
+    <ul class="objectives-list">
+      <li><span class="obj-num">1</span>Understand OIM's report architecture: data definition &rarr; SQL query on OIM view &rarr; template &rarr; rendered output</li>
+      <li><span class="obj-num">2</span>Create a basic list report using an OIM view (v_Person) and map result columns to the report layout</li>
+      <li><span class="obj-num">3</span>Add parameters to filter report output, including a ForeignKey dropdown parameter</li>
+      <li><span class="obj-num">4</span>Configure output format options: PDF, Excel, and HTML; understand the rendering engine behind each</li>
+      <li><span class="obj-num">5</span>Schedule recurring report generation via the Job Service and verify the schedule in the Job Queue</li>
+      <li><span class="obj-num">6</span>Publish a report to the web portal under a named navigation node for self-service access by standard users</li>
+    </ul>
+  </div>
+
+  <!-- PREREQUISITES -->
+  <div class="content-section" id="prerequisites">
+    <h2><span class="section-icon">02</span> Prerequisites</h2>
+    <ul class="prereq-list">
+      <li class="prereq-tag">Basic SQL SELECT knowledge</li>
+      <li class="prereq-tag">OIM Manager access</li>
+      <li class="prereq-tag">OIM Designer access</li>
+      <li class="prereq-tag">Web portal access for testing</li>
+      <li class="prereq-tag">Crystal Reports runtime installed (for PDF)</li>
+    </ul>
+
+    <div class="callout callout-info" style="margin-top:1rem;">
+      <div class="callout-title">Mentor Note</div>
+      Trainees need only basic SQL (SELECT, FROM, WHERE, JOIN). They do not need to be SQL experts. If SQL is weak, spend 15 minutes on the pattern: <code>SELECT columns FROM view WHERE filter</code> before starting RPS-1. The view naming convention (<code>v_</code> prefix) is a key concept to drill in from the first exercise.
+    </div>
+  </div>
+
+  <!-- CORE CONCEPTS -->
+  <div class="content-section" id="concepts">
+    <h2><span class="section-icon">03</span> Core Concepts</h2>
+
+    <h3>Report Architecture</h3>
+    <div class="arch-flow">
+      <div class="arch-wrap">
+        <div class="arch-step data">OIM View (SQL)</div>
+        <div class="arch-label">Data Source</div>
+      </div>
+      <span class="arch-arrow">&rarr;</span>
+      <div class="arch-wrap">
+        <div class="arch-step template">Report Definition</div>
+        <div class="arch-label">Layout &amp; Parameters</div>
+      </div>
+      <span class="arch-arrow">&rarr;</span>
+      <div class="arch-wrap">
+        <div class="arch-step template">Rendering Engine</div>
+        <div class="arch-label">Crystal / Export</div>
+      </div>
+      <span class="arch-arrow">&rarr;</span>
+      <div class="arch-wrap">
+        <div class="arch-step output">Output</div>
+        <div class="arch-label">PDF / Excel / HTML</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Output Formats</h3>
+    <div class="format-grid">
+      <div class="format-card">
+        <div class="fmt-badge fmt-pdf">PDF</div>
+        <p>Fixed-layout business reports; requires Crystal Reports runtime on the report server; best for compliance documents</p>
+      </div>
+      <div class="format-card">
+        <div class="fmt-badge fmt-excel">Excel</div>
+        <p>Data-first export; allows downstream manipulation; no Crystal dependency; best for data analysts who need to filter further</p>
+      </div>
+      <div class="format-card">
+        <div class="fmt-badge fmt-html">HTML</div>
+        <p>Browser-renderable; works without Crystal; best for portal self-service where users just need to read data online</p>
+      </div>
+    </div>
+
+    <div class="concept-box">
+      <h4>Always Use Views, Never Raw Tables</h4>
+      <p>OIM views (e.g. <code>v_Person</code>, <code>v_PersonInOrg</code>, <code>v_Department</code>) automatically apply row-level security and exclude deleted, archived, and inactive records. Direct queries against raw tables (e.g. <code>Person</code>) bypass security trimming and return stale, deleted, or security-restricted data. This is not just a best practice — it is a security requirement. Every SQL query in every report in this module must use the <code>v_</code> prefixed view, never the raw table.</p>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Parameter Types</h3>
+    <table class="trouble-table">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Input Method in Portal</th>
+          <th>Use Case</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>String</strong></td>
+          <td>Free-text input box</td>
+          <td>Search by name fragment, description keyword</td>
+        </tr>
+        <tr>
+          <td><strong>Boolean</strong></td>
+          <td>Checkbox or toggle</td>
+          <td>Filter by IsExternal, IsInActive flags</td>
+        </tr>
+        <tr>
+          <td><strong>Date</strong></td>
+          <td>Date picker</td>
+          <td>Filter by creation date range, effective date</td>
+        </tr>
+        <tr>
+          <td><strong>ForeignKey</strong></td>
+          <td>Dropdown populated from a referenced table</td>
+          <td>Filter by Department, Business Role, Location — the portal generates the dropdown automatically</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Connection to Module PRO</div>
+      Scheduled reports run via the OIM Job Service. The schedule definition creates a Job Queue entry that fires at the configured time. This is the same Job Service covered in Module 007 (PRO). When trainees ask "how does the schedule trigger?", the answer is the same mechanism that triggers all automated processes in OIM.
+    </div>
+  </div>
+
+  <!-- EXERCISES -->
+  <div class="content-section" id="exercises">
+    <h2><span class="section-icon">04</span> Exercises</h2>
+
+    <!-- RPS-1 -->
+    <div class="exercise-card" id="rps1">
+      <div class="exercise-header">
+        <span class="exercise-id">RPS-1</span>
+        <span class="exercise-title">First Report &mdash; Active Person List</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create a report listing all active Persons with first name, last name, department, and email address. Render a preview before configuring any output format.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Open OIM Designer &rarr; navigate to <strong>Reports</strong> in the object tree</li>
+        <li><span class="step-dot"></span>Right-click Reports &rarr; <strong>New Report</strong> &rarr; choose "List Report" as the type</li>
+        <li><span class="step-dot"></span>Name the report "Active Person List"</li>
+        <li><span class="step-dot"></span>In the Data Definition tab, enter the SQL query (see below)</li>
+        <li><span class="step-dot"></span>Map the returned columns to report display columns: FirstName, LastName, DefaultEmailAddress, DepartmentName, Description</li>
+        <li><span class="step-dot"></span>Click <strong>Preview</strong> — verify data rows appear; confirm no deleted or inactive persons are returned</li>
+        <li><span class="step-dot"></span>Ask the trainee: "What would happen if we used the raw <code>Person</code> table instead of <code>v_Person</code>?"</li>
+        <li><span class="step-dot"></span>Save the report definition</li>
+      </ul>
+
+      <h3>SQL Query for This Report</h3>
+      <pre><code><span class="kw">SELECT</span>
+    p.FirstName,
+    p.LastName,
+    p.DefaultEmailAddress,
+    d.DepartmentName,
+    p.Description
+<span class="kw">FROM</span> v_Person p
+<span class="kw">LEFT JOIN</span> v_Department d
+    <span class="kw">ON</span> p.UID_Department = d.UID_Department
+<span class="kw">WHERE</span> p.IsInActive = 0
+<span class="kw">ORDER BY</span> p.LastName, p.FirstName</code></pre>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Mentor Hint &mdash; Preview First</div>
+        Always start with a preview before configuring the output format. The preview renders data immediately in the Designer grid without the overhead of PDF rendering or Crystal Reports processing. If the data looks wrong in preview (wrong columns, too many rows, wrong filter), fix it there rather than discovering the problem after a slow PDF render. Establish this as the standard workflow: preview first, format second.
+      </div>
+
+      <div class="callout callout-error">
+        <div class="callout-title">Common Mistake &mdash; Raw Table Query</div>
+        Using <code>Person</code> (raw table) instead of <code>v_Person</code> (view) returns deleted records (marked with XMarkedForDeletion), archived persons, and bypasses row-level security trimming. The report will appear to work but will show data that users should not see. Always use the <code>v_</code> prefixed view — make this a non-negotiable rule the trainee can recite.
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">LEFT JOIN vs INNER JOIN</div>
+        The query uses LEFT JOIN on v_Department so that Persons without a department assignment still appear in the report. An INNER JOIN would silently exclude undepartmented persons. For compliance reports, silently missing records is dangerous — prefer LEFT JOIN unless you have a specific reason to exclude non-matches.
+      </div>
+    </div>
+
+    <!-- RPS-2 -->
+    <div class="exercise-card" id="rps2">
+      <div class="exercise-header">
+        <span class="exercise-id">RPS-2</span>
+        <span class="exercise-title">Parameterized Report</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Add a department filter parameter to the Active Person List report so users can scope output to a single department; demonstrate the ForeignKey parameter's auto-populated dropdown in the portal.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Open the Active Person List report from RPS-1 in Designer</li>
+        <li><span class="step-dot"></span>Navigate to the <strong>Parameters</strong> tab of the report definition</li>
+        <li><span class="step-dot"></span>Add a new parameter: Name = <code>UID_Department</code>, Type = <strong>ForeignKey</strong>, Referenced Table = Department, Referenced Column = UID_Department</li>
+        <li><span class="step-dot"></span>Set the parameter as <strong>optional</strong> (not required) — users should be able to run the report without selecting a department</li>
+        <li><span class="step-dot"></span>Update the SQL WHERE clause to include the department filter (see code block below)</li>
+        <li><span class="step-dot"></span>Save and run Preview — with no parameter value, all active persons should still appear</li>
+        <li><span class="step-dot"></span>Run Preview again with a specific department selected — verify only that department's persons appear</li>
+        <li><span class="step-dot"></span>Deploy the report to the portal (if available) and show the trainee the auto-generated department dropdown</li>
+      </ul>
+
+      <h3>Updated WHERE Clause</h3>
+      <pre><code><span class="cm">-- Original WHERE clause from RPS-1:</span>
+<span class="kw">WHERE</span> p.IsInActive = 0
+
+<span class="cm">-- Updated WHERE clause with optional department parameter:</span>
+<span class="kw">WHERE</span> p.IsInActive = 0
+  <span class="kw">AND</span> (@UID_Department <span class="kw">IS NULL OR</span> p.UID_Department = @UID_Department)
+
+<span class="cm">-- The IS NULL check makes the parameter optional.
+-- When no department is selected, @UID_Department IS NULL evaluates TRUE
+-- and the department filter is bypassed, returning all active persons.</span></code></pre>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Mentor Hint &mdash; ForeignKey "Magic"</div>
+        ForeignKey parameters automatically generate a dropdown list in the portal by querying the referenced table. OIM populates the dropdown from v_Department (or whichever table is referenced) without any additional configuration. Show the trainee this behaviour in the portal — it often surprises them that a dropdown appears with real department names without writing any dropdown-populating code. This is one of OIM's most useful report features.
+      </div>
+
+      <div class="callout callout-error">
+        <div class="callout-title">Common Mistake &mdash; Unregistered Parameter</div>
+        Adding <code>@UID_Department</code> to the SQL WHERE clause but forgetting to register it as a parameter in the report's Parameters tab causes a SQL execution error when the report runs. OIM does not know to supply a value for an unregistered placeholder. The parameter definition in the Parameters tab is mandatory — the SQL alone is insufficient.
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">Optional vs Required Parameters</div>
+        If the parameter is set as Required, users cannot run the report without selecting a department — useful for reports where running without a filter would be prohibitively slow. If Optional, users can omit the parameter to get all results. For this exercise, Optional is correct because the report is intentionally designed to work both filtered and unfiltered.
+      </div>
+    </div>
+
+    <!-- RPS-3 -->
+    <div class="exercise-card" id="rps3">
+      <div class="exercise-header">
+        <span class="exercise-id">RPS-3</span>
+        <span class="exercise-title">Schedule and Portal Publication</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Schedule the Active Person List report to run daily at 06:00; publish it to the "Compliance Reports" portal navigation node; verify it is accessible and usable by a standard portal user.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Open the Active Person List report in Designer &rarr; navigate to the <strong>Schedule</strong> tab</li>
+        <li><span class="step-dot"></span>Enable scheduling &rarr; set Recurrence = Daily &rarr; set Time = 06:00 &rarr; Save</li>
+        <li><span class="step-dot"></span>After saving, open the OIM Job Queue (Manager or Designer) and locate the scheduled report entry — confirm it shows the next run time as tomorrow at 06:00</li>
+        <li><span class="step-dot"></span>Return to the report definition &rarr; navigate to the <strong>Publish</strong> or <strong>Portal</strong> tab</li>
+        <li><span class="step-dot"></span>Set the Navigation Node = "Compliance Reports" (create the node first if it does not exist)</li>
+        <li><span class="step-dot"></span>Save and run DBQueue</li>
+        <li><span class="step-dot"></span>Log into the web portal as a standard user &rarr; navigate to the Compliance Reports section</li>
+        <li><span class="step-dot"></span>Confirm the "Active Person List" report appears in the list</li>
+        <li><span class="step-dot"></span>Run the report from the portal &rarr; verify the department dropdown appears &rarr; run both filtered and unfiltered</li>
+        <li><span class="step-dot"></span>Test output formats: download as PDF, Excel, and HTML if all three are enabled</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Mentor Hint &mdash; Scheduled Reports and the Job Service</div>
+        Scheduled reports run via the OIM Job Service. The schedule definition you created in the Report's Schedule tab causes OIM to create a recurring Job Queue entry. Show this entry to the trainee in the Job Queue — it makes the scheduling mechanism concrete rather than abstract. This connects directly back to Module 007 (PRO): scheduled reports are just another process triggered by the Job Service, using the same mechanism as any other scheduled OIM job.
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">Testing Without Waiting for Schedule</div>
+        To test the report immediately without waiting until 06:00, run it manually from Designer or from the portal. The schedule only controls automated unattended execution. Manual execution via the portal run button bypasses the schedule and triggers rendering immediately, which is the correct approach for testing during development.
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">Portal Navigation Node Access</div>
+        The "Compliance Reports" navigation node must be accessible to the standard user's Application Role. If the user cannot see the Compliance Reports section in the portal, check that the navigation node has the appropriate permission grant linked to a Business Role the user is a member of. This connects back to Module 012 (PMS) — portal visibility is always controlled by the role model.
+      </div>
+
+      <div class="outcome-box">
+        <strong>Expected Outcome:</strong> The report is accessible in the portal under Compliance Reports, scheduled to run daily at 06:00 via the Job Service, renders with a working department filter dropdown, and exports correctly to all three output formats. The trainee can trace from portal click through Job Service through SQL view to rendered output without assistance.
+      </div>
+    </div>
+  </div>
+
+  <!-- TROUBLESHOOTING -->
+  <div class="content-section" id="troubleshooting">
+    <h2><span class="section-icon">05</span> Troubleshooting Reference</h2>
+
+    <table class="trouble-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Symptom</th>
+          <th>Likely Cause</th>
+          <th>Resolution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td class="trouble-symptom">Report preview shows no data</td>
+          <td>SQL query returns no rows — filter too restrictive or view returns nothing in this environment</td>
+          <td>Copy the exact SQL and run it in SQL Server Management Studio against the OIM database; check the WHERE clause, especially IsInActive value</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td class="trouble-symptom">Department dropdown is empty in the portal</td>
+          <td>ForeignKey parameter resolution config incorrect; wrong table or column referenced</td>
+          <td>Open parameter definition in Designer; verify Referenced Table = Department and Referenced Column = UID_Department; confirm v_Department has data</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td class="trouble-symptom">PDF render fails or produces blank output</td>
+          <td>Crystal Reports runtime not installed or misconfigured on the report server</td>
+          <td>Verify Crystal Reports runtime is installed on the OIM report server; check OIM logs for Crystal-specific errors; test HTML output instead to isolate</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td class="trouble-symptom">Schedule not running at the configured time</td>
+          <td>OIM Job Service is stopped, or the schedule definition was not saved with a valid recurrence</td>
+          <td>Check Job Service status in Windows Services; re-open the schedule definition and confirm recurrence is set; check Job Queue for the entry</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td class="trouble-symptom">Report not visible in the portal navigation</td>
+          <td>Report not linked to a portal navigation node, or the user lacks access to that node</td>
+          <td>Open report definition &rarr; Publish tab &rarr; confirm navigation node is set; check that the node is accessible to the user's Application Role</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td class="trouble-symptom">Deleted or archived persons appearing in report results</td>
+          <td>SQL query uses raw Person table instead of v_Person view</td>
+          <td>Update all SQL references from <code>Person</code> to <code>v_Person</code>; similarly replace any raw table references with their <code>v_</code> view equivalents</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td class="trouble-symptom">Department filter makes the report very slow</td>
+          <td>Missing database index on UID_Department in the underlying table, or the view itself is unoptimised</td>
+          <td>Test the raw SQL in SSMS with an execution plan; add a SQL query hint if appropriate; consider pre-filtering in the view or adding an index via a DBA</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <div>Intragen OIM Academy &mdash; Module 015 RPS &mdash; Mentor Guide</div>
+    <div>Level: Intermediate &nbsp;&bull;&nbsp; 3 Exercises &nbsp;&bull;&nbsp; ~1.5 Days</div>
+  </div>
+
+</main>
+<footer>
+  INTRAGEN<span class="footer-dot">.</span> Academy &mdash; Mentoring Documentation &mdash;
+  &copy; Intragen International. This document remains strictly private and confidential.
+</footer>
+</body>
+</html>

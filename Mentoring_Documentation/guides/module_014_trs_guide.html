@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 014 — Transport (TRS) | Intragen OIM Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #7B2D8B;
+    --purple-dark: #5C1F6B;
+    --teal: #007B77;
+    --golden: #F0A800;
+    --body-bg: #FAF8F5;
+    --code-bg: #1E1E1E;
+    --border: #DDD;
+    --text: #2C2C2C;
+    --muted: #6B6B6B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #F0EDE8;
+    color: var(--text);
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    background: var(--purple);
+    color: #fff;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 0 0 2rem 0;
+  }
+
+  aside::-webkit-scrollbar { width: 5px; }
+  aside::-webkit-scrollbar-track { background: var(--purple-dark); }
+  aside::-webkit-scrollbar-thumb { background: var(--golden); border-radius: 3px; }
+
+  .sidebar-header {
+    background: var(--purple-dark);
+    padding: 1.4rem 1.1rem 1.2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .sidebar-logo {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.8rem;
+  }
+
+  .sidebar-module-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--golden);
+    margin-bottom: 0.2rem;
+  }
+
+  .sidebar-module-code {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.55);
+  }
+
+  .sidebar-section {
+    padding: 1.1rem 1rem 0.4rem 1rem;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+  }
+
+  aside nav a {
+    display: block;
+    padding: 0.55rem 1rem 0.55rem 1.25rem;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.83rem;
+    border-left: 3px solid transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  aside nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-left-color: var(--teal);
+    color: #fff;
+  }
+
+  aside nav a.active {
+    background: rgba(255,255,255,0.1);
+    border-left-color: var(--teal);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .sidebar-meta {
+    margin: 1.5rem 1rem 0 1rem;
+    background: rgba(0,0,0,0.18);
+    border-radius: 6px;
+    padding: 0.9rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .sidebar-meta .meta-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+  }
+
+  .sidebar-meta .meta-row:last-child { margin-bottom: 0; }
+  .sidebar-meta .meta-label { color: rgba(255,255,255,0.45); }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    padding: 2rem 2.5rem;
+    max-width: 960px;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    background: linear-gradient(135deg, #5C1F6B, #7B2D8B);
+    color: #fff;
+    border-radius: 10px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+
+  .page-header .watermark {
+    position: absolute;
+    top: 1rem; right: 1.5rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.5);
+    opacity: 0.5;
+  }
+
+  .page-header .breadcrumb {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 0.6rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 1rem;
+  }
+
+  .badge-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-intermediate { background: var(--golden); color: #1a1a1a; }
+  .badge-info { background: rgba(255,255,255,0.15); color: #fff; }
+
+  /* ── SECTION BANNERS (h2) ── */
+  h2 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: var(--purple-dark);
+    color: #fff;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  h2 .section-icon {
+    width: 24px; height: 24px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  h3 {
+    font-size: 0.95rem;
+    color: var(--purple-dark);
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+  }
+
+  .content-section { margin-bottom: 2.5rem; }
+
+  /* ── OBJECTIVES LIST ── */
+  .objectives-list { list-style: none; padding: 0; }
+
+  .objectives-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+
+  .objectives-list li:last-child { border-bottom: none; }
+
+  .obj-num {
+    width: 24px; height: 24px;
+    background: var(--purple);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── PREREQUISITES ── */
+  .prereq-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .prereq-tag {
+    background: rgba(123,45,139,0.08);
+    color: var(--purple-dark);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid rgba(123,45,139,0.2);
+  }
+
+  /* ── EXERCISE CARDS ── */
+  .exercise-card {
+    background: #fff;
+    border-left: 4px solid var(--teal);
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.2s;
+  }
+
+  .exercise-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+
+  .exercise-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .exercise-id {
+    background: var(--teal);
+    color: #fff;
+    padding: 0.2rem 0.65rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+  }
+
+  .exercise-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--purple-dark);
+  }
+
+  .exercise-goal {
+    font-size: 0.88rem;
+    color: var(--text);
+    margin-bottom: 1rem;
+    padding: 0.65rem 0.9rem;
+    background: var(--body-bg);
+    border-radius: 5px;
+  }
+
+  .exercise-goal strong { color: var(--purple-dark); }
+
+  /* ── STEPS LIST ── */
+  .steps-list { list-style: none; padding: 0; margin-bottom: 1rem; }
+
+  .steps-list li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    font-size: 0.875rem;
+    padding: 0.35rem 0;
+  }
+
+  .step-dot {
+    width: 8px; height: 8px;
+    background: var(--teal);
+    border-radius: 50%;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: 0 6px 6px 0;
+    padding: 0.85rem 1rem;
+    margin: 0.85rem 0;
+    font-size: 0.875rem;
+    border-left: 4px solid;
+  }
+
+  .callout-title {
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.35rem;
+  }
+
+  .callout-tip { background: #F0FDF4; border-color: #22C55E; }
+  .callout-tip .callout-title { color: #15803D; }
+  .callout-warning { background: #FFF8E1; border-color: #F0A800; }
+  .callout-warning .callout-title { color: #B07600; }
+  .callout-error { background: #F5EFF8; border-color: var(--purple); }
+  .callout-error .callout-title { color: var(--purple-dark); }
+  .callout-info { background: #E8F4FF; border-color: #3B82F6; }
+  .callout-info .callout-title { color: #1D4ED8; }
+
+  /* ── CODE BLOCKS ── */
+  pre {
+    background: var(--code-bg);
+    color: #D4D4D4;
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    margin: 0.85rem 0;
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+
+  .kw { color: #569CD6; }
+  .fn { color: #DCDCAA; }
+  .cm { color: #6A9955; font-style: italic; }
+  .str { color: #CE9178; }
+  .op { color: #D4D4D4; }
+
+  code {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 0.85em;
+    background: #EDE8F0;
+    color: #8B2080;
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+  }
+
+  pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+
+  /* ── TROUBLE / LOG TABLES ── */
+  .trouble-table,
+  .log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    margin: 1rem 0;
+  }
+
+  .trouble-table thead tr,
+  .log-table thead tr { background: var(--purple-dark); color: #fff; }
+
+  .trouble-table th,
+  .log-table th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .trouble-table td,
+  .log-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .trouble-table tbody tr:last-child td,
+  .log-table tbody tr:last-child td { border-bottom: none; }
+
+  .trouble-table tbody tr:nth-child(even) td,
+  .log-table tbody tr:nth-child(even) td { background: #F8F5FB; }
+
+  .trouble-symptom { font-weight: 600; color: var(--purple); }
+
+  .status-inserted { color: #22C55E; font-weight: 700; }
+  .status-updated { color: #3B82F6; font-weight: 700; }
+  .status-skipped { color: var(--muted); font-weight: 700; }
+  .status-error { color: var(--purple); font-weight: 700; }
+
+  /* ── INFO GRID ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .info-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    border-top: 3px solid var(--teal);
+  }
+
+  .info-card .ic-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .info-card .ic-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--purple-dark);
+  }
+
+  /* ── CLASSIFY GRID ── */
+  .classify-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .classify-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.2rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+
+  .classify-card.transportable { border-top: 4px solid #22C55E; }
+  .classify-card.not-transportable { border-top: 4px solid var(--purple); }
+
+  .classify-card h4 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .classify-card.transportable h4 { color: #16A34A; }
+  .classify-card.not-transportable h4 { color: var(--purple-dark); }
+
+  .classify-card ul {
+    list-style: none;
+    padding: 0;
+    font-size: 0.83rem;
+  }
+
+  .classify-card ul li {
+    padding: 0.28rem 0 0.28rem 1rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .classify-card ul li:last-child { border-bottom: none; }
+
+  .classify-card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+
+  .classify-card.transportable ul li::before { background: #22C55E; }
+  .classify-card.not-transportable ul li::before { background: var(--purple); }
+
+  /* ── PIPELINE FLOW ── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 1.2rem 0;
+    flex-wrap: wrap;
+  }
+
+  .pipe-step {
+    background: var(--purple-dark);
+    color: #fff;
+    padding: 0.7rem 1.1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 6px;
+    text-align: center;
+    min-width: 120px;
+  }
+
+  .pipe-step.source { background: var(--teal); }
+  .pipe-step.transport { background: var(--purple-dark); }
+  .pipe-step.target { background: #22C55E; color: #1a1a1a; }
+
+  .pipe-arrow {
+    font-size: 1.2rem;
+    color: var(--muted);
+    padding: 0 0.5rem;
+    font-weight: 700;
+  }
+
+  .pipe-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 0.3rem;
+  }
+
+  .pipe-wrap { display: flex; flex-direction: column; align-items: center; }
+
+  /* ── OUTCOME BOX ── */
+  .outcome-box {
+    background: #F0FDF4;
+    border: 1px solid rgba(34,197,94,0.35);
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    font-size: 0.875rem;
+    margin-top: 0.75rem;
+  }
+
+  .outcome-box strong { color: #16A34A; }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    margin-top: 3rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--purple-dark);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.75);
+    font-size: 0.78rem;
+    text-align: center;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside>
+  <div class="sidebar-header">
+    <div class="sidebar-logo">INTRAGEN<span style="color:#F0A800;">.</span></div>
+    <div class="sidebar-module-title">Module 014 &mdash; Transport (TRS)</div>
+    <div class="sidebar-module-code">Mentor Guide &bull; Intermediate</div>
+  </div>
+
+  <div class="sidebar-section">On This Page</div>
+  <nav>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#objectives">Learning Objectives</a>
+    <a href="#prerequisites">Prerequisites</a>
+    <a href="#concepts">Core Concepts</a>
+    <a href="#exercises">Exercises</a>
+    <a href="#trs1">TRS-1: What Gets Transported?</a>
+    <a href="#trs2">TRS-2: Create Package</a>
+    <a href="#trs3">TRS-3: Export and Import</a>
+    <a href="#trs4">TRS-4: Conflict Resolution</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+  </nav>
+
+  <div class="sidebar-meta">
+    <div class="meta-row">
+      <span class="meta-label">Code</span>
+      <span>TRS</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Level</span>
+      <span>Intermediate</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Exercises</span>
+      <span>4</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Duration</span>
+      <span>~1.5 days</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header" id="overview">
+    <div class="watermark">INTRAGEN.</div>
+    <div class="breadcrumb">Intragen OIM Academy &rsaquo; Mentor Guides &rsaquo; Module 014</div>
+    <h1>Module 014 &mdash; Transport (TRS)</h1>
+    <p class="subtitle">OIM transports carry customisation changes between environments. This module covers creating transport packages, exporting and importing ZIPs, reading import logs, and resolving conflicts — the foundation for safely moving changes from Dev through Test to Production.</p>
+    <div class="badge-row">
+      <span class="badge badge-intermediate">Intermediate</span>
+      <span class="badge badge-info">4 Exercises</span>
+      <span class="badge badge-info">~1.5 Days</span>
+      <span class="badge badge-info">TRS</span>
+    </div>
+  </div>
+
+  <!-- INFO GRID -->
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ic-label">Module Code</div>
+      <div class="ic-value">TRS</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Exercises</div>
+      <div class="ic-value">4</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Duration</div>
+      <div class="ic-value">~1.5 days</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Level</div>
+      <div class="ic-value">Intermediate</div>
+    </div>
+  </div>
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="content-section" id="objectives">
+    <h2><span class="section-icon">01</span> Learning Objectives</h2>
+    <ul class="objectives-list">
+      <li><span class="obj-num">1</span>Understand what is transportable (configuration) versus what stays per-environment (data)</li>
+      <li><span class="obj-num">2</span>Create a transport package in OIM Designer using both Manual and Automatic modes</li>
+      <li><span class="obj-num">3</span>Add specific objects to a Manual transport package with precision</li>
+      <li><span class="obj-num">4</span>Export the package to a ZIP file and verify its integrity</li>
+      <li><span class="obj-num">5</span>Import the ZIP package in a target environment and read the import log</li>
+      <li><span class="obj-num">6</span>Interpret all import log statuses: Inserted, Updated, Skipped, Error</li>
+      <li><span class="obj-num">7</span>Simulate and resolve a transport conflict by choosing Overwrite or Skip</li>
+    </ul>
+  </div>
+
+  <!-- PREREQUISITES -->
+  <div class="content-section" id="prerequisites">
+    <h2><span class="section-icon">02</span> Prerequisites</h2>
+    <ul class="prereq-list">
+      <li class="prereq-tag">OIM Designer access</li>
+      <li class="prereq-tag">Basic OIM customisation knowledge</li>
+      <li class="prereq-tag">At least one custom template or process created</li>
+      <li class="prereq-tag">Access to two environments (Dev + Test) recommended</li>
+    </ul>
+
+    <div class="callout callout-info" style="margin-top:1rem;">
+      <div class="callout-title">Mentor Note</div>
+      If a full Dev/Test environment split is not available, TRS-3 can be performed by re-importing the same package into the same environment. The import log will show "Skipped" for all objects (since they are already current), but the mechanics are identical. Explain this to the trainee at the start so expectations are set correctly.
+    </div>
+  </div>
+
+  <!-- CORE CONCEPTS -->
+  <div class="content-section" id="concepts">
+    <h2><span class="section-icon">03</span> Core Concepts</h2>
+
+    <h3>The Transport Pipeline</h3>
+    <div class="pipeline">
+      <div class="pipe-wrap">
+        <div class="pipe-step source">Dev Environment</div>
+        <div class="pipe-label">Customise</div>
+      </div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-wrap">
+        <div class="pipe-step transport">Transport ZIP</div>
+        <div class="pipe-label">Package &amp; Export</div>
+      </div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-wrap">
+        <div class="pipe-step transport">Import</div>
+        <div class="pipe-label">Review Log</div>
+      </div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-wrap">
+        <div class="pipe-step target">Test / Prod</div>
+        <div class="pipe-label">Verify</div>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Analogy for Trainees</div>
+      OIM Transport is like a git commit of configuration changes. The transport package is your commit, the ZIP file is your deployable artifact, and importing it is your deployment. Person data (UIDs, account records, employee records) are environment-specific and stay in each environment — they are never transported. Templates, processes, scripts, and sync definitions are transportable because they are configuration, not data.
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Transportable vs Non-Transportable</h3>
+    <div class="classify-grid">
+      <div class="classify-card transportable">
+        <h4>Transportable (Config)</h4>
+        <ul>
+          <li>Process definitions and templates</li>
+          <li>Mail templates</li>
+          <li>Scripts and functions</li>
+          <li>Synchronisation project definitions</li>
+          <li>Report definitions</li>
+          <li>Job chain definitions</li>
+          <li>Web portal configuration</li>
+          <li>Role model structure (Business Roles)</li>
+        </ul>
+      </div>
+      <div class="classify-card not-transportable">
+        <h4>Not Transportable (Data)</h4>
+        <ul>
+          <li>Person records</li>
+          <li>Account objects (AD, SAP, etc.)</li>
+          <li>OIM UIDs (environment-specific)</li>
+          <li>Role memberships (PersonInRole)</li>
+          <li>Audit logs and history</li>
+          <li>Job queue entries</li>
+          <li>Synchronisation run history</li>
+          <li>Environment-specific configuration values</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Manual vs Automatic Packages</h3>
+    <p style="font-size:0.875rem; margin-bottom:0.75rem;">OIM Designer supports two package collection modes:</p>
+
+    <table class="trouble-table">
+      <thead>
+        <tr>
+          <th>Mode</th>
+          <th>How it collects objects</th>
+          <th>Best used for</th>
+          <th>Risk</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Automatic</strong></td>
+          <td>Detects all changes made during the current Designer session</td>
+          <td>Full feature releases; large-scale deployments</td>
+          <td>May include unintended changes if session was not clean</td>
+        </tr>
+        <tr>
+          <td><strong>Manual</strong></td>
+          <td>You explicitly right-click each object and add it</td>
+          <td>Surgical deployments; individual fixes; this module's exercises</td>
+          <td>May miss dependent objects if dependencies are not added manually</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:1.5rem;">Import Log Status Codes</h3>
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Meaning</th>
+          <th>Action Required</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="status-inserted">Inserted</td>
+          <td>Object did not exist in the target — it was created fresh</td>
+          <td>None — expected for new objects</td>
+        </tr>
+        <tr>
+          <td class="status-updated">Updated</td>
+          <td>Object already existed in target and was overwritten with the source version</td>
+          <td>Verify the overwrite was intentional; check for local target changes that may have been lost</td>
+        </tr>
+        <tr>
+          <td class="status-skipped">Skipped</td>
+          <td>Object exists in target and is identical to source — no change was needed</td>
+          <td>None — confirms the environments are in sync for this object</td>
+        </tr>
+        <tr>
+          <td class="status-error">Error</td>
+          <td>Import of this object failed — dependency missing, constraint violation, or corrupt data</td>
+          <td>Must investigate and resolve — do not proceed to production with unresolved errors</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- EXERCISES -->
+  <div class="content-section" id="exercises">
+    <h2><span class="section-icon">04</span> Exercises</h2>
+
+    <!-- TRS-1 -->
+    <div class="exercise-card" id="trs1">
+      <div class="exercise-header">
+        <span class="exercise-id">TRS-1</span>
+        <span class="exercise-title">What Gets Transported?</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Understand the transportable vs non-transportable distinction with concrete examples; classify a list of OIM objects as one or the other.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Discussion exercise: present the trainee with a mixed list of OIM objects to classify</li>
+        <li><span class="step-dot"></span>For each object, ask the trainee to say "transportable" or "not transportable" and explain why</li>
+        <li><span class="step-dot"></span>Objects to classify: Process template, Person record, Mail template, AD Account object, Script function, Job queue entry, Report definition, UID value, Web portal nav node, PersonInRole record</li>
+        <li><span class="step-dot"></span>After the discussion, open OIM Designer &rarr; Transport and examine the object categories available for packaging</li>
+        <li><span class="step-dot"></span>Confirm the trainee can explain the principle without referring to notes before proceeding</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Mentor Hint</div>
+        Use the git analogy: transport = committing configuration changes. A git commit contains code (config) not the database records your app creates at runtime. Similarly, OIM transport contains process definitions (config) but not the Person and account records the processes create at runtime. UIDs are environment-specific database identifiers — transporting them would cause UID collisions and break referential integrity in the target.
+      </div>
+
+      <div class="callout callout-error">
+        <div class="callout-title">Common Mistake</div>
+        Trainees often try to include Person records or PersonInRole memberships in a transport package, thinking they can migrate employee data this way. Explain clearly: data lives in each environment and is managed through sync processes or manual entry. The transport mechanism is exclusively for configuration objects.
+      </div>
+    </div>
+
+    <!-- TRS-2 -->
+    <div class="exercise-card" id="trs2">
+      <div class="exercise-header">
+        <span class="exercise-id">TRS-2</span>
+        <span class="exercise-title">Creating a Transport Package and Adding Objects</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Create a Manual transport package in Designer; add a customised template (or process) to it with precision.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>Open OIM Designer and ensure you have a customised object ready (e.g. a modified mail template or process from an earlier module)</li>
+        <li><span class="step-dot"></span>Navigate to <strong>Transport</strong> in the Designer tree</li>
+        <li><span class="step-dot"></span>Right-click the Transport node &rarr; <strong>New Package</strong> &rarr; select <strong>Manual</strong> mode</li>
+        <li><span class="step-dot"></span>Name the package clearly, e.g. "TRS-Exercise-&lt;date&gt;"</li>
+        <li><span class="step-dot"></span>Navigate to your customised template in its normal location in the Designer tree</li>
+        <li><span class="step-dot"></span>Right-click the template &rarr; <strong>Add to transport package</strong> &rarr; select your named package</li>
+        <li><span class="step-dot"></span>Return to the Transport node and expand your package to verify the object is listed</li>
+        <li><span class="step-dot"></span>Discuss with the trainee: what dependencies does this object have? Should those be added too?</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Mentor Hint &mdash; Manual vs Automatic</div>
+        Automatic packages detect changes automatically during the Designer session — useful for releasing an entire feature. Manual packages let you choose exactly what goes in, which is better for surgical deployments: a specific bug fix, a single template change, or a carefully scoped delivery. Always use Manual for this exercise so the trainee experiences the deliberate selection process rather than letting the tool decide.
+      </div>
+
+      <div class="callout callout-error">
+        <div class="callout-title">Common Mistake &mdash; Adding the Parent Folder</div>
+        Trainees sometimes right-click the <em>folder</em> containing the object and add the folder to the package rather than the specific object. This exports every object in that folder, which is rarely what you want for a surgical deployment. Always navigate into the folder and right-click the individual object.
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">Dependency Awareness</div>
+        When adding an object to a transport, consider its dependencies. A process template that calls a script function requires that script function to also exist in the target environment. If the dependency is missing in the target, the import will succeed but the object will fail at runtime. Check the object's Dependencies tab before finalising the package.
+      </div>
+    </div>
+
+    <!-- TRS-3 -->
+    <div class="exercise-card" id="trs3">
+      <div class="exercise-header">
+        <span class="exercise-id">TRS-3</span>
+        <span class="exercise-title">Export and Import</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Export the package to a ZIP file; import it in the target environment (or re-import in the same environment); read and interpret the full import log.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>In Designer, right-click your transport package &rarr; <strong>Export</strong> &rarr; choose a save location &rarr; confirm the ZIP is created</li>
+        <li><span class="step-dot"></span>Verify the ZIP file exists and has a non-zero file size</li>
+        <li><span class="step-dot"></span>Connect Designer to the <strong>target environment</strong> (or remain on the same environment for a test re-import)</li>
+        <li><span class="step-dot"></span>Navigate to Transport &rarr; <strong>Import</strong> &rarr; browse to the exported ZIP file</li>
+        <li><span class="step-dot"></span>Review the preview/summary screen before confirming the import</li>
+        <li><span class="step-dot"></span>Confirm the import and wait for it to complete</li>
+        <li><span class="step-dot"></span>Open the <strong>import log</strong> — scroll through every line and identify the status of each object</li>
+        <li><span class="step-dot"></span>Ask the trainee to narrate what each log entry means using the status codes from the Core Concepts section</li>
+        <li><span class="step-dot"></span>Verify the imported object is visible and functional in the target environment</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Mentor Hint &mdash; Reading the Import Log</div>
+        Walk trainees through the import log carefully and methodically. "Updated" = object already existed and was overwritten. "Inserted" = new object created. "Skipped" = no change needed (already up to date). "Error" = something went wrong — must not be ignored, even on non-critical objects. One unresolved error can cascade into runtime failures. Make the trainee read every line of the log in this exercise so the habit is established.
+      </div>
+
+      <div class="callout callout-error">
+        <div class="callout-title">Common Mistake &mdash; Ignoring Import Errors</div>
+        Trainees and even experienced practitioners sometimes close the import log at first glance if "most" objects show Inserted or Updated. A single Error entry near the bottom can go unnoticed. Errors often indicate a missing dependency in the target environment. Establish the rule: if there is any Error in the import log, the import is not considered successful until the error is investigated and resolved.
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">Re-Import on Same Environment</div>
+        If only one environment is available, re-importing the same package produces an import log where everything shows "Skipped" (objects are already current). This is still a valid teaching exercise — it confirms the log is readable and the trainee understands what "Skipped" means. In production, seeing all-Skipped on a re-import is useful confirmation that the target already has the correct version.
+      </div>
+    </div>
+
+    <!-- TRS-4 -->
+    <div class="exercise-card" id="trs4">
+      <div class="exercise-header">
+        <span class="exercise-id">TRS-4</span>
+        <span class="exercise-title">Conflict Resolution</span>
+      </div>
+      <div class="exercise-goal">
+        <strong>Goal:</strong> Simulate a transport conflict by modifying the same object in both Dev and Test; import from Dev to Test; observe the conflict indicator and choose Overwrite or Skip.
+      </div>
+
+      <h3>Key Steps</h3>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span>In Dev: modify a mail template (e.g. change the subject line) and package it in a new Manual transport</li>
+        <li><span class="step-dot"></span>In Test: modify the <em>same</em> mail template (e.g. change the body text) — this creates a divergence</li>
+        <li><span class="step-dot"></span>Export the Dev package to a new ZIP file</li>
+        <li><span class="step-dot"></span>Import the Dev ZIP into the Test environment</li>
+        <li><span class="step-dot"></span>Observe the conflict indicator in the import dialog — this flags that the target version differs from the source version</li>
+        <li><span class="step-dot"></span>Discuss with the trainee: which version should win? What are the implications of each choice?</li>
+        <li><span class="step-dot"></span>Choose <strong>Overwrite</strong> — the Dev version replaces the Test version completely</li>
+        <li><span class="step-dot"></span>Verify the result in Test — confirm the Dev version is now active</li>
+        <li><span class="step-dot"></span>Repeat the exercise but this time choose <strong>Skip</strong> — confirm the Test version is preserved unchanged</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Mentor Hint &mdash; Conflict Decision Framework</div>
+        In production, ALWAYS review conflicts manually — never click through conflict prompts without reading them. The rule of thumb: if the target has changes that are NOT in the source (e.g. a hotfix applied directly to production), "Skip" is safer. If the source is the definitive version of truth (Dev is the master), use "Overwrite". Establish the principle early: Dev is always the source of truth. Direct edits to Test or Prod environments are an anti-pattern because they will be overwritten by the next transport.
+      </div>
+
+      <div class="callout callout-warning">
+        <div class="callout-title">Production Conflicts Require Extra Care</div>
+        When importing to Production, treat every conflict as a potential data loss event. Before overwriting a production object, take note of the current production version (or export it as a backup package). This allows rollback if the imported version has issues.
+      </div>
+
+      <div class="outcome-box">
+        <strong>Expected Outcome:</strong> The trainee can safely move changes between environments and handle merge scenarios. They understand that Overwrite replaces the target with the source version, and Skip preserves the target version unchanged. They have the habit of reading the import log fully before considering an import complete.
+      </div>
+    </div>
+  </div>
+
+  <!-- TROUBLESHOOTING -->
+  <div class="content-section" id="troubleshooting">
+    <h2><span class="section-icon">05</span> Troubleshooting Reference</h2>
+
+    <table class="trouble-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Symptom</th>
+          <th>Likely Cause</th>
+          <th>Resolution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td class="trouble-symptom">Objects missing from package after export</td>
+          <td>Objects not saved or compiled in Designer before packaging</td>
+          <td>Save all changes in Designer, recompile affected objects, then re-add to the transport package and re-export</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td class="trouble-symptom">Import fails with "Object not found" error</td>
+          <td>A dependency of the imported object is missing in the target environment</td>
+          <td>Check the Dependencies tab on the object in Dev; add missing dependencies to the transport package and re-import</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td class="trouble-symptom">Changes invisible after successful import</td>
+          <td>Import succeeded but DBQueue not run, or a service restart is required</td>
+          <td>Run DBQueue Processor; if still invisible, restart the OIM Job Service and API Server in the target environment</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td class="trouble-symptom">No conflict prompt during import despite known divergence</td>
+          <td>Import ran in silent or non-interactive mode; conflict detection bypassed</td>
+          <td>Check import settings in Designer; ensure interactive mode is selected so conflicts are surfaced for manual review</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td class="trouble-symptom">ZIP file appears corrupt or import refuses to open it</td>
+          <td>File transfer corruption (e.g. via email or FTP in ASCII mode)</td>
+          <td>Verify file size matches the source; re-copy using binary transfer; check ZIP integrity with a standard unzip tool</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td class="trouble-symptom">Template overwrote a newer version in target</td>
+          <td>Chose "Overwrite" on a conflict without reviewing both versions</td>
+          <td>Restore from the backup export (if taken before import); going forward, always review conflict content before choosing Overwrite</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td class="trouble-symptom">Import applied to wrong environment</td>
+          <td>Designer was connected to the wrong server at import time</td>
+          <td>Always verify the environment name shown in the Designer title bar before importing; establish a pre-import checklist for production deployments</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    INTRAGEN<span style="color:#F0A800;">.</span> Academy &mdash; Mentoring Documentation &mdash; &copy; Intragen International. This document remains strictly private and confidential.
+  </div>
+
+</main>
+</body>
+</html>
