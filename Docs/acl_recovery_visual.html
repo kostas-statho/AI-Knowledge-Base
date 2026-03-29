@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b2e5a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ACL Recovery">
+<link rel="manifest" href="manifest.json">
+<title>Πρόγραμμα Αποκατάστασης ΠΧΣ — Αναγνωστόπουλος Χ.</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#eef2f7;color:#1a2b3c;min-height:100vh}
+
+/* HEADER */
+.hdr{background:linear-gradient(160deg,#0b2e5a 0%,#1a5fa8 100%);color:#fff;padding:22px 20px 18px;text-align:center;position:relative;overflow:hidden}
+.hdr::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hdr-inner{position:relative;z-index:1}
+.hdr h1{font-size:23px;font-weight:700;letter-spacing:-.3px;margin-bottom:3px}
+.hdr p{font-size:13px;opacity:.82;margin-bottom:10px}
+.badges{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:10px}
+.badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:500}
+
+/* DAY COUNTER */
+.day-strip{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.day-pill{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);border-radius:12px;padding:6px 14px;font-size:12px;font-weight:600;line-height:1.3}
+.day-pill span{display:block;font-size:10px;font-weight:400;opacity:.78}
+.day-pill.active-phase{background:#fff;color:#0b2e5a}
+
+/* TODAY STRIP */
+.today-strip{background:#fff7e0;border-bottom:2px solid #f0c040;padding:10px 16px}
+.today-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.today-dot{width:8px;height:8px;border-radius:50%;background:#e08800;flex-shrink:0}
+.today-text{font-size:13px;color:#5a3800;font-weight:600}
+.today-sub{font-size:11px;color:#7a5000;margin-top:1px}
+
+/* PHASE NAV */
+.pnav{display:flex;overflow-x:auto;background:#fff;border-bottom:1.5px solid #dde4ee;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:0;z-index:100}
+.pnav::-webkit-scrollbar{display:none}
+.pnav button{flex:0 0 auto;padding:12px 16px 10px;border:none;background:none;font-size:12px;font-weight:600;color:#8a9ab0;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .15s;line-height:1.3}
+.pnav button span{display:block;font-size:9.5px;font-weight:400;opacity:.75;margin-top:1px}
+.pnav button.active{color:#1a5fa8;border-bottom-color:#1a5fa8}
+.pnav button.current-phase{position:relative}
+.pnav button.current-phase::after{content:'●';position:absolute;top:4px;right:4px;font-size:7px;color:#e08800}
+
+/* PHASE PANELS */
+.phase{display:none}
+.phase.active{display:block;animation:fi .22s ease}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.wrap{max-width:600px;margin:0 auto;padding:16px 12px 40px}
+
+/* PHASE HERO */
+.phase-hero{border-radius:16px;padding:18px 20px 16px;margin-bottom:16px;color:#fff;position:relative;overflow:hidden}
+.ph1-bg{background:linear-gradient(135deg,#1450a3,#2878d4)}
+.ph2-bg{background:linear-gradient(135deg,#0a5e48,#1a9e78)}
+.ph3-bg{background:linear-gradient(135deg,#7a4200,#c07010)}
+.ph4-bg{background:linear-gradient(135deg,#8a2052,#d4507e)}
+.ph5-bg{background:linear-gradient(135deg,#32228a,#6a62cc)}
+.phase-hero h2{font-size:20px;font-weight:700;letter-spacing:-.2px;margin-bottom:3px}
+.phase-hero .sub{font-size:12px;opacity:.82;margin-bottom:10px}
+.goals{display:flex;flex-wrap:wrap;gap:5px}
+.goal{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:20px;font-size:11px;padding:2px 10px}
+
+/* PROGRESS */
+.prog{background:#fff;border-radius:12px;padding:12px 16px;margin-bottom:14px;border:1px solid #dde4ee}
+.prog-row{display:flex;justify-content:space-between;font-size:12px;color:#7a8898;margin-bottom:7px}
+.prog-track{height:7px;background:#e8eef5;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;transition:width 1s ease}
+
+/* INFO BOXES */
+.ibox{border-radius:11px;padding:11px 14px;margin-bottom:14px;font-size:13px;line-height:1.65}
+.ibox b{font-weight:700}
+.ib1{background:#deeeff;border:1px solid #a8ccf0;color:#0a3a6e}
+.ib2{background:#d8f5eb;border:1px solid #8ed4b8;color:#064032}
+.ib3{background:#fff0d8;border:1px solid #f0c870;color:#6a3800}
+.ib4{background:#f0e8ff;border:1px solid #c0aaf0;color:#320880}
+.ib-warn{background:#fff7e0;border:1px solid #f0d050;color:#6a3800}
+.ib-men{background:#ffeef8;border:1px solid #f0a0d4;color:#600040}
+.ib-red{background:#fff0f0;border:1px solid #f0a0a0;color:#7a0010}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:10px 14px;background:#fff;border:1px solid #dde4ee;border-radius:10px;margin-bottom:14px}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:#4a5a6a}
+.ld{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* SECTION LABEL */
+.slabel{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8a9ab0;margin:18px 0 9px 2px}
+
+/* CARD */
+.card{background:#fff;border:1px solid #dde4ee;border-radius:16px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+
+/* PHOTO VISUAL */
+.card-photo{position:relative;height:200px;overflow:hidden;background:#c8d4e0}
+.card-photo img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:opacity .3s}
+.card-photo img.err{opacity:0;position:absolute}
+.photo-svg{display:none;width:100%;height:100%;background:#f0f5fa}
+.photo-svg.show{display:block}
+.photo-svg svg{width:100%;height:100%}
+.photo-label{position:absolute;bottom:0;left:0;right:0;padding:28px 14px 12px;background:linear-gradient(transparent,rgba(10,25,50,.72));color:#fff}
+.photo-label h3{font-size:15px;font-weight:700;line-height:1.2;margin-bottom:1px}
+.photo-label p{font-size:11px;opacity:.85}
+
+/* CARD HEAD */
+.card-head{display:flex;align-items:center;gap:10px;padding:13px 16px 10px;border-bottom:1px solid #edf2f7}
+.num{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.nb{background:#deeeff;color:#0a3a6e}.ng{background:#d8f5eb;color:#064032}
+.na{background:#fff0d8;color:#6a3800}.np{background:#f0e8ff;color:#320880}
+.nc{background:#ffe8ec;color:#7a0a20}
+.card-title{font-size:15px;font-weight:600;color:#1a2b3c}
+.card-sub{font-size:11px;color:#6a7a8a;margin-top:1px}
+
+/* SVG DIAG */
+.diag{background:#f4f8fc;border-top:1px solid #e4ecf4;border-bottom:1px solid #e4ecf4}
+.diag svg{display:block;width:100%}
+
+/* CARD BODY */
+.card-body{padding:13px 16px}
+.card-body.pt{padding-top:8px}
+ol.steps{list-style:none;margin:0 0 11px}
+ol.steps li{display:flex;gap:8px;padding:3px 0;font-size:13px;line-height:1.58;align-items:flex-start;color:#1a2b3c}
+.sn{width:20px;height:20px;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-top:2px}
+.snb{background:#deeeff;color:#0a3a6e}.sng{background:#d8f5eb;color:#064032}
+.sna{background:#fff0d8;color:#6a3800}.snp{background:#f0e8ff;color:#320880}
+.snc{background:#ffe8ec;color:#7a0a20}.snw{background:#fff0d8;color:#6a3800}
+
+/* TAGS */
+.tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid #dde4ee;color:#4a5a6a;background:#f0f4f8}
+.tb{background:#deeeff;color:#0a3a6e;border-color:#a8ccf0}
+.tg{background:#d8f5eb;color:#064032;border-color:#8ed4b8}
+.ta{background:#fff0d8;color:#6a3800;border-color:#f0c870}
+.tp{background:#f0e8ff;color:#320880;border-color:#c0aaf0}
+.tc{background:#ffe8ec;color:#7a0a20;border-color:#f0a0b0}
+
+/* ICE CARD */
+.ice-head{background:#deeeff;border-bottom:1px solid #a8ccf0;padding:12px 16px}
+.ice-head h3{font-size:14px;font-weight:700;color:#0a3a6e}
+.ice-head p{font-size:11px;color:#1a5fa8;margin-top:2px}
+
+/* MILESTONE */
+.milestone{background:#fff;border:2px solid #a8ccf0;border-radius:13px;padding:14px 16px;margin-bottom:14px}
+.milestone h3{font-size:13px;font-weight:700;color:#0a3a6e;margin-bottom:8px}
+.milestone ul{list-style:none}
+.milestone ul li{display:flex;gap:8px;font-size:13px;padding:3px 0;align-items:flex-start;color:#1a2b3c}
+.milestone ul li::before{content:"✓";font-size:12px;color:#1a9e78;flex-shrink:0;margin-top:2px}
+
+/* CHECKBOX TRACKER */
+.check-group{background:#fff;border:1px solid #dde4ee;border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.check-group h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#8a9ab0;margin-bottom:8px}
+.check-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f0f4f8;cursor:pointer;user-select:none}
+.check-row:last-child{border-bottom:none}
+.check-box{width:20px;height:20px;border-radius:5px;border:2px solid #c0ccd8;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.check-row.done .check-box{background:#1a9e78;border-color:#1a9e78}
+.check-row.done .check-box::after{content:'✓';color:#fff;font-size:12px;font-weight:700}
+.check-row.done .check-label{text-decoration:line-through;color:#9aaa9a}
+.check-label{font-size:13px;color:#1a2b3c}
+.check-sub{font-size:11px;color:#8a9ab0;display:block;margin-top:1px}
+
+/* ATTRIB */
+.attrib{font-size:10px;color:#8a9ab0;text-align:right;padding:4px 10px 0;font-style:italic}
+
+/* CRITERIA BOX */
+.criteria{background:#f0faf4;border:1px solid #8ed4b8;border-radius:11px;padding:12px 14px;margin-bottom:14px}
+.criteria h4{font-size:12px;font-weight:700;color:#064032;margin-bottom:7px;text-transform:uppercase;letter-spacing:.05em}
+.criteria ul{list-style:none}
+.criteria ul li{font-size:13px;color:#1a2b3c;padding:2px 0;display:flex;gap:6px}
+.criteria ul li::before{content:"→";color:#1a9e78;font-weight:700}
+
+/* FOOTER */
+footer{text-align:center;font-size:11px;color:#8a9ab0;padding:12px 0 24px}
+
+/* COMPLETION COUNTER */
+.today-counter{font-size:12px;font-weight:500;color:#7a5000;white-space:nowrap;flex-shrink:0;padding:3px 10px;border-radius:20px;background:rgba(224,136,0,.12);border:1px solid rgba(224,136,0,.3)}
+.today-counter.done{color:#064032;background:rgba(26,158,120,.15);border-color:rgba(26,158,120,.4)}
+
+/* ═══ APP SHELL: BOTTOM NAV + TABS ═══ */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:300;background:#fff;border-top:1px solid #dde4ee;display:flex;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -2px 12px rgba(0,0,0,.08)}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 0 6px;border:none;background:none;cursor:pointer;color:#8a9ab0;font-size:10px;font-weight:600;gap:3px;-webkit-tap-highlight-color:transparent;transition:color .15s}
+.bnav-btn .bicon{font-size:22px;line-height:1;transition:transform .15s}
+.bnav-btn.active{color:#1a5fa8}
+.bnav-btn.active .bicon{transform:scale(1.12)}
+.tab{display:none;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+.tab.active{display:block;animation:slideIn .22s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+.pnav{display:none !important}
+.today-strip{display:none !important}
+.fab{display:none !important}
+
+/* PHASE SWITCHER (in Tab 1) */
+.phase-switcher{display:flex;overflow-x:auto;gap:6px;padding:10px 12px 6px;background:#fff;border-bottom:1px solid #dde4ee;position:sticky;top:0;z-index:100;scrollbar-width:none}
+.phase-switcher::-webkit-scrollbar{display:none}
+.psw-btn{flex:0 0 auto;padding:6px 14px;border-radius:20px;border:none;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;background:#f0f4f8;color:#6a7a8a;transition:all .15s;-webkit-tap-highlight-color:transparent;text-align:center;line-height:1.3}
+.psw-btn.active{background:#1a5fa8;color:#fff}
+.psw-btn.current-phase{position:relative}
+.psw-btn.current-phase::after{content:'●';position:absolute;top:-2px;right:2px;font-size:7px;color:#e08800}
+
+/* TODAY TAB */
+.today-hero{background:linear-gradient(160deg,#0b2e5a,#1a5fa8);color:#fff;padding:18px 16px 16px;padding-top:calc(18px + env(safe-area-inset-top))}
+.today-hero h2{font-size:20px;font-weight:700;margin-bottom:4px}
+.today-hero .sub{font-size:13px;opacity:.85;margin-bottom:12px}
+.today-stat-row{display:flex;gap:8px;flex-wrap:wrap}
+.today-stat{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:12px;padding:7px 13px;font-size:12px;font-weight:600}
+.today-stat span{display:block;font-size:10px;font-weight:400;opacity:.8}
+
+/* MILESTONE CARDS (Tab 2) */
+.ms-card{background:#fffbee;border:2px solid #d4a800;border-radius:14px;margin-bottom:14px;overflow:hidden}
+.ms-card-head{background:linear-gradient(135deg,#7a5800,#c89000);padding:11px 16px;display:flex;align-items:center;gap:9px}
+.ms-trophy{font-size:18px;line-height:1;flex-shrink:0}
+.ms-card-head h3{font-size:13px;font-weight:700;color:#fff;margin:0;line-height:1.3}
+.ms-card-head p{font-size:11px;color:#ffe9a0;margin-top:2px}
+.ms-body{padding:12px 14px}
+.ms-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid #f0e8c0;cursor:pointer;user-select:none;min-height:52px;-webkit-tap-highlight-color:transparent}
+.ms-row:last-child{border-bottom:none}
+.ms-box{width:24px;height:24px;border-radius:6px;border:2.5px solid #c0a000;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;background:#fff}
+.ms-row.pass .ms-box{background:#1a9e78;border-color:#1a9e78}
+.ms-row.pass .ms-box::after{content:'✓';color:#fff;font-size:14px;font-weight:700}
+.ms-row.pass .ms-label{color:#9aaa9a;text-decoration:line-through}
+.ms-label{font-size:13px;color:#3a2800;line-height:1.45;flex:1}
+.ms-label strong{display:block;font-weight:600;color:#7a5000;font-size:11px;margin-top:3px}
+.ms-footer{background:#fff8d4;border-top:1px solid #e8d880;padding:9px 14px;font-size:11px;color:#7a5800}
+.ms-footer.all-pass{background:#d8f5eb;border-top-color:#8ed4b8;color:#064032}
+.ms-progress-text{font-weight:700;color:#c89000}
+
+/* SYMPTOM LOG */
+.sym-log{background:#fff;border:1px solid #dde4ee;border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.sym-log h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#8a9ab0;margin-bottom:10px}
+.sym-fields{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.sym-field{flex:1;min-width:75px}
+.sym-field label{font-size:11px;color:#6a7a8a;font-weight:600;display:block;margin-bottom:4px}
+.sym-field input,.sym-field select{width:100%;padding:8px 10px;border:1.5px solid #c8d4e0;border-radius:8px;font-size:16px;background:#f8fafc;-webkit-appearance:none;appearance:none}
+.sym-field input:focus,.sym-field select:focus{outline:none;border-color:#1a5fa8}
+.sym-save{background:#1a5fa8;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;width:100%}
+.sym-chart{margin-top:10px;background:#f4f8fc;border-radius:8px;padding:8px}
+.sym-chart canvas{display:block;width:100%;height:56px}
+.sym-chart-label{font-size:10px;color:#8a9ab0;text-align:center;margin-top:3px}
+.sym-last{font-size:11px;color:#6a7a8a;margin-top:8px;padding-top:8px;border-top:1px solid #edf2f7}
+
+/* PROGRESS TAB (Tab 3) */
+.prog-tab-card{background:#fff;border:1px solid #dde4ee;border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.prog-tab-card h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#8a9ab0;margin-bottom:12px}
+.phase-prog-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.phase-prog-row:last-child{margin-bottom:0}
+.phase-prog-label{font-size:12px;font-weight:600;color:#1a2b3c;width:58px;flex-shrink:0}
+.phase-prog-track{flex:1;height:8px;background:#e8eef5;border-radius:4px;overflow:hidden}
+.phase-prog-fill{height:100%;border-radius:4px;transition:width .8s ease}
+.phase-prog-pct{font-size:11px;color:#6a7a8a;width:32px;text-align:right;flex-shrink:0}
+.streak-badge{background:linear-gradient(135deg,#e08800,#f0b800);color:#fff;border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.streak-badge .streak-num{font-size:36px;font-weight:800;line-height:1}
+.streak-badge .streak-info{font-size:13px;font-weight:600}
+.streak-badge .streak-sub{font-size:11px;opacity:.88;margin-top:2px}
+.check-row.next-up{border-left:3px solid #1a5fa8 !important;background:linear-gradient(90deg,#eff7ff 0%,transparent 60%) !important}
+.notif-row{padding:10px 0 0;text-align:center}
+.notif-btn{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:20px;padding:6px 16px;font-size:11px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
+.notif-btn:disabled{opacity:.55;cursor:default}
+
+/* PWA INSTALL BANNER */
+.pwa-banner{position:fixed;bottom:calc(68px + env(safe-area-inset-bottom));left:10px;right:10px;background:#fff;border-radius:16px;box-shadow:0 6px 28px rgba(0,0,0,.18);padding:13px 14px;z-index:400;display:flex;align-items:center;gap:11px;transform:translateY(120px);opacity:0;transition:transform .35s cubic-bezier(.22,.68,0,1.2),opacity .3s ease;border:1.5px solid #dde4ee;pointer-events:none}
+.pwa-banner.show{transform:translateY(0);opacity:1;pointer-events:auto}
+.pwa-banner-icon{font-size:26px;flex-shrink:0;line-height:1}
+.pwa-banner-text{flex:1;min-width:0}
+.pwa-banner-title{font-size:13px;font-weight:700;color:#1a2b3c}
+.pwa-banner-sub{font-size:11px;color:#6a7a8a;margin-top:2px;line-height:1.4}
+.pwa-banner-btns{display:flex;gap:7px;flex-shrink:0}
+.pwa-btn-install{background:#1a5fa8;color:#fff;border:none;border-radius:8px;padding:8px 13px;font-size:12px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pwa-btn-later{background:none;color:#8a9ab0;border:1.5px solid #dde4ee;border-radius:8px;padding:8px 10px;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+/* REDUCED MOTION */
+@media(prefers-reduced-motion:reduce){
+  .phase.active{animation:none}
+  .prog-fill{transition:none}
+  html{scroll-behavior:auto}
+}
+
+/* ═══ MOBILE ENHANCEMENTS ═══ */
+
+/* Floating jump-to-checklist button */
+.fab{
+  position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));right:16px;
+  z-index:200;background:#1a5fa8;color:#fff;border:none;border-radius:30px;
+  padding:13px 20px 13px 16px;font-size:14px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 18px rgba(10,46,90,.38);
+  display:flex;align-items:center;gap:7px;
+  transition:opacity .25s,transform .25s;
+  -webkit-tap-highlight-color:transparent;
+}
+.fab:active{transform:scale(.94)}
+.fab.hidden{opacity:0;pointer-events:none;transform:translateY(12px)}
+.fab-icon{font-size:17px;line-height:1}
+
+@media(max-width:600px){
+  /* Base */
+  body{font-size:15px}
+
+  /* Header */
+  .hdr{padding:14px 12px 12px;padding-top:calc(14px + env(safe-area-inset-top))}
+  .hdr h1{font-size:20px}
+  .hdr p{font-size:12px}
+  .badge{font-size:11px;padding:3px 10px}
+
+  /* Day pills */
+  .day-pill{padding:8px 13px}
+  .day-pill span:last-child{font-size:12px}
+
+  /* Today strip — sticky just below phase nav */
+  .today-strip{
+    padding:12px 14px;
+    position:sticky;top:47px;z-index:90;
+    background:#fff7e0;
+  }
+  .today-text{font-size:14px}
+  .today-sub{font-size:12px;line-height:1.5}
+  .today-counter{font-size:12px;}
+
+  /* Phase nav — taller tap targets */
+  .pnav{top:0}
+  .pnav button{padding:14px 15px 12px;font-size:13px}
+  .pnav button span{font-size:10.5px}
+
+  /* Content wrap — bottom padding for FAB clearance */
+  .wrap{padding:12px 10px 110px}
+
+  /* Cards */
+  .card{border-radius:14px}
+  .card-photo{height:210px}
+  .card-body{padding:13px 14px}
+  .card-title{font-size:15px}
+  .card-sub{font-size:12px}
+
+  /* Checklist rows — 52px minimum touch target */
+  .check-group{padding:12px 12px;border-radius:13px}
+  .check-row{
+    padding:11px 2px;
+    min-height:52px;
+    gap:12px;
+  }
+  .check-box{width:26px;height:26px;border-radius:7px;border-width:2.5px}
+  .check-row.done .check-box::after{font-size:15px}
+  .check-label{font-size:14px;line-height:1.4}
+  .check-sub{font-size:12px}
+
+  /* Steps */
+  ol.steps li{font-size:14px;line-height:1.6}
+  .sn{width:22px;height:22px;font-size:11px;border-radius:6px}
+
+  /* Tags */
+  .tag{font-size:12px;padding:4px 12px}
+
+  /* Info boxes */
+  .ibox{font-size:14px;line-height:1.7;padding:12px 14px}
+
+  /* Phase hero */
+  .phase-hero{padding:16px 16px 14px;border-radius:14px}
+  .phase-hero h2{font-size:21px}
+  .phase-hero .sub{font-size:13px}
+  .goal{font-size:12px;padding:3px 11px}
+
+  /* Section label */
+  .slabel{font-size:12px;margin:20px 0 10px 2px}
+
+  /* Milestone & criteria text */
+  .milestone ul li,.criteria ul li{font-size:14px;padding:4px 0}
+  .milestone h3,.criteria h4{font-size:13px}
+
+  /* Progress bar */
+  .prog{padding:11px 14px}
+  .prog-row{font-size:12px}
+  .prog-track{height:8px}
+
+  /* Legend */
+  .legend{gap:8px;padding:10px 12px}
+  .li{font-size:12px}
+
+  /* Footer — safe area bottom */
+  footer{padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+
+  /* App shell mobile */
+  .ms-row{min-height:56px}
+  .ms-box{width:26px;height:26px}
+  .ms-label{font-size:14px}
+  .sym-field input,.sym-field select{font-size:16px}
+  .today-hero h2{font-size:22px}
+  .bnav-btn .bicon{font-size:20px}
+  .bnav-btn{font-size:10px}
+}
+
+@media(max-width:380px){
+  .hdr h1{font-size:17px}
+  .day-pill{padding:6px 10px}
+  .pnav button{padding:12px 11px 10px;font-size:12px}
+  .check-label{font-size:13px}
+  ol.steps li{font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-inner">
+    <h1>Πρόγραμμα Αποκατάστασης ΠΧΣ</h1>
+    <p>Αναγνωστόπουλος Χαράλαμπος · Χειρουργείο 23.03.2026</p>
+    <div class="badges">
+      <span class="badge">Ανακατασκευή ΠΧΣ</span>
+      <span class="badge">Πλάγια μηνισκεκτομή</span>
+      <span class="badge">OSTEON Ορθοπαιδική Κλινική</span>
+      <span class="badge">Δρ. ΒΙ Σακελλαρίου</span>
+    </div>
+    <div class="day-strip" id="dayStrip">
+      <div class="day-pill active-phase" id="dayPill"><span>Μετεγχ. μέρα</span><span id="dayNum">—</span></div>
+      <div class="day-pill" id="phasePill"><span>Τρέχουσα φάση</span><span id="phaseLabel">—</span></div>
+      <div class="day-pill" id="milestonePill"><span>Επόμενος στόχος</span><span id="milestoneLabel">—</span></div>
+      <div class="day-pill" id="streakPill"><span>Σερί</span><span id="streakLabel">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<nav class="bnav" id="bnav">
+  <button class="bnav-btn active" onclick="switchTab(0)"><span class="bicon">🏠</span>Σήμερα</button>
+  <button class="bnav-btn" onclick="switchTab(1)"><span class="bicon">📋</span>Πρόγραμμα</button>
+  <button class="bnav-btn" onclick="switchTab(2)"><span class="bicon">🏆</span>Στόχοι</button>
+  <button class="bnav-btn" onclick="switchTab(3)"><span class="bicon">📊</span>Πρόοδος</button>
+</nav>
+
+<!-- ═══ TAB 0: ΣΗΜΕΡΑ ═══ -->
+<div class="tab active" id="tab0">
+  <div class="today-hero">
+    <h2 id="heroGreeting">Καλημέρα, Χαράλαμπε!</h2>
+    <div class="sub" id="heroSub"></div>
+    <div class="today-stat-row">
+      <div class="today-stat"><span>Μέρα</span><span id="statDay">—</span></div>
+      <div class="today-stat"><span>Φάση</span><span id="statPhase">—</span></div>
+      <div class="today-stat"><span>Σερί</span><span id="statStreak">—</span></div>
+      <div class="today-stat"><span>Ολοκλ.</span><span id="statDone">—</span></div>
+    </div>
+    <div class="notif-row" id="notifRow">
+      <button class="notif-btn" id="notifBtn" onclick="enableReminder()">🔔 Ενεργοποίηση υπενθύμισης</button>
+    </div>
+  </div>
+  <div class="wrap" id="todayWrap">
+    <div class="slabel">Σημερινές ασκήσεις</div>
+    <div id="todayChecklist"></div>
+    <div class="slabel">Ημερήσιο σύμπτωμα — Μέρα <span id="symLogDay"></span></div>
+    <div class="sym-log">
+      <h4>Καταγραφή συμπτωμάτων</h4>
+      <div class="sym-fields">
+        <div class="sym-field">
+          <label>Πόνος (0–10)</label>
+          <input type="number" id="symPain" min="0" max="10" placeholder="0–10">
+        </div>
+        <div class="sym-field">
+          <label>Οίδημα</label>
+          <select id="symSwelling">
+            <option value="">—</option>
+            <option value="0">Κανένα</option>
+            <option value="1">Ήπιο</option>
+            <option value="2">Μέτριο</option>
+            <option value="3">Έντονο</option>
+          </select>
+        </div>
+        <div class="sym-field">
+          <label>Κάμψη (°)</label>
+          <input type="number" id="symROM" min="0" max="160" placeholder="π.χ. 90">
+        </div>
+      </div>
+      <button class="sym-save" onclick="saveSymptoms()">Αποθήκευση</button>
+      <div class="sym-chart">
+        <canvas id="symCanvas" height="56"></canvas>
+        <div class="sym-chart-label">— Πόνος (0–10) &nbsp;● Κάμψη (°÷10)</div>
+      </div>
+      <div class="sym-last" id="symLast"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 1: ΠΡΟΓΡΑΜΜΑ ═══ -->
+<div class="tab" id="tab1">
+  <div class="phase-switcher" id="phaseSwitcher">
+    <button class="psw-btn active" onclick="goPhase(0)">Φάση 1<br><small>Μέρ. 0–14</small></button>
+    <button class="psw-btn" onclick="goPhase(1)">Φάση 2<br><small>Εβδ. 3–6</small></button>
+    <button class="psw-btn" onclick="goPhase(2)">Φάση 3<br><small>Εβδ. 7–12</small></button>
+    <button class="psw-btn" onclick="goPhase(3)">Φάση 4<br><small>Μήν. 4–6</small></button>
+    <button class="psw-btn" onclick="goPhase(4)">Φάση 5<br><small>Μήν. 6–9</small></button>
+  </div>
+
+<!-- ═══════════════ PHASE 1 ═══════════════ -->
+<div class="phase active" id="p0">
+<div class="wrap">
+
+  <div class="phase-hero ph1-bg">
+    <h2>Φάση 1 — Άμεση μετεγχείρηση</h2>
+    <div class="sub">Μέρες 0–14 · 3 συνεδρίες/ημέρα · Προστασία, ενεργοποίηση, αποκατάσταση</div>
+    <div class="goals">
+      <span class="goal">Μείωση οιδήματος</span><span class="goal">Προστασία μοσχεύματος</span>
+      <span class="goal">Ενεργοποίηση τετρακέφαλου</span><span class="goal">Πλήρης έκταση</span>
+      <span class="goal">Κάμψη 90° έως μέρα 14</span>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div class="prog-row"><span>Συνολική αποκατάσταση</span><span>Φάση 1 από 5</span></div>
+    <div class="prog-track"><div class="prog-fill" id="prog0" style="width:10%;background:#1a5fa8"></div></div>
+  </div>
+
+  <div class="ibox ib1"><b>Νάρθηκας + κάλτσες:</b> Φοράτε τον μηροκνημικό κηδεμόνα ανά πάσα στιγμή εκτός από τις ασκήσεις. Αντιθρομβωτικές κάλτσες για 20 ημέρες. Ενέσεις Clexane 40 καθημερινά για 20 ημέρες (έως <span id="clexaneEnd1"></span>).</div>
+
+  <div class="ibox ib-men"><b>Σημείωση μηνισκεκτομής:</b> Περισσότερο οίδημα είναι φυσιολογικό τις πρώτες 2 εβδομάδες. Αποφύγετε κάμψη πέραν 90° έως εβδομάδα 6 — η περιοχή επιδιόρθωσης χρειάζεται προστασία. Η πλήρης αποκατάσταση κάμψης μπορεί να διαρκέσει λίγο περισσότερο απ' ό,τι για ΠΧΣ μόνο.</div>
+
+  <div class="legend">
+    <div class="li"><div class="ld" style="background:#7a8fa0"></div>Σώμα</div>
+    <div class="li"><div class="ld" style="background:#e05848"></div>Γόνατο (χειρ.)</div>
+    <div class="li"><div class="ld" style="background:#4a9fd6"></div>Ενεργός μυς</div>
+    <div class="li"><div class="ld" style="background:#1aaa80"></div>Κίνηση</div>
+    <div class="li"><div class="ld" style="background:#e8a830"></div>Μαξιλάρι/στήριγμα</div>
+  </div>
+
+  <div class="slabel">Ημερήσια λίστα</div>
+  <div class="check-group">
+    <h4>Σημερινές ασκήσεις — τσεκάρετε κάθε συνεδρία</h4>
+    <div class="check-row" onclick="toggleCheck('c1a')" id="c1a">
+      <div class="check-box"></div>
+      <div><div class="check-label">Συσπάσεις τετρακέφαλου — 3 σειρές × 10–15 επαν.</div><span class="check-sub">Συνεδρία 1</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c1b')" id="c1b">
+      <div class="check-box"></div>
+      <div><div class="check-label">Συσπάσεις τετρακέφαλου — 3 σειρές × 10–15 επαν.</div><span class="check-sub">Συνεδρία 2</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c1c')" id="c1c">
+      <div class="check-box"></div>
+      <div><div class="check-label">Συσπάσεις τετρακέφαλου — 3 σειρές × 10–15 επαν.</div><span class="check-sub">Συνεδρία 3</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c1d')" id="c1d">
+      <div class="check-box"></div>
+      <div><div class="check-label">Ανύψωση τεντωμένου ποδιού — 3×10–15 × 3 συνεδρίες</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c1e')" id="c1e">
+      <div class="check-box"></div>
+      <div><div class="check-label">Ολίσθηση φτέρνας — 3×10–15 × 3 συνεδρίες</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c1f')" id="c1f">
+      <div class="check-box"></div>
+      <div><div class="check-label">Παθητική έκταση — 3× για 10–15 λεπτά</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c1g')" id="c1g">
+      <div class="check-box"></div>
+      <div><div class="check-label">Αντλήσεις αστραγάλου — κάθε ώρα ξύπνιος</div><span class="check-sub">Πρόληψη θρόμβωσης — κάθε ώρα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c1h')" id="c1h">
+      <div class="check-box"></div>
+      <div><div class="check-label">Ένεση Clexane</div><span class="check-sub">Καθημερινά έως μέρα 20</span></div>
+    </div>
+  </div>
+
+  <div class="slabel">Ασκήσεις · 3× ημερησίως</div>
+
+  <!-- 1. Quad sets -->
+  <div class="card">
+    <div class="card-head"><div class="num nb">1</div><div><div class="card-title">Συσπάσεις τετρακέφαλου</div><div class="card-sub">Σύσπαση τετρακέφαλου · ισομετρική σύσπαση</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 115" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="q1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <rect x="0" y="94" width="340" height="3" rx="1.5" fill="#b8c4cc"/>
+      <circle cx="32" cy="76" r="18" fill="#7a8fa0"/>
+      <rect x="50" y="64" width="115" height="26" rx="11" fill="#7a8fa0"/>
+      <rect x="165" y="64" width="72" height="26" rx="9" fill="#4a9fd6"/>
+      <ellipse cx="244" cy="77" rx="14" ry="12" fill="#e05848"/>
+      <rect x="258" y="64" width="55" height="26" rx="9" fill="#7a8fa0"/>
+      <ellipse cx="320" cy="77" rx="11" ry="9" fill="#7a8fa0"/>
+      <line x1="244" y1="55" x2="244" y2="40" stroke="#1aaa80" stroke-width="2.5" marker-end="url(#q1)"/>
+      <text x="200" y="57" font-family="Arial,sans-serif" font-size="10" fill="#1a5fa8" text-anchor="middle">σύσπαση τετρακέφαλου</text>
+      <text x="244" y="34" font-family="Arial,sans-serif" font-size="10" fill="#1aaa80" text-anchor="middle">πίεσε κάτω · κράτα 5 δευτ.</text>
+      <text x="32" y="22" font-family="Arial,sans-serif" font-size="9" fill="#6a7a8a">κεφάλι</text>
+      <text x="280" y="92" font-family="Arial,sans-serif" font-size="9" fill="#6a7a8a">πόδι</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn snb">1</div>Ξαπλώστε επίπεδα με το χειρουργημένο πόδι πλήρως εκτεταμένο</li>
+        <li><div class="sn snb">2</div>Σφίξτε τον τετρακέφαλο — πιέστε το πίσω μέρος του γονάτου δυνατά στο στρώμα</li>
+        <li><div class="sn snb">3</div>Νιώστε τον μηρό να σκληραίνει. Κρατήστε 5 δευτ., ελευθερώστε αργά</li>
+      </ol>
+      <div class="tags"><span class="tag tb">3 σειρές</span><span class="tag tb">10–15 επαν.</span><span class="tag">Κρατήστε 5 δευτ.</span><span class="tag">3× ημερησίως</span></div>
+    </div>
+  </div>
+
+  <!-- 2. SLR -->
+  <div class="card">
+    <div class="card-photo">
+      <img src="https://images.pexels.com/photos/5037407/pexels-photo-5037407.jpeg?auto=compress&cs=tinysrgb&w=800"
+           alt="Straight leg raise" loading="lazy"
+           onerror="this.classList.add('err');this.nextElementSibling.classList.add('show')">
+      <div class="photo-svg">
+        <svg viewBox="0 0 340 128" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="128" fill="#eef4fa"/>
+          <rect x="0" y="108" width="340" height="3" rx="1.5" fill="#b8c4cc"/>
+          <circle cx="32" cy="92" r="18" fill="#7a8fa0"/>
+          <rect x="50" y="80" width="115" height="24" rx="10" fill="#7a8fa0"/>
+          <polygon points="166,106 156,84 276,28 286,50" fill="#4a9fd6"/>
+          <ellipse cx="222" cy="67" rx="14" ry="12" fill="#e05848"/>
+          <circle cx="280" cy="38" r="9" fill="#7a8fa0"/>
+          <text x="187" y="72" font-family="Arial,sans-serif" font-size="10" fill="#1aaa80">~30°</text>
+          <text x="298" y="34" font-family="Arial,sans-serif" font-size="10" fill="#1aaa80" text-anchor="middle">κράτα 3 δευτ.</text>
+        </svg>
+      </div>
+      <div class="photo-label"><h3>Ανύψωση τεντωμένου ποδιού (SLR)</h3><p>Ανύψωση τεντωμένου ποδιού · σφίξτε τετρακέφαλο ΠΡΩΤΑ</p></div>
+    </div>
+    <div class="attrib">Φωτο: Pexels (ελεύθερη άδεια)</div>
+    <div class="card-body pt">
+      <ol class="steps">
+        <li><div class="sn snb">1</div>Σφίξτε τον τετρακέφαλο ΠΡΩΤΑ — αυτό κλειδώνει το γόνατο και προστατεύει το μόσχευμα</li>
+        <li><div class="sn snb">2</div>Σηκώστε πόδι ~30° με το γόνατο κλειδωμένο ευθεία</li>
+        <li><div class="sn snb">3</div>Κρατήστε 3 δευτ. στην κορυφή, κατεβάστε αργά και ελεγχόμενα</li>
+      </ol>
+      <div class="tags"><span class="tag tb">3 σειρές</span><span class="tag tb">10–15 επαν.</span><span class="tag">3× ημερησίως</span></div>
+    </div>
+  </div>
+
+  <!-- 3. Ankle pumps -->
+  <div class="card">
+    <div class="card-head"><div class="num ng">3</div><div><div class="card-title">Αντλήσεις αστραγάλου</div><div class="card-sub">Κάμψη αστραγάλου · πρόληψη θρόμβωσης — κάθε ώρα</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="ap1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <rect x="0" y="92" width="340" height="3" rx="1.5" fill="#b8c4cc"/>
+      <rect x="110" y="64" width="122" height="24" rx="10" fill="#7a8fa0"/>
+      <ellipse cx="240" cy="76" rx="15" ry="13" fill="#e05848"/>
+      <rect x="255" y="65" width="66" height="22" rx="9" fill="#7a8fa0"/>
+      <ellipse cx="326" cy="66" rx="9" ry="10" fill="#7a8fa0"/>
+      <line x1="326" y1="56" x2="326" y2="34" stroke="#1aaa80" stroke-width="3" marker-end="url(#ap1)"/>
+      <text x="315" y="28" font-family="Arial,sans-serif" font-size="10" fill="#1aaa80">κάμψη ↑</text>
+      <line x1="326" y1="86" x2="326" y2="108" stroke="#e05848" stroke-width="3" marker-end="url(#ap1)"/>
+      <text x="310" y="116" font-family="Arial,sans-serif" font-size="10" fill="#b83020">έκταση ↓</text>
+      <text x="165" y="44" font-family="Arial,sans-serif" font-size="11" fill="#1aaa80" text-anchor="middle">20–30 επαν. · κάθε ώρα · και τα δύο πόδια</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn sng">1</div>Τραβήξτε τα δάχτυλα προς τα σας (ραχιαία κάμψη) — νιώστε τεντωμένο γαστροκνήμιο</li>
+        <li><div class="sn sng">2</div>Σπρώξτε τα δάχτυλα μακριά (πελματιαία κάμψη) — σταθερός ρυθμός</li>
+        <li><div class="sn sng">3</div>Αντλεί αίμα από τις φλέβες γάμπας στην καρδιά — κρίσιμη πρόληψη θρόμβωσης</li>
+      </ol>
+      <div class="tags"><span class="tag tg">20–30 επαν.</span><span class="tag">Κάθε ώρα ξύπνιος</span><span class="tag">Και τα δύο πόδια</span></div>
+    </div>
+  </div>
+
+  <!-- 4. Passive Extension -->
+  <div class="card">
+    <div class="card-head"><div class="num nb">4</div><div><div class="card-title">Παθητική έκταση γόνατος</div><div class="card-sub">Παθητική έκταση · με βαρύτητα · κρίσιμος στόχος</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 118" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="96" width="340" height="3" rx="1.5" fill="#b8c4cc"/>
+      <circle cx="32" cy="78" r="18" fill="#7a8fa0"/>
+      <rect x="50" y="66" width="115" height="24" rx="11" fill="#7a8fa0"/>
+      <rect x="165" y="66" width="72" height="24" rx="9" fill="#7a8fa0"/>
+      <ellipse cx="244" cy="84" rx="15" ry="13" fill="#e05848"/>
+      <rect x="253" y="80" width="72" height="16" rx="8" fill="#e8a830"/>
+      <text x="290" y="89" font-family="Arial,sans-serif" font-size="9" fill="#7a3800" text-anchor="middle">μαξιλάρι κάτω γάμπα</text>
+      <rect x="253" y="64" width="66" height="18" rx="7" fill="#7a8fa0"/>
+      <ellipse cx="325" cy="73" rx="9" ry="7" fill="#7a8fa0"/>
+      <line x1="244" y1="56" x2="244" y2="76" stroke="#1aaa80" stroke-width="2" stroke-dasharray="4,2"/>
+      <text x="244" y="48" font-family="Arial,sans-serif" font-size="10" fill="#6a7a8a" text-anchor="middle">βαρύτητα εκτείνει γόνατο — πλήρης χαλάρωση</text>
+      <text x="244" y="106" font-family="Arial,sans-serif" font-size="9" fill="#1aaa80" text-anchor="middle">10–15 λεπτά · μηδέν προσπάθεια · 3× ημερησίως</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn snb">1</div>Μαξιλάρι ή πετσέτα κάτω από τη ΓΑΜΠΑ — όχι στο ίδιο το γόνατο</li>
+        <li><div class="sn snb">2</div>Αφήστε τη βαρύτητα να τραβήξει παθητικά το γόνατο προς πλήρη έκταση</li>
+        <li><div class="sn snb">3</div>Χαλαρώστε εντελώς — μηδενική μυϊκή προσπάθεια — 10–15 λεπτά</li>
+        <li><div class="sn snb">4</div>Στόχος: το χειρουργημένο γόνατο φτάνει στην ίδια έκταση με το άλλο πόδι</li>
+      </ol>
+      <div class="tags"><span class="tag tb">3× ημερησίως</span><span class="tag tb">10–15 λεπτά</span><span class="tag">Μηδενική προσπάθεια</span></div>
+    </div>
+  </div>
+
+  <!-- 5. Heel slides -->
+  <div class="card">
+    <div class="card-head"><div class="num nb">5</div><div><div class="card-title">Ολίσθηση φτέρνας</div><div class="card-sub">Κάμψη γόνατος · αποκατάσταση κάμψης 90°</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 155" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="hs1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <rect x="0" y="134" width="340" height="3" rx="1.5" fill="#b8c4cc"/>
+      <circle cx="32" cy="76" r="18" fill="#7a8fa0"/>
+      <rect x="50" y="64" width="115" height="24" rx="11" fill="#7a8fa0"/>
+      <rect x="165" y="64" width="68" height="24" rx="9" fill="#7a8fa0"/>
+      <ellipse cx="240" cy="76" rx="14" ry="12" fill="#e05848"/>
+      <rect x="254" y="64" width="60" height="24" rx="9" fill="none" stroke="#9ab8cc" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <ellipse cx="320" cy="76" rx="10" ry="8" fill="none" stroke="#9ab8cc" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="286" y="58" font-family="Arial,sans-serif" font-size="9" fill="#9ab8cc" text-anchor="middle">αρχή</text>
+      <polygon points="228,70 244,82 202,134 186,122" fill="#4a9fd6"/>
+      <ellipse cx="191" cy="130" rx="14" ry="8" fill="#7a8fa0"/>
+      <line x1="270" y1="134" x2="218" y2="134" stroke="#1aaa80" stroke-width="2.5" marker-end="url(#hs1)"/>
+      <text x="244" y="148" font-family="Arial,sans-serif" font-size="10" fill="#1aaa80" text-anchor="middle">σύρε φτέρνα προς γλουτούς</text>
+      <text x="268" y="56" font-family="Arial,sans-serif" font-size="10" fill="#1aaa80">target 90°</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn snb">1</div>Ξαπλώστε ανάσκελα, χειρουργημένο πόδι πλήρως εκτεταμένο</li>
+        <li><div class="sn snb">2</div>Σύρετε αργά τη φτέρνα προς τους γλουτούς — ήπιο τράβηγμα είναι φυσιολογικό</li>
+        <li><div class="sn snb">3</div>Σταματήστε αμέσως σε έντονο πόνο. Επιστρέψτε αργά</li>
+        <li><div class="sn snb">4</div>Στόχος: κάμψη 90° έως μέρα 14. Μέγ. 90° έως εβδ. 6 (μηνίσκος)</div>
+      </ol>
+      <div class="tags"><span class="tag tb">3 σειρές</span><span class="tag tb">10–15 επαν.</span><span class="tag">Στόχος: 90° έως μέρα 14</span></div>
+    </div>
+  </div>
+
+  <!-- Ice therapy -->
+  <div class="slabel">Παγοθεραπεία · κάθε 2–3 ώρες</div>
+  <div class="card">
+    <div class="ice-head"><h3>Παγοθεραπεία</h3><p>20 ημέρες συνολικά · 20 λεπτά πάγος / 40 λεπτά ανάπαυση · πάντα ανυψωμένο</p></div>
+    <div class="diag"><svg viewBox="0 0 340 90" xmlns="http://www.w3.org/2000/svg">
+      <rect x="18" y="18" width="86" height="54" rx="9" fill="#b5d4f4"/>
+      <text x="61" y="39" font-family="Arial,sans-serif" font-size="12" fill="#0a3a6e" text-anchor="middle" font-weight="700">ΠΑΓΟΣ</text>
+      <text x="61" y="60" font-family="Arial,sans-serif" font-size="21" fill="#042060" text-anchor="middle" font-weight="700">20 min</text>
+      <line x1="104" y1="45" x2="128" y2="45" stroke="#7aaad8" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <rect x="128" y="18" width="86" height="54" rx="9" fill="#eaf0f8"/>
+      <text x="171" y="39" font-family="Arial,sans-serif" font-size="12" fill="#5a6a80" text-anchor="middle" font-weight="700">ΑΝΑΠΑΥΣΗ</text>
+      <text x="171" y="60" font-family="Arial,sans-serif" font-size="21" fill="#3a4a60" text-anchor="middle" font-weight="700">40 min</text>
+      <line x1="214" y1="45" x2="238" y2="45" stroke="#7aaad8" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <rect x="238" y="18" width="86" height="54" rx="9" fill="#b5d4f4"/>
+      <text x="281" y="39" font-family="Arial,sans-serif" font-size="12" fill="#0a3a6e" text-anchor="middle" font-weight="700">ΠΑΓΟΣ</text>
+      <text x="281" y="60" font-family="Arial,sans-serif" font-size="21" fill="#042060" text-anchor="middle" font-weight="700">20 min</text>
+      <text x="334" y="52" font-family="Arial,sans-serif" font-size="26" fill="#7aaad8" text-anchor="middle">…</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn snw">!</div>Τυλίξτε πάγο σε πανί — ποτέ απευθείας στο δέρμα</li>
+        <li><div class="sn snw">!</div>Πόδι ανυψωμένο πάνω από το επίπεδο καρδιάς σε κάθε παγοθεραπεία</li>
+        <li><div class="sn snw">!</div>Συνεχίστε και τις 20 ημέρες παράλληλα με το Clexane (λήγει <span id="clexaneEnd2"></span>)</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="milestone">
+    <h3>Στόχοι Φάσης 1 — πρέπει να επιτευχθούν πριν προχωρήσετε</h3>
+    <ul>
+      <li>Πλήρης παθητική έκταση ίση με το άλλο πόδι</li>
+      <li>Κάμψη γόνατος ≥ 90° έως μέρα 14</li>
+      <li>Ανύψωση τεντωμένου ποδιού χωρίς καθυστέρηση έκτασης</li>
+      <li>Οίδημα σταθερό και διαχειρίσιμο</li>
+    </ul>
+  </div>
+
+  <div class="ibox ib-red"><b>Καλέστε χειρουργό αν:</b> Θερμοκρασία &gt;38°C · Κοκκίνισμα / εκκρίσεις πληγής · Ξαφνική αύξηση οιδήματος · Μούδιασμα ή μυρμήγκιασμα κάτω από το γόνατο · Πόνος ή σφίξιμο στη γάμπα (σημάδι θρόμβωσης)</div>
+
+</div>
+</div>
+
+<!-- ═══════════════ PHASE 2 ═══════════════ -->
+<div class="phase" id="p1">
+<div class="wrap">
+
+  <div class="phase-hero ph2-bg">
+    <h2>Φάση 2 — Πρώιμη ενδυνάμωση</h2>
+    <div class="sub">Εβδομάδες 3–6 · Έναρξη φυσικοθεραπείας · Απογαλακτισμός νάρθηκα</div>
+    <div class="goals">
+      <span class="goal">Κάμψη 120°</span><span class="goal">Πλήρης έκταση</span>
+      <span class="goal">Φυσιολογικό βάδισμα</span><span class="goal">Δύναμη τετρακέφαλου</span><span class="goal">Έναρξη ποδηλάτου</span>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div class="prog-row"><span>Συνολική αποκατάσταση</span><span>Φάση 2 από 5</span></div>
+    <div class="prog-track"><div class="prog-fill" style="width:28%;background:#1a9e78"></div></div>
+  </div>
+
+  <div class="ibox ib2"><b>Νάρθηκας:</b> Απογαλακτισμός κατά εβδομάδες 3–4 με καθοδήγηση φυσικοθεραπευτή. Πλήρης φόρτιση βάρους. Clexane λήγει μέρα 20 (<span id="clexaneEnd3"></span>). Επανέλεγχος πληγής 2 εβδομάδες μετά.</div>
+
+  <div class="ibox ib-men"><b>Μηνισκεκτομή:</b> Συνεχίστε τον περιορισμό κάμψης στις 90° έως εβδομάδα 6. Ημικαθίσματα τοίχου μέγ. 45°. Αποφύγετε βαθιά κάμψη γόνατος πέραν 90° πριν σας εγκρίνει ο φυσικοθεραπευτής.</div>
+
+  <div class="criteria">
+    <h4>Κριτήρια για πρόοδο στη Φάση 3</h4>
+    <ul>
+      <li>Κάμψη γόνατος ≥ 120° (120°, όχι 90°)</li>
+      <li>Δύναμη τετρακέφαλου &gt;60% αναίτιου ποδιού</li>
+      <li>Βάδισμα χωρίς κουτσαμάρα σε επίπεδο έδαφος</li>
+      <li>Χωρίς καθυστέρηση έκτασης στο SLR</li>
+    </ul>
+  </div>
+
+  <div class="slabel">Ημερήσια λίστα</div>
+  <div class="check-group">
+    <h4>Σημερινές ασκήσεις — τσεκάρετε κάθε συνεδρία</h4>
+    <div class="check-row" onclick="toggleCheck('c2a')" id="c2a">
+      <div class="check-box"></div>
+      <div><div class="check-label">Ημικαθίσματα τοίχου 3×10 / 45°</div><span class="check-sub">Πρωινή συνεδρία</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c2b')" id="c2b">
+      <div class="check-box"></div>
+      <div><div class="check-label">Ημικαθίσματα τοίχου 3×10 / 45°</div><span class="check-sub">Απογευματινή</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c2c')" id="c2c">
+      <div class="check-box"></div>
+      <div><div class="check-label">Άρσεις φτέρνας 3×15</div><span class="check-sub">Και τα δύο πόδια</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c2d')" id="c2d">
+      <div class="check-box"></div>
+      <div><div class="check-label">Απαγωγή ισχίου 3×12–15</div><span class="check-sub">Πλάγια θέση</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c2e')" id="c2e">
+      <div class="check-box"></div>
+      <div><div class="check-label">Διάταση ισχιοκνημιαίων 3×30 δευτ.</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c2f')" id="c2f">
+      <div class="check-box"></div>
+      <div><div class="check-label">Στατικό ποδήλατο 10–20 λεπτά</div><span class="check-sub">Εβδ. 4+</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c2g')" id="c2g">
+      <div class="check-box"></div>
+      <div><div class="check-label">Φυσιοθεραπεία σήμερα / αυτοεξάσκηση</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+  </div>
+
+  <div class="slabel">Ασκήσεις</div>
+
+  <div class="card">
+    <div class="card-photo">
+      <img src="https://images.pexels.com/photos/3768698/pexels-photo-3768698.jpeg?auto=compress&cs=tinysrgb&w=800"
+           alt="Wall squat exercise" loading="lazy"
+           onerror="this.classList.add('err');this.nextElementSibling.classList.add('show')">
+      <div class="photo-svg">
+        <svg viewBox="0 0 340 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="160" fill="#eef5f0"/>
+          <rect x="288" y="18" width="8" height="132" rx="2" fill="#b0bac4"/>
+          <circle cx="95" cy="38" r="15" fill="#7a8fa0"/>
+          <rect x="82" y="53" width="24" height="26" rx="6" fill="#7a8fa0"/>
+          <polygon points="85,79 107,79 122,116 70,116" fill="#4a9fd6"/>
+          <ellipse cx="96" cy="114" rx="22" ry="10" fill="#e05848"/>
+          <rect x="82" y="124" width="12" height="22" rx="4" fill="#7a8fa0"/>
+          <rect x="100" y="124" width="12" height="22" rx="4" fill="#7a8fa0"/>
+          <text x="95" y="29" font-family="Arial,sans-serif" font-size="10" fill="#1a9e78" text-anchor="middle">μόνο 30–45°</text>
+          <path d="M56,82 A16,16 0 0,0 54,105" stroke="#1aaa80" stroke-width="1.5" fill="none"/>
+          <text x="36" y="96" font-family="Arial,sans-serif" font-size="9" fill="#1aaa80">30–45°</text>
+        </svg>
+      </div>
+      <div class="photo-label"><h3>Ημικαθίσματα τοίχου</h3><p>Ημικαθίσματα με τοίχο · μέγ. 45° έως εβδ. 6</p></div>
+    </div>
+    <div class="attrib">Φωτο: Pexels (ελεύθερη άδεια)</div>
+    <div class="card-body pt">
+      <ol class="steps">
+        <li><div class="sn sng">1</div>Πλάτη ίσια στον τοίχο, πόδια ~30 εκ. από τον τοίχο</li>
+        <li><div class="sn sng">2</div>Κατεβείτε μόνο 30–45° — ΜΗΝ ξεπεράσετε 90° ακόμα</li>
+        <li><div class="sn sng">3</div>Κρατήστε 5–10 δευτ., επιστρέψτε. Γόνατα πάνω από δάχτυλα</li>
+      </ol>
+      <div class="tags"><span class="tag tg">3 σειρές</span><span class="tag tg">10 επαν.</span><span class="tag">Κρατήστε 5–10 δευτ.</span><span class="tag">2× ημερησίως</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="num ng">2</div><div><div class="card-title">Άρσεις φτέρνας</div><div class="card-sub">Άρση φτέρνας — ενεργοποίηση γαστροκνημίου</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 130" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="cr1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <rect x="50" y="120" width="240" height="3" rx="1.5" fill="#b0bac4"/>
+      <circle cx="120" cy="30" r="14" fill="#7a8fa0"/>
+      <rect x="108" y="44" width="22" height="36" rx="5" fill="#7a8fa0"/>
+      <rect x="112" y="80" width="10" height="40" rx="4" fill="#7a8fa0"/>
+      <rect x="124" y="80" width="10" height="40" rx="4" fill="#7a8fa0"/>
+      <rect x="108" y="120" width="14" height="8" rx="3" fill="#7a8fa0"/>
+      <rect x="124" y="120" width="14" height="8" rx="3" fill="#7a8fa0"/>
+      <text x="120" y="21" font-family="Arial,sans-serif" font-size="10" fill="#6a7a8a" text-anchor="middle">επίπεδο</text>
+      <circle cx="220" cy="24" r="14" fill="#7a8fa0"/>
+      <rect x="208" y="38" width="22" height="36" rx="5" fill="#7a8fa0"/>
+      <rect x="212" y="74" width="10" height="36" rx="4" fill="#4a9fd6"/>
+      <rect x="224" y="74" width="10" height="36" rx="4" fill="#4a9fd6"/>
+      <rect x="208" y="108" width="14" height="8" rx="3" fill="#7a8fa0"/>
+      <rect x="224" y="108" width="14" height="8" rx="3" fill="#7a8fa0"/>
+      <line x1="219" y1="116" x2="219" y2="126" stroke="#1aaa80" stroke-width="2" marker-end="url(#cr1)"/>
+      <text x="219" y="16" font-family="Arial,sans-serif" font-size="10" fill="#1a9e78" text-anchor="middle">ανυψωμένο</text>
+      <text x="170" y="102" font-family="Arial,sans-serif" font-size="10" fill="#4a9fd6" text-anchor="middle">γαστροκνήμιο ενεργό · κατέβα αργά</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn sng">1</div>Σταθείτε κρατώντας τον τοίχο για ισορροπία</li>
+        <li><div class="sn sng">2</div>Σηκωθείτε αργά στις μύτες, κρατήστε 2 δευτ. στην κορυφή</li>
+        <li><div class="sn sng">3</div>Κατεβείτε αργά — η εκκεντρική φάση χτίζει δύναμη</li>
+      </ol>
+      <div class="tags"><span class="tag tg">3 σειρές</span><span class="tag tg">15 επαν.</span><span class="tag">Και τα δύο πόδια</span><span class="tag">2× ημερησίως</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="num ng">3</div><div><div class="card-title">Απαγωγή ισχίου (πλάγια θέση)</div><div class="card-sub">Απαγωγή ισχίου · ενεργοποίηση μέσου γλουτιαίου</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 125" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="ha1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <rect x="0" y="106" width="340" height="3" rx="1.5" fill="#b8c4cc"/>
+      <circle cx="32" cy="62" r="15" fill="#7a8fa0"/>
+      <rect x="47" y="54" width="90" height="22" rx="8" fill="#7a8fa0"/>
+      <rect x="137" y="64" width="78" height="18" rx="7" fill="#7a8fa0"/>
+      <ellipse cx="220" cy="73" rx="11" ry="8" fill="#7a8fa0"/>
+      <polygon points="140,54 140,66 258,30 258,42" fill="#4a9fd6"/>
+      <ellipse cx="258" cy="36" rx="13" ry="9" fill="#e05848"/>
+      <line x1="272" y1="64" x2="272" y2="28" stroke="#1aaa80" stroke-width="2.5" marker-end="url(#ha1)"/>
+      <text x="295" y="48" font-family="Arial,sans-serif" font-size="10" fill="#1aaa80">lift 35°</text>
+      <text x="258" y="22" font-family="Arial,sans-serif" font-size="10" fill="#e05848" text-anchor="middle">χειρ. πόδι</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn sng">1</div>Ξαπλώστε στη μη χειρουργημένη πλευρά, σώμα σε ευθεία γραμμή</li>
+        <li><div class="sn sng">2</div>Κρατήστε χειρουργημένο πόδι ίσιο και σηκώστε 30–40° — χωρίς στροφή</li>
+        <li><div class="sn sng">3</div>Κρατήστε 2 δευτ., κατεβάστε αργά. Στοχεύει μέσο γλουτιαίο</li>
+      </ol>
+      <div class="tags"><span class="tag tg">3 σειρές</span><span class="tag tg">12–15 επαν.</span><span class="tag">2× ημερησίως</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-photo">
+      <img src="https://images.pexels.com/photos/8018976/pexels-photo-8018976.jpeg?auto=compress&cs=tinysrgb&w=800"
+           alt="Supine hamstring stretch" loading="lazy"
+           onerror="this.classList.add('err');this.nextElementSibling.classList.add('show')">
+      <div class="photo-svg">
+        <svg viewBox="0 0 340 135" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="135" fill="#eef5f0"/>
+          <rect x="0" y="112" width="340" height="3" rx="1.5" fill="#b8c4cc"/>
+          <circle cx="32" cy="96" r="15" fill="#7a8fa0"/>
+          <rect x="47" y="84" width="90" height="24" rx="10" fill="#7a8fa0"/>
+          <polygon points="140,84 140,96 242,30 242,42" fill="#4a9fd6"/>
+          <ellipse cx="242" cy="36" rx="13" ry="10" fill="#e05848"/>
+          <path d="M248,28 Q272,12 282,34 Q277,48 258,44" fill="none" stroke="#e8a830" stroke-width="3" stroke-linecap="round"/>
+          <text x="295" y="30" font-family="Arial,sans-serif" font-size="9" fill="#7a3800">λουράκι/πετσέτα</text>
+          <text x="132" y="70" font-family="Arial,sans-serif" font-size="10" fill="#1aaa80">70–90°</text>
+        </svg>
+      </div>
+      <div class="photo-label"><h3>Διάταση ισχιοκνημιαίων ύπτια</h3><p>Διάταση ισχιοκνημιαίων · βρόχος πετσέτας γύρω από πόδι</p></div>
+    </div>
+    <div class="attrib">Φωτο: Pexels (ελεύθερη άδεια)</div>
+    <div class="card-body pt">
+      <ol class="steps">
+        <li><div class="sn sng">1</div>Βάλτε πετσέτα γύρω από τη σόλα του χειρουργημένου ποδιού</li>
+        <li><div class="sn sng">2</div>Τραβήξτε απαλά πόδι στις 70–90°, κρατώντας το γόνατο όσο πιο ίσιο γίνεται</li>
+        <li><div class="sn sng">3</div>Κρατήστε 30 δευτ. — νιώστε το τράβηγμα στο πίσω μέρος του μηρού</li>
+      </ol>
+      <div class="tags"><span class="tag tg">3 διατάσεις</span><span class="tag tg">30 δευτ. η καθεμία</span><span class="tag">2× ημερησίως</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-photo">
+      <img src="https://images.pexels.com/photos/4162595/pexels-photo-4162595.jpeg?auto=compress&cs=tinysrgb&w=800"
+           alt="Stationary bike" loading="lazy"
+           onerror="this.classList.add('err');this.nextElementSibling.classList.add('show')">
+      <div class="photo-svg">
+        <svg viewBox="0 0 340 130" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="130" fill="#eef5f0"/>
+          <circle cx="115" cy="88" r="30" fill="none" stroke="#b0bac4" stroke-width="5"/>
+          <circle cx="225" cy="88" r="30" fill="none" stroke="#b0bac4" stroke-width="5"/>
+          <line x1="115" y1="88" x2="170" y2="52" stroke="#8a9aaa" stroke-width="4"/>
+          <line x1="170" y1="52" x2="225" y2="88" stroke="#8a9aaa" stroke-width="4"/>
+          <line x1="170" y1="52" x2="170" y2="22" stroke="#8a9aaa" stroke-width="4"/>
+          <rect x="158" y="16" width="24" height="9" rx="4" fill="#b0bac4"/>
+          <circle cx="184" cy="26" r="10" fill="#7a8fa0"/>
+          <line x1="184" y1="36" x2="184" y2="52" stroke="#7a8fa0" stroke-width="8" stroke-linecap="round"/>
+          <text x="275" y="55" font-family="Arial,sans-serif" font-size="10" fill="#1a9e78" text-anchor="middle">σέλα ΨΗΛΑ</text>
+          <text x="275" y="70" font-family="Arial,sans-serif" font-size="10" fill="#6a7a8a" text-anchor="middle">μηδενική αντίσταση</text>
+          <text x="275" y="85" font-family="Arial,sans-serif" font-size="10" fill="#6a7a8a" text-anchor="middle">μόνο χωρίς πόνο</text>
+        </svg>
+      </div>
+      <div class="photo-label"><h3>Στατικό ποδήλατο</h3><p>Ποδήλατο γυμναστικής · σέλα ψηλά · μηδενική αντίσταση · εβδ. 4+</p></div>
+    </div>
+    <div class="card-body pt">
+      <ol class="steps">
+        <li><div class="sn sng">1</div>Ανεβάστε σέλα ώστε γόνατο να μένει κοντά στην πλήρη έκταση στο κάτω σημείο</li>
+        <li><div class="sn sng">2</div>Ξεκινήστε εβδ. 4–5 · μηδενική αντίσταση · μόνο ομαλή κυκλική κίνηση</li>
+        <li><div class="sn sng">3</div>Αυξήστε από 10 → 20 λεπτά. Σταματήστε αν το οίδημα αυξηθεί μετά</li>
+      </ol>
+      <div class="tags"><span class="tag tg">Έναρξη 10 λεπτά</span><span class="tag tg">Αύξηση σε 20 λεπτά</span><span class="tag">Εβδ. 4+</span></div>
+    </div>
+  </div>
+
+  <div class="milestone">
+    <h3>Στόχοι Φάσης 2 — επιτύχετε πριν προχωρήσετε</h3>
+    <ul>
+      <li>Κάμψη γόνατος ≥ 120°</li>
+      <li>Βάδισμα σε επίπεδο έδαφος χωρίς κουτσαμάρα</li>
+      <li>Ολοκλήρωση 3×10 ημικαθισμάτων τοίχου χωρίς πόνο</li>
+      <li>Χωρίς καθυστέρηση έκτασης στην ανύψωση τεντωμένου ποδιού</li>
+      <li>Δύναμη τετρακέφαλου &gt;60% αναίτιου ποδιού</li>
+    </ul>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════ PHASE 3 ═══════════════ -->
+<div class="phase" id="p2">
+<div class="wrap">
+
+  <div class="phase-hero ph3-bg">
+    <h2>Φάση 3 — Προοδευτική επιβάρυνση</h2>
+    <div class="sub">Εβδομάδες 7–12 · Χτίσιμο δύναμης και σταθερότητας · Στόχος πλήρης κάμψη</div>
+    <div class="goals">
+      <span class="goal">Πλήρης κάμψη</span><span class="goal">Μονοποδική ισορροπία</span>
+      <span class="goal">Κανονική ανάβαση σκαλών</span><span class="goal">Κολύμβηση ελεύθερο</span><span class="goal">Τετρακέφαλος 60%+</span>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div class="prog-row"><span>Συνολική αποκατάσταση</span><span>Φάση 3 από 5</span></div>
+    <div class="prog-track"><div class="prog-fill" style="width:52%;background:#c07010"></div></div>
+  </div>
+
+  <div class="ibox ib3"><b>Χωρίς νάρθηκα</b> για καθημερινές δραστηριότητες από εβδ. 7. Φυσικοθεραπεία 2–3× εβδομαδιαίως. Χωρίς τρέξιμο ή κρούσεις ακόμα. Ο πόνος είναι απόλυτο σταμάτημα — μην τον αγνοείτε.</div>
+
+  <div class="criteria">
+    <h4>Κριτήρια για πρόοδο στη Φάση 4</h4>
+    <ul>
+      <li>Πλήρης κάμψη γόνατος ίση με αναίτιο πόδι</li>
+      <li>Δύναμη τετρακέφαλου &gt;70% αναίτιου ποδιού</li>
+      <li>Μονοποδική ισορροπία 30 δευτ. με κλειστά μάτια</li>
+      <li>Βάδισμα απεριόριστης απόστασης χωρίς κουτσαμάρα</li>
+    </ul>
+  </div>
+
+  <div class="slabel">Ημερήσια λίστα</div>
+  <div class="check-group">
+    <h4>Σημερινές ασκήσεις — τσεκάρετε κάθε συνεδρία</h4>
+    <div class="check-row" onclick="toggleCheck('c3a')" id="c3a">
+      <div class="check-box"></div>
+      <div><div class="check-label">Πλήρες κάθισμα 3×12–15</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c3b')" id="c3b">
+      <div class="check-box"></div>
+      <div><div class="check-label">Βήματα εμπρός 3×10 κάθε πόδι</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c3c')" id="c3c">
+      <div class="check-box"></div>
+      <div><div class="check-label">Μονοποδική ισορροπία 3×30 δευτ.</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c3d')" id="c3d">
+      <div class="check-box"></div>
+      <div><div class="check-label">Ανέβασμα σκαλοπατιού 3×12</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c3e')" id="c3e">
+      <div class="check-box"></div>
+      <div><div class="check-label">Γέφυρα γλουτών 3×15 — κρατήστε 2 δευτ.</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c3f')" id="c3f">
+      <div class="check-box"></div>
+      <div><div class="check-label">Φυσιοθεραπεία</div><span class="check-sub">2–3× εβδ.</span></div>
+    </div>
+  </div>
+
+  <div class="slabel">Ασκήσεις</div>
+
+  <div class="card">
+    <div class="card-photo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Squats.svg/600px-Squats.svg.png"
+           alt="Squat exercise" loading="lazy"
+           style="object-fit:contain;background:#f5f8f0;padding:10px"
+           onerror="this.classList.add('err');this.nextElementSibling.classList.add('show')">
+      <div class="photo-svg">
+        <svg viewBox="0 0 340 160" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="160" fill="#f8f2ea"/>
+          <circle cx="222" cy="40" r="14" fill="#7a8fa0"/>
+          <rect x="210" y="54" width="22" height="22" rx="5" fill="#7a8fa0"/>
+          <polygon points="212,76 232,76 252,130 192,130" fill="#4a9fd6"/>
+          <ellipse cx="222" cy="128" rx="20" ry="10" fill="#e05848"/>
+          <text x="222" y="31" font-family="Arial,sans-serif" font-size="10" fill="#c07010" text-anchor="middle">full squat · 90°+</text>
+        </svg>
+      </div>
+      <div class="photo-label"><h3>Πλήρες κάθισμα με σωματικό βάρος</h3><p>Κάθισμα πλήρες · 90° και βαθύτερα · διάγραμμα Wikimedia</p></div>
+    </div>
+    <div class="attrib">Διάγραμμα: Wikimedia Commons — Everkinetic (CC BY-SA 3.0)</div>
+    <div class="card-body pt">
+      <ol class="steps">
+        <li><div class="sn sna">1</div>Πόδια σε πλάτος ώμων, δάχτυλα ελαφρώς έξω</li>
+        <li><div class="sn sna">2</div>Κατεβείτε μέχρι μηροί παράλληλα ή βαθύτερα — στήθος ψηλά</li>
+        <li><div class="sn sna">3</div>Γόνατα πάνω από δάχτυλα — χωρίς κατάρρευση. Ωθήστε από τις φτέρνες</li>
+      </ol>
+      <div class="tags"><span class="tag ta">3 σειρές</span><span class="tag ta">12–15 επαν.</span><span class="tag">2× ημερησίως</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-photo">
+      <img src="https://images.pexels.com/photos/5262738/pexels-photo-5262738.jpeg?auto=compress&cs=tinysrgb&w=800"
+           alt="Forward lunge" loading="lazy"
+           onerror="this.classList.add('err');this.nextElementSibling.classList.add('show')">
+      <div class="photo-svg">
+        <svg viewBox="0 0 340 158" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="158" fill="#f8f2ea"/>
+          <circle cx="170" cy="30" r="14" fill="#7a8fa0"/>
+          <rect x="158" y="44" width="24" height="28" rx="6" fill="#7a8fa0"/>
+          <polygon points="162,72 182,72 212,134 192,134" fill="#4a9fd6"/>
+          <ellipse cx="202" cy="132" rx="16" ry="9" fill="#e05848"/>
+          <polygon points="158,72 178,72 145,128 125,128" fill="#7a8fa0"/>
+          <text x="202" y="80" font-family="Arial,sans-serif" font-size="10" fill="#1a5fa8">χειρ. γόνατο μπροστά</text>
+        </svg>
+      </div>
+      <div class="photo-label"><h3>Βήματα εμπρός (lunges)</h3><p>Βήμα εμπρός · χειρουργημένο πόδι μπροστά</p></div>
+    </div>
+    <div class="attrib">Φωτο: Pexels (ελεύθερη άδεια)</div>
+    <div class="card-body pt">
+      <ol class="steps">
+        <li><div class="sn sna">1</div>Κάντε βήμα εμπρός με χειρουργημένο πόδι, χαμηλώστε πίσω γόνατο προς πάτωμα</li>
+        <li><div class="sn sna">2</div>Μπροστινή κνήμη κατακόρυφη — γόνατο ΔΕΝ περνά πέρα από τα δάχτυλα</li>
+        <li><div class="sn sna">3</div>Ανέβετε ωθώντας από μπροστινή φτέρνα. Ξεκινήστε ρηχά, βαθύτερα με την πρόοδο</li>
+      </ol>
+      <div class="tags"><span class="tag ta">3 σειρές</span><span class="tag ta">10 κάθε πόδι</span><span class="tag">2× ημερησίως</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="num na">3</div><div><div class="card-title">Μονοποδική ισορροπία</div><div class="card-sub">Ισορροπία μονοποδικά · αποκατάσταση ιδιοδεκτικότητας</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 155" xmlns="http://www.w3.org/2000/svg">
+      <rect x="60" y="134" width="220" height="3" rx="1.5" fill="#b8c4cc"/>
+      <circle cx="170" cy="28" r="14" fill="#7a8fa0"/>
+      <rect x="158" y="42" width="24" height="36" rx="6" fill="#7a8fa0"/>
+      <rect x="165" y="78" width="13" height="54" rx="5" fill="#4a9fd6"/>
+      <ellipse cx="172" cy="106" rx="10" ry="8" fill="#e05848"/>
+      <rect x="162" y="132" width="20" height="10" rx="4" fill="#7a8fa0"/>
+      <polygon points="158,78 178,78 144,118 130,110" fill="#7a8fa0" opacity="0.7"/>
+      <path d="M205,82 Q228,64 215,46" stroke="#1aaa80" stroke-width="1.5" fill="none" stroke-dasharray="4,2"/>
+      <path d="M136,82 Q113,64 126,46" stroke="#1aaa80" stroke-width="1.5" fill="none" stroke-dasharray="4,2"/>
+      <text x="170" y="18" font-family="Arial,sans-serif" font-size="11" fill="#c07010" text-anchor="middle" font-weight="700">ανοιχτά μάτια → πρόοδος σε κλειστά</text>
+      <text x="252" y="110" font-family="Arial,sans-serif" font-size="11" fill="#6a7a8a">κράτα 30 δευτ.</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn sna">1</div>Σταθείτε μόνο στο χειρουργημένο πόδι — χέρι κοντά στον τοίχο για ασφάλεια</li>
+        <li><div class="sn sna">2</div>Κρατήστε 30 δευτ. με ανοιχτά μάτια, έπειτα προχωρήστε σε κλειστά μάτια</li>
+        <li><div class="sn sna">3</div>Προσθέστε αστάθεια: διπλωμένο στρώμα, μαξιλάρι ισορροπίας — καθώς βελτιώνεστε</li>
+      </ol>
+      <div class="tags"><span class="tag ta">3 κρατήματα</span><span class="tag ta">30 δευτ. κάθε</span><span class="tag">3× ημερησίως</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="num na">4</div><div><div class="card-title">Ανέβασμα σκαλοπατιού</div><div class="card-sub">Ανέβασμα σκαλοπατιού · σκαλί 15–20 εκ.</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 155" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="su1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <rect x="125" y="112" width="122" height="30" rx="4" fill="#d0dde8"/>
+      <rect x="105" y="132" width="142" height="14" rx="3" fill="#a8b8c8"/>
+      <text x="186" y="125" font-family="Arial,sans-serif" font-size="9" fill="#4a6a88" text-anchor="middle">step · 15–20 cm</text>
+      <circle cx="188" cy="40" r="14" fill="#7a8fa0"/>
+      <rect x="176" y="54" width="24" height="28" rx="6" fill="#7a8fa0"/>
+      <polygon points="181,82 201,82 208,112 190,112" fill="#4a9fd6"/>
+      <ellipse cx="198" cy="110" rx="13" ry="8" fill="#e05848"/>
+      <polygon points="177,82 197,82 172,134 152,134" fill="#7a8fa0"/>
+      <line x1="232" y1="120" x2="232" y2="68" stroke="#1aaa80" stroke-width="2.5" marker-end="url(#su1)"/>
+      <text x="252" y="96" font-family="Arial,sans-serif" font-size="10" fill="#1aaa80">drive up</text>
+      <text x="188" y="31" font-family="Arial,sans-serif" font-size="10" fill="#c07010" text-anchor="middle">ώθηση από φτέρνα χειρ. ποδιού</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn sna">1</div>Χρησιμοποιήστε σκαλί 15–20 εκ. ύψους. Τοποθετήστε χειρουργημένο πόδι πάνω</li>
+        <li><div class="sn sna">2</div>Ωθήστε από τη φτέρνα χειρουργημένου ποδιού για να ανυψωθείτε</li>
+        <li><div class="sn sna">3</div>Κατεβάστε πίσω πόδι αργά και ελεγχόμενα</li>
+        <li><div class="sn sna">4</div>Αυξήστε ύψος σκαλιού καθώς βελτιώνεται η δύναμη</li>
+      </ol>
+      <div class="tags"><span class="tag ta">3 σειρές</span><span class="tag ta">12 επαν.</span><span class="tag">2× ημερησίως</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-photo">
+      <img src="https://images.pexels.com/photos/4534632/pexels-photo-4534632.jpeg?auto=compress&cs=tinysrgb&w=800"
+           alt="Glute bridge" loading="lazy"
+           onerror="this.classList.add('err');this.nextElementSibling.classList.add('show')">
+      <div class="photo-svg">
+        <svg viewBox="0 0 340 135" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="135" fill="#f8f2ea"/>
+          <defs><marker id="gb1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+          <rect x="0" y="115" width="340" height="3" rx="1.5" fill="#b0bac4"/>
+          <circle cx="32" cy="60" r="14" fill="#7a8fa0"/>
+          <polygon points="46,54 66,54 110,75 94,83" fill="#7a8fa0"/>
+          <ellipse cx="100" cy="70" rx="16" ry="14" fill="#4a9fd6"/>
+          <polygon points="94,76 116,63 188,96 166,110" fill="#7a8fa0"/>
+          <ellipse cx="178" cy="104" rx="14" ry="9" fill="#e05848"/>
+          <line x1="100" y1="54" x2="100" y2="34" stroke="#1aaa80" stroke-width="2.5" marker-end="url(#gb1)"/>
+          <text x="100" y="27" font-family="Arial,sans-serif" font-size="10" fill="#1aaa80" text-anchor="middle">ισχία πάνω · σφίξε δυνατά γλουτούς</text>
+        </svg>
+      </div>
+      <div class="photo-label"><h3>Γέφυρα γλουτών</h3><p>Γέφυρα γλουτών · κρατήστε 2 δευτ. στην κορυφή</p></div>
+    </div>
+    <div class="attrib">Φωτο: Pexels (ελεύθερη άδεια)</div>
+    <div class="card-body pt">
+      <ol class="steps">
+        <li><div class="sn sna">1</div>Ξαπλώστε ανάσκελα, γόνατα λυγισμένα ~90°, πόδια ίσια σε πλάτος ισχίων</li>
+        <li><div class="sn sna">2</div>Ανυψώστε ισχία — σφίξτε δυνατά γλουτούς στην κορυφή</li>
+        <li><div class="sn sna">3</div>Ευθεία γραμμή από ώμους έως γόνατα — κρατήστε 2 δευτ.</li>
+        <li><div class="sn sna">4</div>Κατεβάστε αργά χωρίς να αγγίξετε ισχία στο στρώμα μεταξύ επαναλήψεων</li>
+      </ol>
+      <div class="tags"><span class="tag ta">3 σειρές</span><span class="tag ta">15 επαν.</span><span class="tag">Κρατήστε 2 δευτ.</span></div>
+    </div>
+  </div>
+
+  <div class="milestone">
+    <h3>Στόχοι Φάσης 3 — επιτύχετε πριν προχωρήσετε</h3>
+    <ul>
+      <li>Πλήρης κάμψη γόνατος ίση με το άλλο πόδι</li>
+      <li>Μονοποδική ισορροπία 30 δευτ. με κλειστά μάτια</li>
+      <li>15 ανεβάσεις σκαλοπατιού χωρίς πόνο</li>
+      <li>Βάδισμα απεριόριστης απόστασης χωρίς κουτσαμάρα</li>
+      <li>Δύναμη τετρακέφαλου &gt;70% — επιβεβαιωμένο από φυσικοθεραπευτή</li>
+    </ul>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════ PHASE 4 ═══════════════ -->
+<div class="phase" id="p3">
+<div class="wrap">
+
+  <div class="phase-hero ph4-bg">
+    <h2>Φάση 4 — Δυναμική προπόνηση</h2>
+    <div class="sub">Μήνες 4–6 · Δύναμη · Ταχύτητα · Ευκινησία</div>
+    <div class="goals">
+      <span class="goal">Ελεύθερο τρέξιμο</span><span class="goal">Πλάγια ευκινησία</span>
+      <span class="goal">Προπόνηση άλματος</span><span class="goal">Αλλαγές κατεύθυνσης</span><span class="goal">Προετοιμασία αθλήματος</span>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div class="prog-row"><span>Συνολική αποκατάσταση</span><span>Φάση 4 από 5</span></div>
+    <div class="prog-track"><div class="prog-fill" style="width:74%;background:#d4507e"></div></div>
+  </div>
+
+  <div class="ibox" style="background:#fce8f0;border:1px solid #f0a0c0;color:#6a0830"><b>Σημαντικό:</b> Το τρέξιμο ξεκινά ΜΟΝΟ όταν η δύναμη τετρακέφαλου φτάσει ≥ 70% του άλλου ποδιού (επιβεβαιωμένο από φυσιοθεραπευτή). Κάθε μήνας καθυστέρησης επιστροφής στο άθλημα μειώνει τον κίνδυνο επαναφοράς κατά 51%. Άλματα εισάγονται από τον μήνα 5 μόνο.</div>
+
+  <div class="criteria">
+    <h4>Κριτήρια για πρόοδο στη Φάση 5</h4>
+    <ul>
+      <li>Συνεχές τρέξιμο 30 λεπτά σε επίπεδο, χωρίς οίδημα εντός 24ώρου</li>
+      <li>Προσγείωση μονοποδικού άλματος σταθερή και σίγουρη</li>
+      <li>Αλλαγές κατεύθυνσης στο 75% ταχύτητας, εντελώς ανώδυνες</li>
+      <li>Δύναμη τετρακέφαλου ≥ 80% άλλου ποδιού</li>
+    </ul>
+  </div>
+
+  <div class="slabel">Ημερήσια λίστα</div>
+  <div class="check-group">
+    <h4>Σημερινές ασκήσεις — τσεκάρετε κάθε συνεδρία</h4>
+    <div class="check-row" onclick="toggleCheck('c4a')" id="c4a">
+      <div class="check-box"></div>
+      <div><div class="check-label">Πρόγραμμα τρεξίματος — βάδισμα/τρέξιμο</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c4b')" id="c4b">
+      <div class="check-box"></div>
+      <div><div class="check-label">Πλάγια βήματα λάστιχου 3×10 κάθε πλευρά</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c4c')" id="c4c">
+      <div class="check-box"></div>
+      <div><div class="check-label">Ισορροπία αστεριού 3 γύροι × 8 κατευθύνσεις</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c4d')" id="c4d">
+      <div class="check-box"></div>
+      <div><div class="check-label">Κατακόρυφα άλματα 3×10</div><span class="check-sub">Μήνας 5+</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c4e')" id="c4e">
+      <div class="check-box"></div>
+      <div><div class="check-label">Αλλαγές κατεύθυνσης 6 διαδρομές — 50% ταχύτητα</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c4f')" id="c4f">
+      <div class="check-box"></div>
+      <div><div class="check-label">Έλεγχος οιδήματος 24 ώρες μετά τρέξιμο</div><span class="check-sub">Αξιολόγηση επόμενη μέρα</span></div>
+    </div>
+  </div>
+
+  <div class="slabel">Ασκήσεις</div>
+
+  <div class="card">
+    <div class="card-photo">
+      <img src="https://images.pexels.com/photos/8454941/pexels-photo-8454941.jpeg?auto=compress&cs=tinysrgb&w=800"
+           alt="Jogging program" loading="lazy"
+           onerror="this.classList.add('err');this.nextElementSibling.classList.add('show')">
+      <div class="photo-svg">
+        <svg viewBox="0 0 340 130" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="130" fill="#fce8f0"/>
+          <rect x="18" y="60" width="60" height="32" rx="7" fill="#fce8f0" stroke="#f0a0c0" stroke-width="1"/>
+          <text x="48" y="74" font-family="Arial,sans-serif" font-size="11" fill="#8a2052" text-anchor="middle" font-weight="700">Βάδιση</text>
+          <text x="48" y="86" font-family="Arial,sans-serif" font-size="10" fill="#8a2052" text-anchor="middle">2 λεπτά</text>
+          <rect x="88" y="60" width="60" height="32" rx="7" fill="#d4507e"/>
+          <text x="118" y="74" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">Τρέξιμο</text>
+          <text x="118" y="86" font-family="Arial,sans-serif" font-size="10" fill="#fce8f0" text-anchor="middle">1 λεπτό</text>
+          <rect x="158" y="60" width="60" height="32" rx="7" fill="#fce8f0" stroke="#f0a0c0" stroke-width="1"/>
+          <text x="188" y="74" font-family="Arial,sans-serif" font-size="11" fill="#8a2052" text-anchor="middle" font-weight="700">Βάδιση</text>
+          <text x="188" y="86" font-family="Arial,sans-serif" font-size="10" fill="#8a2052" text-anchor="middle">2 λεπτά</text>
+          <rect x="228" y="60" width="60" height="32" rx="7" fill="#d4507e"/>
+          <text x="258" y="74" font-family="Arial,sans-serif" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">Τρέξιμο</text>
+          <text x="258" y="86" font-family="Arial,sans-serif" font-size="10" fill="#fce8f0" text-anchor="middle">1 λεπτό</text>
+          <text x="318" y="82" font-family="Arial,sans-serif" font-size="26" fill="#d4507e" text-anchor="middle">…</text>
+          <text x="170" y="48" font-family="Arial,sans-serif" font-size="11" fill="#8a2052" text-anchor="middle" font-weight="700">Εναλλαγές βάδισης/τρεξίματος · επίπεδο έδαφος · μήνας 4</text>
+          <text x="170" y="110" font-family="Arial,sans-serif" font-size="10" fill="#6a7a8a" text-anchor="middle">αύξηση εβδομαδιαίως · στόχος συνεχόμενα 30 λεπτά</text>
+        </svg>
+      </div>
+      <div class="photo-label"><h3>Πρόγραμμα τρεξίματος</h3><p>Πρόγραμμα τρεξίματος · μόνο επίπεδο έδαφος · μήνας 4+</p></div>
+    </div>
+    <div class="attrib">Φωτο: Pexels (ελεύθερη άδεια)</div>
+    <div class="card-body pt">
+      <ol class="steps">
+        <li><div class="sn snc">1</div>Μόνο επίπεδο έδαφος — χωρίς ανηφόρες, μονοπάτια ή ανώμαλο έδαφος στην αρχή</li>
+        <li><div class="sn snc">2</div>Εβδ. 1: εναλλαγή 2 λεπτά βάδισμα / 1 λεπτό τρέξιμο για 20 λεπτά συνολικά</li>
+        <li><div class="sn snc">3</div>Κάθε εβδομάδα αυξάνετε τα διαστήματα τρεξίματος, μειώνετε το βάδισμα</li>
+        <li><div class="sn snc">4</div>Ανάπαυση 24 ώρες αν εμφανιστεί οίδημα μετά από οποιαδήποτε συνεδρία</li>
+      </ol>
+      <div class="tags"><span class="tag tc">Έναρξη 20 λεπτά</span><span class="tag tc">Αύξηση σε 30 λεπτά</span><span class="tag">Μόνο επίπεδο</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-photo">
+      <img src="https://images.pexels.com/photos/6339645/pexels-photo-6339645.jpeg?auto=compress&cs=tinysrgb&w=800"
+           alt="Lateral band walks" loading="lazy"
+           onerror="this.classList.add('err');this.nextElementSibling.classList.add('show')">
+      <div class="photo-svg">
+        <svg viewBox="0 0 340 135" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="135" fill="#fce8f0"/>
+          <defs><marker id="lw1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+          <rect x="0" y="118" width="340" height="3" rx="1.5" fill="#b0bac4"/>
+          <circle cx="170" cy="30" r="14" fill="#7a8fa0"/>
+          <rect x="158" y="44" width="24" height="26" rx="6" fill="#7a8fa0"/>
+          <polygon points="160,70 180,70 200,102 140,102" fill="#4a9fd6"/>
+          <ellipse cx="170" cy="100" rx="22" ry="10" fill="#e05848"/>
+          <rect x="138" y="110" width="12" height="22" rx="4" fill="#7a8fa0"/>
+          <rect x="190" y="110" width="12" height="22" rx="4" fill="#7a8fa0"/>
+          <path d="M150,122 Q170,130 200,120" fill="none" stroke="#e8a830" stroke-width="3.5" stroke-linecap="round"/>
+          <text x="170" y="112" font-family="Arial,sans-serif" font-size="9" fill="#7a3800" text-anchor="middle">λάστιχο αντίστασης</text>
+          <line x1="68" y1="70" x2="35" y2="70" stroke="#1aaa80" stroke-width="2.5" marker-end="url(#lw1)"/>
+          <line x1="272" y1="70" x2="305" y2="70" stroke="#1aaa80" stroke-width="2.5" marker-end="url(#lw1)"/>
+        </svg>
+      </div>
+      <div class="photo-label"><h3>Πλάγια βήματα με λάστιχο</h3><p>Πλαϊνά βήματα με λάστιχο — γλουτοί + σταθερότητα ισχίου</p></div>
+    </div>
+    <div class="attrib">Φωτο: Pexels (ελεύθερη άδεια)</div>
+    <div class="card-body pt">
+      <ol class="steps">
+        <li><div class="sn snc">1</div>Λάστιχο γύρω από αστραγάλους, θέση τεταρτοκαθίσματος σε όλη την άσκηση</li>
+        <li><div class="sn snc">2</div>Αργά, ελεγχόμενα πλάγια βήματα — συνεχής τάση λάστιχου</li>
+        <li><div class="sn snc">3</div>10 βήματα δεξιά, 10 αριστερά = 1 σειρά. Γόνατα ποτέ μέσα</li>
+      </ol>
+      <div class="tags"><span class="tag tc">3 σειρές</span><span class="tag tc">10 βήματα κάθε πλευρά</span><span class="tag">Καθημερινά</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="num nc">3</div><div><div class="card-title">Ισορροπία αστεριού</div><div class="card-sub">Ισορροπία με αστέρι · νευρομυϊκός έλεγχος</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 165" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="se1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <line x1="170" y1="82" x2="170" y2="18" stroke="#d4507e" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#se1)"/>
+      <line x1="170" y1="82" x2="218" y2="38" stroke="#d4507e" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#se1)"/>
+      <line x1="170" y1="82" x2="245" y2="58" stroke="#d4507e" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#se1)"/>
+      <line x1="170" y1="82" x2="282" y2="82" stroke="#d4507e" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#se1)"/>
+      <line x1="170" y1="82" x2="245" y2="132" stroke="#d4507e" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#se1)"/>
+      <line x1="170" y1="82" x2="170" y2="152" stroke="#d4507e" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#se1)"/>
+      <line x1="170" y1="82" x2="98" y2="132" stroke="#d4507e" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#se1)"/>
+      <line x1="170" y1="82" x2="58" y2="82" stroke="#d4507e" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#se1)"/>
+      <circle cx="170" cy="68" r="10" fill="#7a8fa0"/>
+      <line x1="170" y1="78" x2="170" y2="118" stroke="#4a9fd6" stroke-width="6" stroke-linecap="round"/>
+      <ellipse cx="170" cy="102" rx="8" ry="6" fill="#e05848"/>
+      <text x="170" y="158" font-family="Arial,sans-serif" font-size="10" fill="#8a2052" text-anchor="middle">φτάξε 8 κατευθύνσεις · μέτρα απόσταση · σύγκρινε πόδια</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn snc">1</div>Σταθείτε στο χειρουργημένο πόδι στο κέντρο, το ελεύθερο πόδι φτάνει σε 8 κατευθύνσεις</li>
+        <li><div class="sn snc">2</div>Αγγίξτε απαλά το πάτωμα, επιστρέψτε χωρίς να χάσετε ισορροπία</li>
+        <li><div class="sn snc">3</div>Συγκρίνετε αποστάσεις με το άλλο πόδι — στόχος συμμετρία</li>
+      </ol>
+      <div class="tags"><span class="tag tc">3 γύροι</span><span class="tag tc">8 κατευθύνσεις</span><span class="tag">3× εβδομαδιαίως</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-photo">
+      <img src="https://images.pexels.com/photos/7688862/pexels-photo-7688862.jpeg?auto=compress&cs=tinysrgb&w=800"
+           alt="Vertical jumps plyometrics" loading="lazy"
+           onerror="this.classList.add('err');this.nextElementSibling.classList.add('show')">
+      <div class="photo-svg">
+        <svg viewBox="0 0 340 152" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="152" fill="#fce8f0"/>
+          <defs><marker id="vj1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+          <circle cx="128" cy="68" r="12" fill="#7a8fa0"/>
+          <rect x="118" y="80" width="20" height="24" rx="5" fill="#7a8fa0"/>
+          <polygon points="120,104 138,104 148,132 110,132" fill="#4a9fd6"/>
+          <ellipse cx="128" cy="130" rx="20" ry="8" fill="#e05848"/>
+          <circle cx="212" cy="26" r="12" fill="#7a8fa0"/>
+          <rect x="202" y="38" width="20" height="22" rx="5" fill="#7a8fa0"/>
+          <path d="M128,98 Q170,18 212,56" stroke="#1aaa80" stroke-width="2.5" fill="none" stroke-dasharray="5,3" marker-end="url(#vj1)"/>
+          <text x="170" y="14" font-family="Arial,sans-serif" font-size="10" fill="#1aaa80" text-anchor="middle">απαλή προσγείωση · απόσβεση με βαθύ κάμψιμο</text>
+          <text x="258" y="80" font-family="Arial,sans-serif" font-size="10" fill="#8a2052">μήνας 5+</text>
+        </svg>
+      </div>
+      <div class="photo-label"><h3>Κατακόρυφα άλματα · πλειομετρική</h3><p>Κατακόρυφα άλματα · πρώτα διποδικά · μόνο μήνας 5</p></div>
+    </div>
+    <div class="attrib">Φωτο: Pexels (ελεύθερη άδεια)</div>
+    <div class="card-body pt">
+      <ol class="steps">
+        <li><div class="sn snc">1</div>Μόνο μήνας 5 — ξεκινήστε με διποδικά άλματα πριν τα μονοποδικά</li>
+        <li><div class="sn snc">2</div>Πηδήξτε και εστιάστε εντελώς στην ΑΠΑΛΗ προσγείωση — λυγίστε βαθιά τα γόνατα</li>
+        <li><div class="sn snc">3</div>Προσγειωθείτε αθόρυβα — δυνατό χτύπημα = περισσότερη απόσβεση. Αθόρυβο = ασφαλές</li>
+        <li><div class="sn snc">4</div>Προχωρήστε σε μονοποδικό άλμα όταν τα διποδικά είναι πλήρως ανώδυνα</li>
+      </ol>
+      <div class="tags"><span class="tag tc">3 σειρές</span><span class="tag tc">10 επαν.</span><span class="tag">Μήνας 5+</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="num nc">5</div><div><div class="card-title">Αλλαγές κατεύθυνσης</div><div class="card-sub">Αλλαγές κατεύθυνσης — ασκήσεις ευκινησίας με κώνους</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 132" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="dc1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <polygon points="46,108 54,90 38,90" fill="#e8a830"/>
+      <polygon points="132,38 140,20 124,20" fill="#e8a830"/>
+      <polygon points="210,102 218,84 202,84" fill="#e8a830"/>
+      <polygon points="294,28 302,10 286,10" fill="#e8a830"/>
+      <path d="M48,100 L134,30 L212,94 L296,20" stroke="#d4507e" stroke-width="2.5" fill="none" stroke-dasharray="6,3" marker-end="url(#dc1)"/>
+      <text x="170" y="76" font-family="Arial,sans-serif" font-size="11" fill="#6a7a8a" text-anchor="middle">50% ταχύτητα πρώτα → αύξηση σταδιακά</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn snc">1</div>4 κώνοι σε ζιγκ-ζαγκ. Ξεκινήστε στο 50% της μέγιστης ταχύτητας</li>
+        <li><div class="sn snc">2</div>Ελεγχόμενη φύτευση-κοπή — λυγίστε γόνατο σε κάθε φύτευση</li>
+        <li><div class="sn snc">3</div>Αυξήστε ταχύτητα μόνο όταν η τεχνική είναι τέλεια και ανώδυνη</li>
+      </ol>
+      <div class="tags"><span class="tag tc">6 διαδρομές</span><span class="tag tc">60 δευτ. ανάπαυση</span><span class="tag">3× εβδομαδιαίως</span></div>
+    </div>
+  </div>
+
+  <div class="milestone">
+    <h3>Στόχοι Φάσης 4 — επιτύχετε πριν προχωρήσετε</h3>
+    <ul>
+      <li>Συνεχές τρέξιμο 30 λεπτών — χωρίς οίδημα εντός 24 ωρών</li>
+      <li>Προσγείωση μονοποδικού άλματος σταθερή και με πλήρη αυτοπεποίθηση</li>
+      <li>Αλλαγές κατεύθυνσης στο 75% ταχύτητας, εντελώς ανώδυνες</li>
+      <li>Δύναμη τετρακέφαλου ≥ 80% άλλου ποδιού</li>
+    </ul>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════ PHASE 5 ═══════════════ -->
+<div class="phase" id="p4">
+<div class="wrap">
+
+  <div class="phase-hero ph5-bg">
+    <h2>Φάση 5 — Επιστροφή στο άθλημα</h2>
+    <div class="sub">Μήνες 6–9 · Έλεγχοι αποδέσμευσης + πλήρης δραστηριότητα</div>
+    <div class="goals">
+      <span class="goal">Τετρακέφαλος ≥ 90% συμμετρία</span><span class="goal">Τεστ άλματος ≥ 90%</span>
+      <span class="goal">Πλήρης επιστροφή</span><span class="goal">Ψυχολογική ετοιμότητα</span>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div class="prog-row"><span>Συνολική αποκατάσταση</span><span>Φάση 5 από 5</span></div>
+    <div class="prog-track"><div class="prog-fill" style="width:90%;background:#6a62cc"></div></div>
+  </div>
+
+  <div class="ibox ib4"><b>Η επιστροφή στο πλήρες άθλημα απαιτεί επιτυχία σε ΟΛΟΥΣ τους ελέγχους αποδέσμευσης.</b> Μην επιστρέψετε βάσει χρόνου μόνο — η ωρίμανση μοσχεύματος συνεχίζεται έως 2 χρόνια. Αθλητές που επιστρέφουν πριν 9 μήνες έχουν 39% ποσοστό επαναφοράς έναντι 19% μετά τους 9 μήνες.</div>
+
+  <div class="slabel">Ημερήσια λίστα</div>
+  <div class="check-group">
+    <h4>Σημερινές ασκήσεις — τσεκάρετε κάθε συνεδρία</h4>
+    <div class="check-row" onclick="toggleCheck('c5a')" id="c5a">
+      <div class="check-box"></div>
+      <div><div class="check-label">Τρέξιμο 30 λεπτών χωρίς διαλείμματα</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c5b')" id="c5b">
+      <div class="check-box"></div>
+      <div><div class="check-label">Αθλητική προπόνηση χωρίς επαφή</div><span class="check-sub">Ολοκληρώθηκε σήμερα</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c5c')" id="c5c">
+      <div class="check-box"></div>
+      <div><div class="check-label">Ισοκινητικός έλεγχος ≥ 90% συμμετρία</div><span class="check-sub">Σε κλινική</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c5d')" id="c5d">
+      <div class="check-box"></div>
+      <div><div class="check-label">Τεστ άλματος ≥ 90% (και τα 4)</div><span class="check-sub">Σε κλινική</span></div>
+    </div>
+    <div class="check-row" onclick="toggleCheck('c5e')" id="c5e">
+      <div class="check-box"></div>
+      <div><div class="check-label">ACL-RSI ≥ 65/100</div><span class="check-sub">Ψυχολογική ετοιμότητα</span></div>
+    </div>
+  </div>
+
+  <div class="slabel">Έλεγχοι αποδέσμευσης — πρέπει να περάσουν ΟΛΟΙ</div>
+
+  <div class="card">
+    <div class="card-head"><div class="num np">1</div><div><div class="card-title">Ισοκινητικός έλεγχος δύναμης</div><div class="card-sub">Ισοκινητικός έλεγχος — σε φυσιοθεραπευτή ή αθλητιατρείο</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 126" xmlns="http://www.w3.org/2000/svg">
+      <text x="60" y="18" font-family="Arial,sans-serif" font-size="11" fill="#6a7a8a" text-anchor="middle">Άλλο πόδι</text>
+      <text x="168" y="18" font-family="Arial,sans-serif" font-size="11" fill="#6a7a8a" text-anchor="middle">Χειρ. πόδι</text>
+      <text x="278" y="18" font-family="Arial,sans-serif" font-size="10" fill="#320880" text-anchor="middle">Στόχος ≥ 90%</text>
+      <rect x="22" y="28" width="76" height="76" rx="5" fill="#9fe0c8"/>
+      <text x="60" y="72" font-family="Arial,sans-serif" font-size="24" fill="#064032" text-anchor="middle" font-weight="700">100%</text>
+      <rect x="130" y="43" width="76" height="61" rx="5" fill="#afa9ec"/>
+      <rect x="130" y="28" width="76" height="15" rx="5" fill="none" stroke="#afa9ec" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="168" y="78" font-family="Arial,sans-serif" font-size="22" fill="#320880" text-anchor="middle" font-weight="700">80%</text>
+      <line x1="115" y1="48" x2="315" y2="48" stroke="#6a62cc" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="320" y="52" font-family="Arial,sans-serif" font-size="10" fill="#6a62cc">90%</text>
+      <text x="168" y="116" font-family="Arial,sans-serif" font-size="10" fill="#8a2052" text-anchor="middle">πρέπει να φτάσει τη γραμμή 90% πριν την επιστροφή</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn snp">1</div>Εξέταση σε ισοκινητικό δυναμόμετρο σε φυσιοθεραπευτή ή αθλητιατρείο</li>
+        <li><div class="sn snp">2</div>Μετράει μέγιστη ροπή τετρακέφαλου/ισχιοκνημιαίων στις 60°/δευτ. και 180°/δευτ.</li>
+        <li><div class="sn snp">3</div>Επιτυχία: χειρουργημένο πόδι ≥ 90% άλλου ποδιού ΚΑΙ στις δύο μυϊκές ομάδες</li>
+        <li><div class="sn snp">4</div>Αναλογία ισχιοκνημιαίων:τετρακέφαλου (H:Q) επίσης ≥ 0.6</li>
+      </ol>
+      <div class="tags"><span class="tag tp">Επιτυχία: ≥ 90% συμμετρία</span><span class="tag">Σε κλινική</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="num np">2</div><div><div class="card-title">Σειρά τεστ μονοποδικού άλματος</div><div class="card-sub">Μονοποδικά άλματα · πρωτόκολλο 4 τεστ</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 135" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="hop1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <line x1="48" y1="105" x2="48" y2="38" stroke="#8a9aaa" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="48" y="116" font-family="Arial,sans-serif" font-size="9" fill="#8a9aaa" text-anchor="middle">αρχή</text>
+      <path d="M48,94 Q118,12 200,94" stroke="#6a62cc" stroke-width="3" fill="none" marker-end="url(#hop1)"/>
+      <line x1="48" y1="112" x2="200" y2="112" stroke="#320880" stroke-width="1.5" marker-end="url(#hop1)"/>
+      <text x="124" y="126" font-family="Arial,sans-serif" font-size="10" fill="#320880" text-anchor="middle">απόσταση άλματος (μέτρηση σε εκ.)</text>
+      <text x="268" y="92" font-family="Arial,sans-serif" font-size="12" fill="#320880" font-weight="700">≥ 90%</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn snp">1</div><b>Μονό άλμα για απόσταση</b> — πηδήξτε όσο πιο μακριά γίνεται, σταθερή προσγείωση</li>
+        <li><div class="sn snp">2</div><b>Τριπλό άλμα</b> — 3 συνεχόμενα άλματα για μέγιστη συνολική απόσταση</li>
+        <li><div class="sn snp">3</div><b>Χρονομετρημένο άλμα 6 μέτρων</b> — τρέξιμο 6 μ. σε ένα πόδι, σύγκριση χρόνων</li>
+        <li><div class="sn snp">4</div><b>Τριπλό άλμα διασταύρωσης</b> — 3 άλματα διασταυρώνοντας γραμμή για απόσταση</li>
+      </ol>
+      <div class="tags"><span class="tag tp">Επιτυχία: ≥ 90% έναντι άλλου ποδιού</span><span class="tag">Και τα 4 τεστ</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="num np">3</div><div><div class="card-title">Ψυχολογική ετοιμότητα</div><div class="card-sub">Ερωτηματολόγιο ACL-RSI · ≥ 65/100 για επιτυχία</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 102" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="22" width="88" height="58" rx="9" fill="#f0e8ff"/>
+      <text x="64" y="46" font-family="Arial,sans-serif" font-size="12" fill="#320880" text-anchor="middle" font-weight="700">Συναισθήματα</text>
+      <text x="64" y="62" font-family="Arial,sans-serif" font-size="9" fill="#534ab7" text-anchor="middle">φόβος επαναφοράς</text>
+      <text x="64" y="74" font-family="Arial,sans-serif" font-size="9" fill="#534ab7" text-anchor="middle">αυτοπεποίθηση</text>
+      <rect x="126" y="22" width="88" height="58" rx="9" fill="#f0e8ff"/>
+      <text x="170" y="46" font-family="Arial,sans-serif" font-size="12" fill="#320880" text-anchor="middle" font-weight="700">Εμπιστοσύνη</text>
+      <text x="170" y="62" font-family="Arial,sans-serif" font-size="9" fill="#534ab7" text-anchor="middle">εμπιστοσύνη γόνατο</text>
+      <text x="170" y="74" font-family="Arial,sans-serif" font-size="9" fill="#534ab7" text-anchor="middle">καθημ. λειτουργία</text>
+      <rect x="232" y="22" width="88" height="58" rx="9" fill="#f0e8ff"/>
+      <text x="276" y="46" font-family="Arial,sans-serif" font-size="12" fill="#320880" text-anchor="middle" font-weight="700">Κίνδυνος</text>
+      <text x="276" y="62" font-family="Arial,sans-serif" font-size="9" fill="#534ab7" text-anchor="middle">ανησυχία επαναφοράς</text>
+      <text x="276" y="74" font-family="Arial,sans-serif" font-size="9" fill="#534ab7" text-anchor="middle">ετοιμότητα αθλήματος</text>
+      <text x="170" y="14" font-family="Arial,sans-serif" font-size="10" fill="#534ab7" text-anchor="middle" font-weight="700">Επιτυχία: ≥ 65 / 100 στην κλίμακα ACL-RSI</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn snp">1</div>Συμπληρώστε το ερωτηματολόγιο ACL-RSI (Επιστροφή στο Άθλημα μετά Τραυματισμό)</li>
+        <li><div class="sn snp">2</div>Αξιολογεί φόβο επαναφοράς, εμπιστοσύνη στο γόνατο και ανοχή ρίσκου</li>
+        <li><div class="sn snp">3</div>Βαθμολογία ≥ 65/100 είναι το τυπικό κατώφλι επιτυχίας</li>
+        <li><div class="sn snp">4</div>Η ψυχολογική ετοιμότητα μετράει εξίσου με τη σωματική — μην βιαστείτε</li>
+      </ol>
+      <div class="tags"><span class="tag tp">Επιτυχία: ≥ 65/100</span><span class="tag">Κλίμακα ACL-RSI</span></div>
+    </div>
+  </div>
+
+  <div class="slabel">Επιστροφή στο άθλημα — 4 στάδια</div>
+  <div class="card">
+    <div class="card-head"><div class="num np">4</div><div><div class="card-title">Βαθμιαία επιστροφή στο άθλημα</div><div class="card-sub">Βαθμιαία επιστροφή · 2–4 εβδομάδες ανά στάδιο</div></div></div>
+    <div class="diag"><svg viewBox="0 0 340 98" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="rs1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <rect x="8" y="30" width="68" height="46" rx="7" fill="#f0e8ff" stroke="#c0aaf0" stroke-width="1"/>
+      <text x="42" y="50" font-family="Arial,sans-serif" font-size="9" fill="#320880" text-anchor="middle" font-weight="700">Ατομική</text>
+      <text x="42" y="64" font-family="Arial,sans-serif" font-size="9" fill="#534ab7" text-anchor="middle">προπόνηση</text>
+      <line x1="76" y1="53" x2="92" y2="53" stroke="#6a62cc" stroke-width="1.5" marker-end="url(#rs1)"/>
+      <rect x="92" y="30" width="68" height="46" rx="7" fill="#d8d0f8" stroke="#afa9ec" stroke-width="1"/>
+      <text x="126" y="50" font-family="Arial,sans-serif" font-size="9" fill="#26215c" text-anchor="middle" font-weight="700">Χωρίς επαφή</text>
+      <text x="126" y="64" font-family="Arial,sans-serif" font-size="9" fill="#3c3489" text-anchor="middle">ασκήσεις</text>
+      <line x1="160" y1="53" x2="176" y2="53" stroke="#6a62cc" stroke-width="1.5" marker-end="url(#rs1)"/>
+      <rect x="176" y="30" width="68" height="46" rx="7" fill="#afa9ec" stroke="#7f77dd" stroke-width="1"/>
+      <text x="210" y="50" font-family="Arial,sans-serif" font-size="9" fill="#26215c" text-anchor="middle" font-weight="700">Ομαδική</text>
+      <text x="210" y="64" font-family="Arial,sans-serif" font-size="9" fill="#26215c" text-anchor="middle">προπόνηση</text>
+      <line x1="244" y1="53" x2="260" y2="53" stroke="#6a62cc" stroke-width="1.5" marker-end="url(#rs1)"/>
+      <rect x="260" y="30" width="72" height="46" rx="7" fill="#6a62cc"/>
+      <text x="296" y="50" font-family="Arial,sans-serif" font-size="9" fill="#fff" text-anchor="middle" font-weight="700">Πλήρης επαφή</text>
+      <text x="296" y="64" font-family="Arial,sans-serif" font-size="9" fill="#d8d0f8" text-anchor="middle">αγώνας</text>
+      <text x="170" y="20" font-family="Arial,sans-serif" font-size="10" fill="#6a62cc" text-anchor="middle" font-weight="700">2–4 εβδομάδες σε κάθε στάδιο · χωρίς παράλειψη</text>
+      <text x="170" y="88" font-family="Arial,sans-serif" font-size="10" fill="#6a7a8a" text-anchor="middle">οποιοσδήποτε πόνος ή οίδημα = ένα στάδιο πίσω</text>
+    </svg></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><div class="sn snp">1</div>Ατομική προπόνηση → μη επαφή → πλήρης ομαδική προπόνηση → αγώνας</li>
+        <li><div class="sn snp">2</div>2–4 εβδομάδες σε κάθε στάδιο — μην παραλείπετε</li>
+        <li><div class="sn snp">3</div>Οποιοσδήποτε πόνος, οίδημα ή ανησυχία = ένα στάδιο πίσω</li>
+        <li><div class="sn snp">4</div>Το μόσχευμα ωριμάζει έως 24 μήνες — η υπομονή αποτρέπει επαναφορά</li>
+      </ol>
+      <div class="tags"><span class="tag tp">Μήνας 6–9</span><span class="tag tp">4 στάδια</span><span class="tag">Χωρίς βιασύνη</span></div>
+    </div>
+  </div>
+
+  <div class="milestone" style="border-color:#afa9ec">
+    <h3>Πλήρης λίστα αποδέσμευσης — όλα απαιτούνται</h3>
+    <ul>
+      <li>Ισοκινητική δύναμη τετρακέφαλου ≥ 90% συμμετρία</li>
+      <li>Και τα 4 τεστ μονοποδικού άλματος ≥ 90% άλλου ποδιού</li>
+      <li>Ψυχολογική βαθμολογία ACL-RSI ≥ 65/100</li>
+      <li>Πλήρης εύρος κίνησης ίσο και στις δύο πλευρές</li>
+      <li>Χωρίς οίδημα μετά από προπόνηση αθλητικής έντασης</li>
+      <li>Αποδέσμευση από ραντεβού παρακολούθησης χειρουργού</li>
+    </ul>
+  </div>
+
+  <div class="ibox ib-warn"><b>Κίνδυνος επαναφοράς:</b> Υψηλότερος στα πρώτα 2 χρόνια. Προφυλακτικός νάρθηκας γόνατος κατά τα αθλήματα επαφής την πρώτη σεζόν μειώνει αυτόν τον κίνδυνο. Συζητήστε με τον Δρ. Σακελλαρίου στο επόμενο ραντεβού σας.</div>
+
+</div>
+</div>
+
+</div><!-- /tab1 -->
+
+<!-- ═══ TAB 2: ΣΤΟΧΟΙ ═══ -->
+<div class="tab" id="tab2">
+  <div class="wrap">
+
+    <div class="slabel">Φάση 1 → 2 · Κριτήρια για πρόοδο</div>
+    <div class="ms-card" id="ms-phase1">
+      <div class="ms-card-head">
+        <div class="ms-trophy">🏆</div>
+        <div><h3>Αποδέσμευση Φάσης 1</h3><p>Εκτελέστε κάθε τεστ και τσεκάρετε όταν περάσει</p></div>
+      </div>
+      <div class="ms-body">
+        <div class="ms-row" id="m1a" onclick="toggleMilestone('m1a')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Ισομετρική σύσπαση τετρακέφαλου — κράτηση 10 δευτ. χωρίς πόνο<strong>Ξαπλώστε, σφίξτε μηρό, μετρήστε μέχρι 10 — χωρίς δισταγμό</strong></div>
+        </div>
+        <div class="ms-row" id="m1b" onclick="toggleMilestone('m1b')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Ανύψωση τεντωμένου ποδιού — 10 επαναλήψεις χωρίς καθυστέρηση<strong>Σηκώστε πόδι 10 φορές — γόνατο ΔΕΝ λυγίζει κατά την άρση</strong></div>
+        </div>
+        <div class="ms-row" id="m1c" onclick="toggleMilestone('m1c')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Κάμψη γόνατος ≥ 90° — μετρήστε με μοιρογνωμόνιο / εφαρμογή<strong>Καθίστε, λυγίστε γόνατο, μετρήστε γωνία — στόχος ≥ 90°</strong></div>
+        </div>
+        <div class="ms-row" id="m1d" onclick="toggleMilestone('m1d')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Πλήρης παθητική έκταση ίση με υγιές πόδι<strong>Ξαπλώστε με μαξιλάρι κάτω από γάμπα, χαλαρώστε — ίδιο επίπεδο</strong></div>
+        </div>
+      </div>
+      <div class="ms-footer"><span class="ms-progress-text" id="ms1-progress">0 / 4 δοκιμές</span> — ολοκληρώστε όλα πριν περάσετε στη Φάση 2</div>
+    </div>
+
+    <div class="slabel">Φάση 2 → 3 · Κριτήρια για πρόοδο</div>
+    <div class="ms-card" id="ms-phase2">
+      <div class="ms-card-head">
+        <div class="ms-trophy">🏆</div>
+        <div><h3>Αποδέσμευση Φάσης 2</h3><p>Εκτελέστε κάθε τεστ και τσεκάρετε όταν περάσει</p></div>
+      </div>
+      <div class="ms-body">
+        <div class="ms-row" id="m2a" onclick="toggleMilestone('m2a')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Βάδισμα 200μ σε επίπεδο έδαφος χωρίς κουτσαμάρα<strong>Ένα οικοδομικό τετράγωνο — χωρίς αντιστάθμιση ισχίου</strong></div>
+        </div>
+        <div class="ms-row" id="m2b" onclick="toggleMilestone('m2b')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Ημικάθισμα τοίχου 3×10 στις 45° χωρίς πόνο<strong>Κρατήστε 5 δευτ. — μηδέν πόνος κατά εκτέλεση</strong></div>
+        </div>
+        <div class="ms-row" id="m2c" onclick="toggleMilestone('m2c')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Κάμψη γόνατος ≥ 120° — μέτρηση με μοιρογνωμόνιο<strong>Καρέκλα, λυγίστε πόδι πίσω, μετρήστε γωνία</strong></div>
+        </div>
+        <div class="ms-row" id="m2d" onclick="toggleMilestone('m2d')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Ανύψωση τεντωμένου ποδιού χωρίς καθυστέρηση έκτασης<strong>10 επαναλήψεις — γόνατο ΔΕΝ λυγίζει καθόλου</strong></div>
+        </div>
+      </div>
+      <div class="ms-footer"><span class="ms-progress-text" id="ms2-progress">0 / 4 δοκιμές</span> — ολοκληρώστε όλα πριν περάσετε στη Φάση 3</div>
+    </div>
+
+    <div class="slabel">Φάση 3 → 4 · Κριτήρια για πρόοδο</div>
+    <div class="ms-card" id="ms-phase3">
+      <div class="ms-card-head">
+        <div class="ms-trophy">🏆</div>
+        <div><h3>Αποδέσμευση Φάσης 3</h3><p>Εκτελέστε κάθε τεστ και τσεκάρετε όταν περάσει</p></div>
+      </div>
+      <div class="ms-body">
+        <div class="ms-row" id="m3a" onclick="toggleMilestone('m3a')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Ισορροπία χειρ. ποδιού 30 δευτ. με κλειστά μάτια<strong>Σε ένα πόδι, κλείστε μάτια, μετρήστε — χωρίς πάτημα</strong></div>
+        </div>
+        <div class="ms-row" id="m3b" onclick="toggleMilestone('m3b')">
+          <div class="ms-box"></div>
+          <div class="ms-label">15 ανεβάσεις σκαλοπατιού χωρίς πόνο<strong>Σκαλί 15–20εκ., 15 συνεχόμενες — χωρίς αντιστάθμιση</strong></div>
+        </div>
+        <div class="ms-row" id="m3c" onclick="toggleMilestone('m3c')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Πλήρης κάμψη ίση με άλλο πόδι<strong>Καρέκλα, λυγίστε αμφότερα — συγκρίνετε γωνίες</strong></div>
+        </div>
+        <div class="ms-row" id="m3d" onclick="toggleMilestone('m3d')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Βάδισμα 500+ μέτρα χωρίς κουτσαμάρα<strong>Επίπεδη επιφάνεια — κανένα βήμα αντιστάθμισης</strong></div>
+        </div>
+      </div>
+      <div class="ms-footer"><span class="ms-progress-text" id="ms3-progress">0 / 4 δοκιμές</span> — ολοκληρώστε όλα πριν περάσετε στη Φάση 4</div>
+    </div>
+
+    <div class="slabel">Φάση 4 → 5 · Κριτήρια για πρόοδο</div>
+    <div class="ms-card" id="ms-phase4">
+      <div class="ms-card-head">
+        <div class="ms-trophy">🏆</div>
+        <div><h3>Αποδέσμευση Φάσης 4</h3><p>Εκτελέστε κάθε τεστ και τσεκάρετε όταν περάσει</p></div>
+      </div>
+      <div class="ms-body">
+        <div class="ms-row" id="m4a" onclick="toggleMilestone('m4a')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Τρέξιμο 30 λεπτών αδιάκοπα — χωρίς οίδημα 24 ώρες μετά<strong>Ελέγξτε γόνατο την επόμενη μέρα — μηδέν οίδημα</strong></div>
+        </div>
+        <div class="ms-row" id="m4b" onclick="toggleMilestone('m4b')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Μονοποδικό άλμα — αθόρυβη, σταθερή προσγείωση<strong>Ένα πόδι, άλμα μπρος — χωρίς κλόνο, χωρίς βήμα ισορροπίας</strong></div>
+        </div>
+        <div class="ms-row" id="m4c" onclick="toggleMilestone('m4c')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Αλλαγές κατεύθυνσης 75% ταχύτητας — εντελώς ανώδυνες<strong>Ζιγκ-ζαγκ κώνοι — μηδέν πόνος κατά ή μετά</strong></div>
+        </div>
+        <div class="ms-row" id="m4d" onclick="toggleMilestone('m4d')">
+          <div class="ms-box"></div>
+          <div class="ms-label">Δύναμη τετρακέφαλου ≥ 80% — επιβεβαιωμένη από φυσιοθεραπευτή<strong>Ισοκινητική μέτρηση — ζητήστε ποσοστό γραπτώς</strong></div>
+        </div>
+      </div>
+      <div class="ms-footer"><span class="ms-progress-text" id="ms4-progress">0 / 4 δοκιμές</span> — ολοκληρώστε όλα πριν επιστρέψετε στο άθλημα</div>
+    </div>
+
+  </div>
+</div><!-- /tab2 -->
+
+<!-- ═══ TAB 3: ΠΡΟΟΔΟΣ ═══ -->
+<div class="tab" id="tab3">
+  <div class="wrap">
+
+    <div class="streak-badge" id="streakBadge">
+      <div class="streak-num" id="streakNum">0</div>
+      <div><div class="streak-info">Μέρες σερί</div><div class="streak-sub" id="streakSubText"></div></div>
+    </div>
+
+    <div class="prog-tab-card">
+      <h4>Πρόοδος ανά Φάση</h4>
+      <div class="phase-prog-row">
+        <div class="phase-prog-label">Φάση 1</div>
+        <div class="phase-prog-track"><div class="phase-prog-fill" id="ppf0" style="background:#1a5fa8;width:2%"></div></div>
+        <div class="phase-prog-pct" id="ppp0">0%</div>
+      </div>
+      <div class="phase-prog-row">
+        <div class="phase-prog-label">Φάση 2</div>
+        <div class="phase-prog-track"><div class="phase-prog-fill" id="ppf1" style="background:#1a9e78;width:2%"></div></div>
+        <div class="phase-prog-pct" id="ppp1">0%</div>
+      </div>
+      <div class="phase-prog-row">
+        <div class="phase-prog-label">Φάση 3</div>
+        <div class="phase-prog-track"><div class="phase-prog-fill" id="ppf2" style="background:#c07010;width:2%"></div></div>
+        <div class="phase-prog-pct" id="ppp2">0%</div>
+      </div>
+      <div class="phase-prog-row">
+        <div class="phase-prog-label">Φάση 4</div>
+        <div class="phase-prog-track"><div class="phase-prog-fill" id="ppf3" style="background:#d4507e;width:2%"></div></div>
+        <div class="phase-prog-pct" id="ppp3">0%</div>
+      </div>
+      <div class="phase-prog-row">
+        <div class="phase-prog-label">Φάση 5</div>
+        <div class="phase-prog-track"><div class="phase-prog-fill" id="ppf4" style="background:#6a62cc;width:2%"></div></div>
+        <div class="phase-prog-pct" id="ppp4">0%</div>
+      </div>
+    </div>
+
+    <div class="prog-tab-card">
+      <h4>Πόνος &amp; Κάμψη — 14 μέρες</h4>
+      <div class="sym-chart">
+        <canvas id="symCanvasBig" height="56"></canvas>
+        <div class="sym-chart-label">— Πόνος (0–10) &nbsp;● Κάμψη (°÷10)</div>
+      </div>
+    </div>
+
+    <div class="prog-tab-card">
+      <h4>Ολοκλήρωση ασκήσεων — 7 μέρες</h4>
+      <canvas id="weekChart" height="72" style="width:100%;display:block"></canvas>
+      <div class="sym-chart-label" style="margin-top:5px">🟩 Ολοκλήρωση &nbsp;🟦 Μερική &nbsp;⬜ Εκκρεμεί</div>
+    </div>
+
+    <div class="prog-tab-card" id="upcomingDates">
+      <h4>Σημαντικές ημερομηνίες</h4>
+    </div>
+
+  </div>
+</div><!-- /tab3 -->
+
+<footer>Αναγνωστόπουλος Χαράλαμπος · Χειρουργείο 23.03.2026 · OSTEON Ορθοπαιδική Κλινική · Δρ. ΒΙ Σακελλαρίου · E. Ζωγάκης</footer>
+
+<div class="pwa-banner" id="pwaBanner">
+  <div class="pwa-banner-icon">🦴</div>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Εγκαταστήστε την εφαρμογή</div>
+    <div class="pwa-banner-sub" id="pwaSub">Προσθέστε στην Αρχική Οθόνη για γρήγορη πρόσβαση</div>
+  </div>
+  <div class="pwa-banner-btns">
+    <button class="pwa-btn-later" onclick="pwaLater()">Αργότερα</button>
+    <button class="pwa-btn-install" id="pwaInstallBtn" onclick="pwaInstall()">Εγκατάσταση</button>
+  </div>
+</div>
+
+<script>
+// ─── Date logic ───────────────────────────────────────────
+const SURGERY = new Date('2026-03-23');
+const today = new Date();
+today.setHours(0,0,0,0);
+const TODAY_KEY = today.toISOString().slice(0,10);
+const dayNum = Math.floor((today - SURGERY) / 86400000);
+
+function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function fmtDate(d){return String(d.getDate()).padStart(2,'0')+'.'+(String(d.getMonth()+1).padStart(2,'0'))+'.'+d.getFullYear();}
+const clexaneEnd  = addDays(SURGERY, 20);
+const woundCheck  = addDays(SURGERY, 14);
+const physioStart = addDays(SURGERY, 21);
+// Populate date spans
+['clexaneEnd1','clexaneEnd2','clexaneEnd3'].forEach(id => {
+  const e = document.getElementById(id); if (e) e.textContent = fmtDate(clexaneEnd);
+});
+
+function getPhaseIndex(d) {
+  if (d <= 14)  return 0;
+  if (d <= 42)  return 1;
+  if (d <= 84)  return 2;
+  if (d <= 180) return 3;
+  return 4;
+}
+
+const PHASE_NAMES = ['Φάση 1','Φάση 2','Φάση 3','Φάση 4','Φάση 5'];
+const PHASE_ENDS  = [14, 42, 84, 180, 270];
+const PHASE_STARTS = [0, 15, 43, 85, 181];
+const PHASE_NEXT_MILESTONE = [
+  'Μέρα 14: κάμψη 90° + πλήρης έκταση',
+  'Εβδ. 6: κάμψη 120° + φυσιολογικό βάδισμα',
+  'Εβδ. 12: πλήρης κάμψη + μονοποδική 30δευτ.',
+  'Μήνας 6: τρέξιμο 30 λεπτά + τετρακέφαλος 80%',
+  'Μήνας 9: όλοι οι έλεγχοι αποδέσμευσης'
+];
+const PHASE_SUBS = [
+  'Φάση 1 · Προστασία μοσχεύματος · Πάγος κάθε 2–3 ώρες',
+  'Φάση 2 · Πρώιμη ενδυνάμωση · Φυσιοθεραπεία από ' + fmtDate(physioStart),
+  'Φάση 3 · Προοδευτική επιβάρυνση · Χωρίς νάρθηκα',
+  'Φάση 4 · Δυναμική προπόνηση · Τρέξιμο + πλειομετρική',
+  'Φάση 5 · Επιστροφή στο άθλημα · Πέρασε ΟΛΟΥΣ τους ελέγχους'
+];
+
+// ─── Header pills ─────────────────────────────────────────
+const pi = getPhaseIndex(dayNum);
+document.getElementById('dayNum').textContent  = 'Μέρα ' + dayNum;
+document.getElementById('phaseLabel').textContent = PHASE_NAMES[pi];
+const daysLeft = PHASE_ENDS[pi] - dayNum;
+document.getElementById('milestoneLabel').textContent =
+  daysLeft > 0 ? 'Σε ' + daysLeft + ' μέρες' : 'Στόχος επιτεύχθηκε!';
+document.getElementById('milestonePill').title = PHASE_NEXT_MILESTONE[pi];
+
+// ─── Day pill label ────────────────────────────────────────
+(function(){
+  function dayLabel(d){
+    if(d<=0) return d===0?'Μέρα χειρουργείου':'Προεγχ.';
+    if(d<=14) return 'Εβδ. 1–2';
+    const wk=Math.ceil(d/7);
+    return wk<=12?'Εβδ. '+wk:'Μήνας '+Math.floor(d/30)+'+';
+  }
+  const ctx=document.createElement('span');
+  ctx.style.cssText='display:block;font-size:9px;font-weight:400;opacity:.7;margin-top:1px';
+  ctx.textContent=dayLabel(dayNum);
+  document.getElementById('dayPill').appendChild(ctx);
+})();
+
+// ─── Checkbox tracking ────────────────────────────────────
+function toggleCheck(id) {
+  const key = 'chk_' + TODAY_KEY + '_' + id;
+  const el  = document.getElementById(id);
+  if (!el) return;
+  const now = localStorage.getItem(key) === '1';
+  localStorage.setItem(key, now ? '0' : '1');
+  el.classList.toggle('done', !now);
+  el.setAttribute('aria-checked', String(!now));
+  if (navigator.vibrate) navigator.vibrate(!now ? 40 : 15);
+  // also sync clone in today tab if present
+  const clone = document.querySelector('#todayChecklist #' + id);
+  if (clone) clone.classList.toggle('done', !now);
+  markStreakToday();
+  refreshStreak();
+  updateTodayTab();
+}
+
+function loadChecks() {
+  document.querySelectorAll('[id^="c"]').forEach(el => {
+    if (!el.classList.contains('check-row')) return;
+    const key = 'chk_' + TODAY_KEY + '_' + el.id;
+    if (localStorage.getItem(key) === '1') el.classList.add('done');
+  });
+  markStreakToday();
+  refreshStreak();
+}
+loadChecks();
+
+// ─── Streak ───────────────────────────────────────────────
+function markStreakToday() {
+  const activePhase = document.querySelector('.phase.active');
+  if (!activePhase) return;
+  const rows = activePhase.querySelectorAll('.check-row');
+  if (!rows.length) return;
+  if ([...rows].every(r => r.classList.contains('done'))) {
+    localStorage.setItem('streak_' + TODAY_KEY, '1');
+    if (navigator.vibrate) navigator.vibrate([60, 40, 80]);
+  }
+}
+function calcStreak() {
+  let streak = 0, d = new Date(today);
+  while (localStorage.getItem('streak_' + d.toISOString().slice(0,10)) === '1') {
+    streak++; d.setDate(d.getDate() - 1);
+  }
+  return streak;
+}
+function refreshStreak() {
+  const el = document.getElementById('streakLabel');
+  if (!el) return;
+  const s = calcStreak();
+  el.textContent = s > 0 ? s + (s === 1 ? ' μέρα' : ' μέρες') : '—';
+}
+refreshStreak();
+
+// ─── Tab switching ────────────────────────────────────────
+function switchTab(n) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===n));
+  document.querySelectorAll('.bnav-btn').forEach((b,i) => b.classList.toggle('active', i===n));
+  window.scrollTo({top:0});
+  if (n===0) updateTodayTab();
+  if (n===3) { renderProgressTab(); setTimeout(renderSymptomChartBig, 50); setTimeout(renderWeekChart, 60); }
+}
+
+// ─── Phase switcher ───────────────────────────────────────
+function goPhase(n) {
+  document.querySelectorAll('.phase').forEach((p,i) => p.classList.toggle('active', i===n));
+  document.querySelectorAll('.psw-btn').forEach((b,i) => b.classList.toggle('active', i===n));
+  window.scrollTo({top:0});
+}
+// init phase
+goPhase(pi);
+document.querySelectorAll('.psw-btn')[pi].classList.add('current-phase');
+
+// ─── Keyboard accessibility ───────────────────────────────
+document.querySelectorAll('.check-row').forEach(row => {
+  row.setAttribute('tabindex', '0');
+  row.setAttribute('role', 'checkbox');
+  row.setAttribute('aria-checked', row.classList.contains('done').toString());
+  row.addEventListener('keydown', e => {
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); row.click(); }
+  });
+});
+
+// ─── Today Tab ────────────────────────────────────────────
+function getGreeting(){
+  const h=new Date().getHours();
+  return h<12?'Καλημέρα, Χαράλαμπε!':h<17?'Καλό απόγευμα, Χαράλαμπε!':'Καλό βράδυ, Χαράλαμπε!';
+}
+function updateTodayTab() {
+  document.getElementById('heroGreeting').textContent = getGreeting();
+  document.getElementById('heroSub').textContent = PHASE_SUBS[pi];
+  document.getElementById('statDay').textContent = dayNum;
+  document.getElementById('statPhase').textContent = PHASE_NAMES[pi];
+  document.getElementById('statStreak').textContent = calcStreak() || '—';
+  const activePhase = document.querySelector('.phase.active');
+  if (activePhase) {
+    const rows = activePhase.querySelectorAll('.check-row');
+    const done = [...rows].filter(r => r.classList.contains('done')).length;
+    document.getElementById('statDone').textContent = done + '/' + rows.length;
+    const cg = activePhase.querySelector('.check-group');
+    const todayChecklist = document.getElementById('todayChecklist');
+    if (cg && todayChecklist) {
+      todayChecklist.innerHTML = cg.outerHTML;
+      todayChecklist.querySelectorAll('.check-row').forEach(row => {
+        const id = row.id;
+        if (localStorage.getItem('chk_' + TODAY_KEY + '_' + id) === '1') row.classList.add('done');
+        row.onclick = () => { toggleCheck(id); };
+      });
+      const firstUnchecked = todayChecklist.querySelector('.check-row:not(.done)');
+      if (firstUnchecked) firstUnchecked.classList.add('next-up');
+    }
+  }
+  renderSymptomLast();
+}
+
+// ─── Per-phase progress ───────────────────────────────────
+function phasePct(i, day) {
+  if (day < PHASE_STARTS[i]) return 0;
+  if (day > PHASE_ENDS[i])   return 100;
+  return Math.round((day - PHASE_STARTS[i]) / (PHASE_ENDS[i] - PHASE_STARTS[i]) * 100);
+}
+// Update inline progress bars in phase panels
+document.querySelectorAll('.prog-fill').forEach((el,i) => {
+  if (i > 4) return;
+  const pct = phasePct(i, dayNum);
+  el.style.width = Math.max(2, Math.min(98, pct)) + '%';
+  if (dayNum > PHASE_ENDS[i]) el.style.background = '#1a9e78';
+  else if (dayNum < PHASE_STARTS[i]) { el.style.opacity = '.3'; el.style.background = '#c0ccd8'; }
+});
+
+// ─── Progress Tab ─────────────────────────────────────────
+function renderProgressTab() {
+  [0,1,2,3,4].forEach(i => {
+    const pct = phasePct(i, dayNum);
+    const fill = document.getElementById('ppf'+i);
+    const pctEl = document.getElementById('ppp'+i);
+    if (fill) fill.style.width = Math.max(2, Math.min(100, pct)) + '%';
+    if (pctEl) pctEl.textContent = pct + '%';
+  });
+  const s = calcStreak();
+  const snum = document.getElementById('streakNum');
+  const ssub = document.getElementById('streakSubText');
+  if (snum) snum.textContent = s;
+  if (ssub) ssub.textContent = s > 0 ? 'Συνεχόμενες μέρες ολοκλήρωσης' : 'Τσεκάρε τις ασκήσεις σήμερα!';
+  const upEl = document.getElementById('upcomingDates');
+  if (upEl) {
+    const items = [
+      {label:'Clexane λήξη', date:clexaneEnd},
+      {label:'Έλεγχος πληγής', date:woundCheck},
+      {label:'Φυσιοθεραπεία έναρξη', date:physioStart},
+    ];
+    upEl.innerHTML = '<h4 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#8a9ab0;margin-bottom:10px">Σημαντικές ημερομηνίες</h4>' +
+      items.map(it => {
+        const past = it.date < today;
+        return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f4f8;font-size:13px">
+          <span style="color:${past?'#9aaa9a':'#1a2b3c'}">${it.label}</span>
+          <span style="font-weight:600;color:${past?'#9aaa9a':'#1a5fa8'}">${fmtDate(it.date)}${past?' ✓':''}</span>
+        </div>`;
+      }).join('');
+  }
+}
+
+// ─── Milestones ───────────────────────────────────────────
+function toggleMilestone(id) {
+  const el = document.getElementById(id); if (!el) return;
+  const was = localStorage.getItem('ms_' + id) === '1';
+  localStorage.setItem('ms_' + id, was ? '0' : '1');
+  el.classList.toggle('pass', !was);
+  updateMsProgress(id.slice(0,2));
+}
+function updateMsProgress(prefix) {
+  const n = parseInt(prefix[1], 10);
+  const done = ['a','b','c','d'].filter(s => localStorage.getItem('ms_' + prefix + s) === '1').length;
+  const pEl = document.getElementById('ms' + n + '-progress');
+  if (pEl) { pEl.textContent = done + ' / 4 δοκιμές'; pEl.style.color = done === 4 ? '#1a9e78' : '#c89000'; }
+  const card = document.getElementById('ms-phase' + n);
+  if (card) { const f = card.querySelector('.ms-footer'); if (f) f.classList.toggle('all-pass', done === 4); }
+}
+function loadMilestones() {
+  ['m1','m2','m3','m4'].forEach(pfx => {
+    ['a','b','c','d'].forEach(s => {
+      const el = document.getElementById(pfx + s);
+      if (el && localStorage.getItem('ms_' + pfx + s) === '1') el.classList.add('pass');
+    });
+    updateMsProgress(pfx);
+  });
+}
+loadMilestones();
+
+// ─── Symptom log ──────────────────────────────────────────
+function saveSymptoms() {
+  const pain = parseInt(document.getElementById('symPain').value, 10);
+  const sw = parseInt(document.getElementById('symSwelling').value, 10);
+  const rom = parseInt(document.getElementById('symROM').value, 10);
+  if (isNaN(pain) || pain < 0 || pain > 10) { alert('Εισάγετε πόνο 0–10'); return; }
+  localStorage.setItem('sym_' + TODAY_KEY, JSON.stringify({pain, swelling:isNaN(sw)?null:sw, rom:isNaN(rom)?null:rom}));
+  renderSymptomLast();
+  drawSymChart('symCanvas');
+  renderSymptomChartBig();
+}
+function getSymHistory(days) {
+  return Array.from({length:days}, (_,i) => {
+    const d = new Date(today); d.setDate(d.getDate() - (days-1-i));
+    const raw = localStorage.getItem('sym_' + d.toISOString().slice(0,10));
+    return raw ? {date:d, ...JSON.parse(raw)} : null;
+  }).filter(Boolean);
+}
+function drawSymChart(canvasId) {
+  const canvas = document.getElementById(canvasId); if (!canvas) return;
+  const history = getSymHistory(14);
+  const W = canvas.offsetWidth || 300, H = 56;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,W,H);
+  if (!history.length) return;
+  const pad = 16, cW = W - pad*2, n = history.length;
+  ctx.beginPath(); ctx.strokeStyle = '#e05848'; ctx.lineWidth = 2;
+  history.forEach((d,i) => {
+    const x = pad + (i/Math.max(n-1,1))*cW, y = H-6-(d.pain/10)*(H-14);
+    i ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
+  });
+  ctx.stroke();
+  history.forEach((d,i) => {
+    if (d.rom == null) return;
+    const x = pad + (i/Math.max(n-1,1))*cW, y = H-6-(d.rom/160)*(H-14);
+    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fillStyle = '#1a5fa8'; ctx.fill();
+  });
+}
+function renderSymptomChartBig() { drawSymChart('symCanvasBig'); }
+function renderSymptomLast() {
+  const el = document.getElementById('symLast'); if (!el) return;
+  const raw = localStorage.getItem('sym_' + TODAY_KEY);
+  if (!raw) { el.textContent = 'Δεν έχετε καταγράψει σύμπτωμα σήμερα'; return; }
+  const v = JSON.parse(raw);
+  const sw = ['Κανένα','Ήπιο','Μέτριο','Έντονο'];
+  el.innerHTML = '<b>Σήμερα:</b> Πόνος ' + v.pain + '/10 · Οίδημα: ' + (v.swelling!=null?sw[v.swelling]:'—') + ' · Κάμψη: ' + (v.rom!=null?v.rom+'°':'—');
+}
+function initSymLog() {
+  const el = document.getElementById('symLogDay'); if (el) el.textContent = dayNum;
+  const raw = localStorage.getItem('sym_' + TODAY_KEY);
+  if (raw) {
+    const v = JSON.parse(raw);
+    const p = document.getElementById('symPain'), s = document.getElementById('symSwelling'), r = document.getElementById('symROM');
+    if (p) p.value = v.pain;
+    if (s && v.swelling != null) s.value = v.swelling;
+    if (r && v.rom != null) r.value = v.rom;
+  }
+  renderSymptomLast();
+}
+initSymLog();
+
+// ─── Init ─────────────────────────────────────────────────
+updateTodayTab();
+renderProgressTab();
+setTimeout(renderSymptomChartBig, 100);
+switchTab(0);
+
+// ─── Weekly Completion Chart ─────────────────────────────
+function renderWeekChart() {
+  const canvas = document.getElementById('weekChart');
+  if (!canvas) return;
+  const W = canvas.offsetWidth || 320;
+  canvas.width = W; canvas.height = 72;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, 72);
+  const DAY_LABELS = ['Κυ','Δε','Τρ','Τε','Πε','Πα','Σα'];
+  const slotW = (W - 16) / 7;
+  const barW = Math.max(8, slotW - 6);
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - (6 - i));
+    const dayKey = d.toISOString().slice(0, 10);
+    const isToday = i === 6;
+    const streakDone = localStorage.getItem('streak_' + dayKey) === '1';
+    let checked = 0;
+    for (const k in localStorage) {
+      if (k.startsWith('chk_' + dayKey + '_') && localStorage.getItem(k) === '1') checked++;
+    }
+    const pct = streakDone ? 1 : checked > 0 ? Math.min(0.9, checked / 6) : 0;
+    const maxH = 44, barH = Math.max(2, Math.round(maxH * pct));
+    const x = 8 + i * slotW + (slotW - barW) / 2;
+    ctx.fillStyle = streakDone ? '#1a9e78' : checked > 0 ? '#1a5fa8' : (isToday ? '#b8d0ea' : '#dde4ee');
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x, 56 - barH, barW, barH, 3);
+    else ctx.rect(x, 56 - barH, barW, barH);
+    ctx.fill();
+    ctx.fillStyle = isToday ? '#1a5fa8' : '#8a9ab0';
+    ctx.font = (isToday ? 'bold ' : '') + '9px -apple-system,system-ui,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(DAY_LABELS[d.getDay()], x + barW / 2, 70);
+  }
+}
+
+// ─── Notification Reminder ────────────────────────────────
+function enableReminder() {
+  if (!('Notification' in window)) return;
+  Notification.requestPermission().then(function(p) {
+    const btn = document.getElementById('notifBtn');
+    if (p === 'granted') {
+      localStorage.setItem('notif_on', '1');
+      if (btn) { btn.textContent = '🔔 Υπενθύμιση ενεργή'; btn.disabled = true; }
+      checkAndNotify();
+    }
+  });
+}
+function checkAndNotify() {
+  if (Notification.permission !== 'granted') return;
+  if (!localStorage.getItem('notif_on')) return;
+  if (localStorage.getItem('streak_' + TODAY_KEY) === '1') return;
+  if (localStorage.getItem('notif_sent_' + TODAY_KEY)) return;
+  const h = new Date().getHours();
+  if (h < 8 || h > 20) return;
+  localStorage.setItem('notif_sent_' + TODAY_KEY, '1');
+  new Notification('ACL Recovery — Χαράλαμπε! 🦴', {
+    body: 'Οι ασκήσεις σου για σήμερα (Μέρα ' + dayNum + ') σε περιμένουν!',
+    tag: 'acl-daily-' + TODAY_KEY,
+    renotify: false
+  });
+}
+(function initNotifBtn() {
+  const btn = document.getElementById('notifBtn');
+  const row = document.getElementById('notifRow');
+  if (!('Notification' in window)) { if (row) row.style.display = 'none'; return; }
+  if (Notification.permission === 'denied') { if (row) row.style.display = 'none'; return; }
+  if (Notification.permission === 'granted' && localStorage.getItem('notif_on')) {
+    if (btn) { btn.textContent = '🔔 Υπενθύμιση ενεργή'; btn.disabled = true; }
+    checkAndNotify();
+  }
+})();
+
+// ─── PWA Install ─────────────────────────────────────────
+(function() {
+  if (localStorage.getItem('pwa_ok')) return;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.matchMedia('(display-mode:standalone)').matches || navigator.standalone;
+  if (isStandalone) return;
+
+  if (isIOS) {
+    setTimeout(function() {
+      var sub = document.getElementById('pwaSub');
+      var btn = document.getElementById('pwaInstallBtn');
+      if (sub) sub.textContent = 'Safari: πατήστε Share ↑ → «Στην Αρχική Οθόνη»';
+      if (btn) { btn.textContent = 'OK'; }
+      var banner = document.getElementById('pwaBanner');
+      if (banner) banner.classList.add('show');
+    }, 2500);
+  }
+
+  var _deferred = null;
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    _deferred = e;
+    var banner = document.getElementById('pwaBanner');
+    if (banner) banner.classList.add('show');
+    window._deferredPWA = _deferred;
+  });
+  window._deferredPWA = null;
+})();
+
+function pwaInstall() {
+  if (window._deferredPWA) {
+    window._deferredPWA.prompt();
+    window._deferredPWA.userChoice.then(function() { pwaLater(); });
+  } else {
+    pwaLater();
+  }
+}
+function pwaLater() {
+  var banner = document.getElementById('pwaBanner');
+  if (banner) banner.classList.remove('show');
+  localStorage.setItem('pwa_ok', '1');
+}
+
+// ─── Service Worker ───────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function() {});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "ACL Αποκατάσταση — Αναγνωστόπουλος Χ.",
+  "short_name": "ACL Recovery",
+  "description": "Πρόγραμμα αποκατάστασης ΠΧΣ — Χαράλαμπος Αναγνωστόπουλος",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b2e5a",
+  "theme_color": "#0b2e5a",
+  "lang": "el",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='90' fill='%230b2e5a'/><text y='400' x='56' font-size='380' font-family='system-ui'>🦴</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "medical"],
+  "screenshots": []
+}
