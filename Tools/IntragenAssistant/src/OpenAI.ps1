@@ -1,25 +1,5 @@
-# ----------------------------------------------
-# OpenAI helper
-# ----------------------------------------------
-function Invoke-OpenAI($apiKey, $systemMsg, $userMsg) {
-    $body = @{
-        model      = 'gpt-4o'
-        messages   = @(
-            @{ role = 'system'; content = $systemMsg },
-            @{ role = 'user';   content = $userMsg   }
-        )
-        max_tokens = 1500
-    } | ConvertTo-Json -Depth 5
-
-    $wc = New-Object System.Net.WebClient
-    $wc.Encoding = [System.Text.Encoding]::UTF8
-    $wc.Headers.Add('Authorization', "Bearer $apiKey")
-    $wc.Headers.Add('Content-Type', 'application/json')
-    return ($wc.UploadString('https://api.openai.com/v1/chat/completions', $body) | ConvertFrom-Json).choices[0].message.content
-}
-
 # Shared runspace scriptblock — used by all tabs via Invoke-Async.
-# Params: ApiKey, Model, SystemMsg, UserMsg, MaxTokens, JsonMode, Messages (array, optional)
+# Params: ApiKey, Model, SystemMsg, UserMsg, MaxTokens, JsonMode, Messages, Temperature, TopP
 $Script:ApiCallScript = {
     param(
         [string]   $ApiKey,
@@ -27,8 +7,10 @@ $Script:ApiCallScript = {
         [string]   $SystemMsg,
         [string]   $UserMsg,
         [int]      $MaxTokens,
-        [bool]     $JsonMode = $false,
-        [object[]] $Messages = $null    # full message array for multi-turn; if set, overrides SystemMsg+UserMsg
+        [bool]     $JsonMode    = $false,
+        [object[]] $Messages    = $null,    # full message array for multi-turn; if set, overrides SystemMsg+UserMsg
+        [double]   $Temperature = 0.1,
+        [double]   $TopP        = 1.0
     )
 
     if ($Messages -and $Messages.Count -gt 0) {
@@ -41,9 +23,11 @@ $Script:ApiCallScript = {
     }
 
     $bodyHash = @{
-        model      = $Model
-        messages   = $msgArray
-        max_tokens = $MaxTokens
+        model       = $Model
+        messages    = $msgArray
+        max_tokens  = $MaxTokens
+        temperature = $Temperature
+        top_p       = $TopP
     }
     if ($JsonMode) { $bodyHash['response_format'] = @{ type = 'json_object' } }
 
@@ -71,7 +55,7 @@ $Script:ApiCallScript = {
     if ($JsonMode -and $parsed.choices[0].finish_reason -ne 'stop') {
         throw "OpenAI returned truncated JSON (finish_reason=$($parsed.choices[0].finish_reason)). Try reducing maxTokens or simplifying the query."
     }
-    return $parsed.choices[0].message.content
+    return @($parsed.choices[0].message.content, $parsed.usage.total_tokens)
 }
 
 function Parse-Json($raw) {

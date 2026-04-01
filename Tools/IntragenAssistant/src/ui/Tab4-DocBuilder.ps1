@@ -246,12 +246,14 @@ $btnGenDoc.Add_Click({
     )
 
     $params = @{
-        ApiKey    = $Global:ApiKey
-        Model     = $Global:OAISettings.model
-        SystemMsg = ''; UserMsg = ''
-        MaxTokens = [int]$Global:OAISettings.maxTokens
-        JsonMode  = $false
-        Messages  = $Script:DocHistory
+        ApiKey      = $Global:ApiKey
+        Model       = $Global:OAISettings.model
+        SystemMsg   = ''; UserMsg = ''
+        MaxTokens   = [int]$Global:OAISettings.maxTokens
+        JsonMode    = $false
+        Messages    = $Script:DocHistory
+        Temperature = [double]$Global:OAISettings.temperature
+        TopP        = [double]$Global:OAISettings.topP
     }
 
     Invoke-Async $Script:ApiCallScript $params {
@@ -260,13 +262,15 @@ $btnGenDoc.Add_Click({
         $Script:DocHistory += @{ role = 'assistant'; content = $content }
         $Script:DocRound++
         $rtbDocOutput.Text    = $content
-        $lblDocStatus.Text    = "Generated $(Get-Date -Format 'HH:mm')"
+        $t = Get-Date -Format 'HH:mm'
+        $lblDocStatus.Text    = "Generated $t  ($($result[1]) tokens)"
         $btnRefineDoc.Enabled = ($Script:DocRound -lt 5)
         $lblDocRound.Text     = "Round $Script:DocRound/5"
         $btnGenDoc.Enabled    = $true
         $btnGenDoc.Text       = 'Generate Documentation'
     } {
         param($err)
+        Write-ErrorLog "DocBuilder: $err"
         $lblDocStatus.Text = "Error: $err"
         $btnGenDoc.Enabled = $true
         $btnGenDoc.Text    = 'Generate Documentation'
@@ -291,12 +295,14 @@ $btnRefineDoc.Add_Click({
     $Script:DocHistory += @{ role = 'user'; content = $refinement }
 
     $params = @{
-        ApiKey    = $Global:ApiKey
-        Model     = $Global:OAISettings.model
-        SystemMsg = ''; UserMsg = ''
-        MaxTokens = [int]$Global:OAISettings.maxTokens
-        JsonMode  = $false
-        Messages  = $Script:DocHistory
+        ApiKey      = $Global:ApiKey
+        Model       = $Global:OAISettings.model
+        SystemMsg   = ''; UserMsg = ''
+        MaxTokens   = [int]$Global:OAISettings.maxTokens
+        JsonMode    = $false
+        Messages    = $Script:DocHistory
+        Temperature = [double]$Global:OAISettings.temperature
+        TopP        = [double]$Global:OAISettings.topP
     }
 
     Invoke-Async $Script:ApiCallScript $params {
@@ -307,11 +313,12 @@ $btnRefineDoc.Add_Click({
         $rtbDocOutput.Text    = $content
         $txtDocChat.Clear()
         $t = Get-Date -Format 'HH:mm'
-        $lblDocStatus.Text    = "Refined round $Script:DocRound ($t)"
+        $lblDocStatus.Text    = "Refined round $Script:DocRound ($t)  ($($result[1]) tokens)"
         $lblDocRound.Text     = "Round $Script:DocRound/5"
         $btnRefineDoc.Enabled = ($Script:DocRound -lt 5)
     } {
         param($err)
+        Write-ErrorLog "DocBuilder: $err"
         $lblDocStatus.Text    = "Error: $err"
         $btnRefineDoc.Enabled = ($Script:DocRound -lt 5)
     }

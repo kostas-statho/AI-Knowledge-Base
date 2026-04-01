@@ -550,7 +550,7 @@ Rules: (1) Each quadrant has 4-6 complete, actionable sentences  -  no generic f
     $usrMsg  = "Name: $($Global:Profile.name)`nDomain(s) to improve: $domain`nSkills: $skillsStr`nInterests: $interestsStr`nTime available: $targetDays working days at $hoursPerDay hrs/day."
     $apiKey  = $Global:ApiKey
 
-    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model='gpt-4.1';SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2000} `
+    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model=$Global:OAISettings.model;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2000;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
         -onDone {
             param($result)
             $raw = $result[0]

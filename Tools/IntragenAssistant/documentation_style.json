@@ -1,9 +1,9 @@
-{
-  "format": "Markdown",
-  "tone": "Formal",
-  "targetAudience": "OIM Developers",
-  "includeExamples": true,
-  "includeTableOfContents": true,
-  "language": "English",
-  "brandingNotes": "Intragen Academy style. Use ## sections, bold key terms, include OIM version context where relevant."
+﻿{
+    "format":  "Markdown",
+    "tone":  "Formal",
+    "targetAudience":  "OIM Developers",
+    "includeExamples":  true,
+    "includeTableOfContents":  true,
+    "language":  "English",
+    "brandingNotes":  "Intragen Academy style. Use ## sections, bold key terms, include OIM version context where relevant."
 }

@@ -1,10 +1,11 @@
 {
   "model": "gpt-4o",
-  "temperature": 0.1,
-  "maxTokens": 4096,
+  "temperature": 0.2,
+  "maxTokens": 8192,
   "topP": 1.0,
-  "timeoutSeconds": 60,
+  "timeoutSeconds": 90,
   "maxRulesChars": 12000,
   "maxSchemaChars": 4000,
-  "systemPromptAppend": ""
+  "systemPromptAppend": "",
+  "sqlLibraryPath": ""
 }

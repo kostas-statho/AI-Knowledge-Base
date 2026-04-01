@@ -1,14 +1,22 @@
-{
-  "name": "",
-  "role": "OIM Developer",
-  "organisation": "Intragen",
-  "skills": [],
-  "interests": [],
-  "domains": [],
-  "goals": [],
-  "lastUpdated": "",
-  "preferences": {
-    "defaultSqlCategory": "_Scratch",
-    "defaultOutputDir": ""
-  }
+﻿{
+    "name":  "",
+    "role":  "OIM Developer",
+    "organisation":  "Intragen",
+    "skills":  [
+
+               ],
+    "interests":  [
+
+                  ],
+    "domains":  [
+
+                ],
+    "goals":  [
+
+              ],
+    "lastUpdated":  "2026-04-02",
+    "preferences":  {
+                        "defaultSqlCategory":  "_Scratch",
+                        "defaultOutputDir":  ""
+                    }
 }

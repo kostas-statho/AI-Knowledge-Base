@@ -13,14 +13,15 @@ function Load-JsonConfig($path, $default) {
 }
 
 $Global:OAISettings = Load-JsonConfig $OAISettingsPath ([PSCustomObject]@{
-    model             = 'gpt-4o'
-    temperature       = 0.1
-    maxTokens         = 4096
-    topP              = 1.0
-    timeoutSeconds    = 60
-    maxRulesChars     = 12000
-    maxSchemaChars    = 4000
+    model              = 'gpt-4o'
+    temperature        = 0.1
+    maxTokens          = 4096
+    topP               = 1.0
+    timeoutSeconds     = 60
+    maxRulesChars      = 12000
+    maxSchemaChars     = 4000
     systemPromptAppend = ''
+    sqlLibraryPath     = ''
 })
 
 $Global:PresentConfig = Load-JsonConfig $PresentConfigPath ([PSCustomObject]@{

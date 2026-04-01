@@ -146,7 +146,7 @@ Return ONLY a JSON array of exactly 5 objects: [{"question":"...","options":["A.
 '@
     $usrMsg = "Name: $($Global:Profile.name)`nDomain(s) to improve: $domain`nSkills: $($Global:Profile.skills -join ', ')`nInterests: $($Global:Profile.interests -join ', ')`nSWOT Analysis: $swotStr`nTime commitment: $targetDays working days at $hoursPerDay hrs/day."
 
-    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model='gpt-4.1';SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2000} `
+    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model=$Global:OAISettings.model;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2000;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
         -onDone {
             param($result)
             try {

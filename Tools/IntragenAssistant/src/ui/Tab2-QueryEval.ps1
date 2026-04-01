@@ -63,11 +63,27 @@ $btnEvaluate.Location = New-Object System.Drawing.Point(0, 184)
 $btnEvaluate.Width    = 140
 Set-PrimaryButton $btnEvaluate
 
+$cboModel = New-Object System.Windows.Forms.ComboBox
+$cboModel.DropDownStyle = 'DropDownList'
+@('gpt-4o', 'gpt-4o-mini', 'o4-mini') | ForEach-Object { [void]$cboModel.Items.Add($_) }
+$cboModel.Location = New-Object System.Drawing.Point(148, 186)
+$cboModel.Width    = 130
+$cboModel.Font     = $fontInput
+$selModel = $Global:OAISettings.model
+if ($cboModel.Items.Contains($selModel)) { $cboModel.SelectedItem = $selModel } else { $cboModel.SelectedIndex = 0 }
+$cboModel.Add_SelectedIndexChanged({ $Global:OAISettings.model = $cboModel.SelectedItem })
+
 $btnClear = New-Object System.Windows.Forms.Button
 $btnClear.Text     = 'Clear'
-$btnClear.Location = New-Object System.Drawing.Point(148, 184)
+$btnClear.Location = New-Object System.Drawing.Point(286, 184)
 $btnClear.Width    = 70
 Set-SecondaryButton $btnClear
+
+$btnHistory = New-Object System.Windows.Forms.Button
+$btnHistory.Text     = 'History'
+$btnHistory.Location = New-Object System.Drawing.Point(364, 184)
+$btnHistory.Width    = 80
+Set-SecondaryButton $btnHistory
 $btnClear.Add_Click({
     $txtSQL.Clear(); $txtIntent.Clear(); $txtEvalChat.Clear()
     $rtbIssues.Clear()
@@ -82,10 +98,10 @@ $btnClear.Add_Click({
         $sp.lblStatus.Text = ''
     }
 })
-$pnlQE.Controls.AddRange(@($btnEvaluate, $btnClear))
+$pnlQE.Controls.AddRange(@($btnEvaluate, $cboModel, $btnClear, $btnHistory))
 
 $lblQEStatus = New-Object System.Windows.Forms.Label
-$lblQEStatus.Location = New-Object System.Drawing.Point(228, 190)
+$lblQEStatus.Location = New-Object System.Drawing.Point(452, 190)
 $lblQEStatus.AutoSize = $true
 $lblQEStatus.Font     = $fontCaption
 $lblQEStatus.ForeColor = $colTextMuted
@@ -220,10 +236,61 @@ $pnlQE.Controls.Add($lblVerdictHead)
 
 $lblVerdict = New-Object System.Windows.Forms.Label
 $lblVerdict.Location = New-Object System.Drawing.Point(0, ($scoreY + 22))
-$lblVerdict.Size     = New-Object System.Drawing.Size(910, 44)
+$lblVerdict.Size     = New-Object System.Drawing.Size(760, 44)
 $lblVerdict.Font     = $fontLabel
 $lblVerdict.ForeColor = $colTextDark
 $pnlQE.Controls.Add($lblVerdict)
+
+$btnSaveReport = New-Object System.Windows.Forms.Button
+$btnSaveReport.Text     = 'Save Report'
+$btnSaveReport.Location = New-Object System.Drawing.Point(770, $scoreY)
+$btnSaveReport.Width    = 120
+Set-SecondaryButton $btnSaveReport
+$btnSaveReport.Enabled  = $false
+$btnSaveReport.Add_Click({
+    $sfd = New-Object System.Windows.Forms.SaveFileDialog
+    $sfd.Filter   = 'Markdown (*.md)|*.md'
+    $sfd.FileName = "QueryEval_$(Get-Date -Format 'yyyyMMdd_HHmm').md"
+    if ($sfd.ShowDialog() -ne 'OK') { return }
+
+    $ts      = Get-Date -Format 'yyyy-MM-dd HH:mm'
+    $intent  = $txtIntent.Text.Trim()
+    $sqlText = $txtSQL.Text.Trim()
+
+    $lines = [System.Collections.Generic.List[string]]::new()
+    $lines.Add("# Query Evaluation Report")
+    $lines.Add("Generated: $ts")
+    $lines.Add('')
+    if ($intent) { $lines.Add("**Intent:** $intent"); $lines.Add('') }
+    $lines.Add('## SQL')
+    $lines.Add('```sql')
+    $lines.Add($sqlText)
+    $lines.Add('```')
+    $lines.Add('')
+    $lines.Add('## Scorecard')
+    $lines.Add('| Dimension | Score | Status |')
+    $lines.Add('|---|---|---|')
+    foreach ($dim in $dimensions) {
+        $sp    = $Script:ScorePanels[$dim.key]
+        $score = $sp.lblPct.Text
+        $stat  = $sp.lblStatus.Text
+        $lines.Add("| $($dim.label) | $score | $stat |")
+    }
+    $lines.Add("| **Overall** | **$($lblOverallPct.Text)** | $($lblOverallVerb.Text) |")
+    $lines.Add('')
+    $lines.Add('## Issues')
+    $lines.Add($rtbIssues.Text.Trim())
+    $lines.Add('')
+    $lines.Add('## Verdict')
+    $lines.Add($lblVerdict.Text.Trim())
+
+    ($lines -join "`r`n") | Set-Content $sfd.FileName -Encoding UTF8
+    $lblQEStatus.Text = "Saved: $(Split-Path $sfd.FileName -Leaf)"
+})
+$pnlQE.Controls.Add($btnSaveReport)
+
+# Wire Save Report disable into the Clear button (defined earlier)
+$btnClear.Add_Click({ $btnSaveReport.Enabled = $false; $lblQEStatus.Text = '' })
 
 $scoreY += 74
 
@@ -339,8 +406,9 @@ function Render-EvalResult($eval) {
     # Verdict
     $lblVerdict.Text = if ($eval.verdict) { $eval.verdict } else { '' }
 
-    $btnReEval.Enabled = ($Script:EvalRound -lt 5)
-    $lblEvalRound.Text = if ($Script:EvalRound -gt 0) { "Round $($Script:EvalRound)/5" } else { '' }
+    $btnSaveReport.Enabled = $true
+    $btnReEval.Enabled     = ($Script:EvalRound -lt 5)
+    $lblEvalRound.Text     = if ($Script:EvalRound -gt 0) { "Round $($Script:EvalRound)/5" } else { '' }
 }
 
 # ── Build system prompt for Query Eval ───────
@@ -402,13 +470,15 @@ $btnEvaluate.Add_Click({
     $Script:EvalRound = 0
 
     $params = @{
-        ApiKey    = $Global:ApiKey
-        Model     = $Global:OAISettings.model
-        SystemMsg = ''
-        UserMsg   = ''
-        MaxTokens = [int]$Global:OAISettings.maxTokens
-        JsonMode  = $true
-        Messages  = $Script:EvalHistory
+        ApiKey      = $Global:ApiKey
+        Model       = $Global:OAISettings.model
+        SystemMsg   = ''
+        UserMsg     = ''
+        MaxTokens   = [int]$Global:OAISettings.maxTokens
+        JsonMode    = $true
+        Messages    = $Script:EvalHistory
+        Temperature = [double]$Global:OAISettings.temperature
+        TopP        = [double]$Global:OAISettings.topP
     }
 
     Invoke-Async $Script:ApiCallScript $params {
@@ -420,7 +490,9 @@ $btnEvaluate.Add_Click({
             $Script:EvalHistory += @{ role = 'assistant'; content = $raw }
             $Script:EvalRound++
             Render-EvalResult $eval
-            $lblQEStatus.Text = "Evaluated $(Get-Date -Format 'HH:mm')"
+            $t = Get-Date -Format 'HH:mm'
+            $lblQEStatus.Text = "Evaluated $t  ($($result[1]) tokens)"
+            Save-EvalHistoryEntry $txtSQL.Text "$($lblOverallPct.Text)" "$($lblOverallVerb.Text)"
         } catch {
             $lblQEStatus.Text = "Parse error: $_"
         }
@@ -428,6 +500,7 @@ $btnEvaluate.Add_Click({
         $btnEvaluate.Text    = 'Evaluate Query'
     } {
         param($err)
+        Write-ErrorLog "QueryEval: $err"
         $lblQEStatus.Text    = "Error: $err"
         $btnEvaluate.Enabled = $true
         $btnEvaluate.Text    = 'Evaluate Query'
@@ -453,13 +526,15 @@ $btnReEval.Add_Click({
     $Script:EvalHistory += @{ role = 'user'; content = "$note`n`nPlease re-evaluate and return updated JSON using the same schema." }
 
     $params = @{
-        ApiKey    = $Global:ApiKey
-        Model     = $Global:OAISettings.model
-        SystemMsg = ''
-        UserMsg   = ''
-        MaxTokens = [int]$Global:OAISettings.maxTokens
-        JsonMode  = $true
-        Messages  = $Script:EvalHistory
+        ApiKey      = $Global:ApiKey
+        Model       = $Global:OAISettings.model
+        SystemMsg   = ''
+        UserMsg     = ''
+        MaxTokens   = [int]$Global:OAISettings.maxTokens
+        JsonMode    = $true
+        Messages    = $Script:EvalHistory
+        Temperature = [double]$Global:OAISettings.temperature
+        TopP        = [double]$Global:OAISettings.topP
     }
 
     Invoke-Async $Script:ApiCallScript $params {
@@ -472,14 +547,156 @@ $btnReEval.Add_Click({
             Render-EvalResult $eval
             $txtEvalChat.Clear()
             $t = Get-Date -Format 'HH:mm'
-            $lblQEStatus.Text = "Re-evaluated round $Script:EvalRound ($t)"
+            $lblQEStatus.Text = "Re-evaluated round $Script:EvalRound ($t)  ($($result[1]) tokens)"
         } catch {
             $lblQEStatus.Text = "Parse error: $_"
         }
         $btnReEval.Enabled = ($Script:EvalRound -lt 5)
     } {
         param($err)
+        Write-ErrorLog "QueryEval: $err"
         $lblQEStatus.Text  = "Error: $err"
         $btnReEval.Enabled = ($Script:EvalRound -lt 5)
     }
+})
+
+# ── SQL Library Browser ───────────────────────
+$grpSqlLib = New-Object System.Windows.Forms.GroupBox
+$grpSqlLib.Text     = 'SQL Library'
+$grpSqlLib.Location = New-Object System.Drawing.Point(0, ($scoreY + 78))
+$grpSqlLib.Size     = New-Object System.Drawing.Size(920, 150)
+$grpSqlLib.Font     = $fontSubhead
+$pnlQE.Controls.Add($grpSqlLib)
+
+$lstSqlLib = New-Object System.Windows.Forms.ListBox
+$lstSqlLib.Location  = New-Object System.Drawing.Point(10, 22)
+$lstSqlLib.Size      = New-Object System.Drawing.Size(780, 116)
+$lstSqlLib.Font      = $fontLabel
+$grpSqlLib.Controls.Add($lstSqlLib)
+
+$btnRefreshLib = New-Object System.Windows.Forms.Button
+$btnRefreshLib.Text     = 'Refresh'
+$btnRefreshLib.Location = New-Object System.Drawing.Point(798, 22)
+$btnRefreshLib.Width    = 90
+Set-SecondaryButton $btnRefreshLib
+$grpSqlLib.Controls.Add($btnRefreshLib)
+
+$btnLoadSql = New-Object System.Windows.Forms.Button
+$btnLoadSql.Text     = 'Load'
+$btnLoadSql.Location = New-Object System.Drawing.Point(798, 58)
+$btnLoadSql.Width    = 90
+Set-SecondaryButton $btnLoadSql
+$btnLoadSql.Enabled  = $false
+$grpSqlLib.Controls.Add($btnLoadSql)
+
+function Refresh-SqlLibrary {
+    $lstSqlLib.Items.Clear()
+    $root = $Global:OAISettings.sqlLibraryPath
+    if (-not $root -or -not (Test-Path $root)) { return }
+    Get-ChildItem -Path $root -Filter '*.sql' -Recurse -ErrorAction SilentlyContinue |
+        Sort-Object FullName |
+        ForEach-Object {
+            $rel = $_.FullName.Substring($root.Length).TrimStart('\','/')
+            [void]$lstSqlLib.Items.Add($rel)
+        }
+}
+
+$lstSqlLib.Add_SelectedIndexChanged({ $btnLoadSql.Enabled = ($lstSqlLib.SelectedIndex -ge 0) })
+
+$lstSqlLib.Add_DoubleClick({
+    if ($lstSqlLib.SelectedItem) {
+        $path = Join-Path $Global:OAISettings.sqlLibraryPath $lstSqlLib.SelectedItem
+        if (Test-Path $path) { $txtSQL.Text = Get-Content $path -Raw -Encoding UTF8 }
+    }
+})
+
+$btnLoadSql.Add_Click({
+    if ($lstSqlLib.SelectedItem) {
+        $path = Join-Path $Global:OAISettings.sqlLibraryPath $lstSqlLib.SelectedItem
+        if (Test-Path $path) { $txtSQL.Text = Get-Content $path -Raw -Encoding UTF8 }
+    }
+})
+
+$btnRefreshLib.Add_Click({ Refresh-SqlLibrary })
+
+# Initial populate if path already configured
+Refresh-SqlLibrary
+
+# ── Evaluation History ────────────────────────
+$EvalHistoryPath = Join-Path $ScriptDir 'data\eval_history.json'
+
+function Load-EvalHistory {
+    if (Test-Path $EvalHistoryPath) {
+        try { return @(Get-Content $EvalHistoryPath -Raw -Encoding UTF8 | ConvertFrom-Json) }
+        catch { return @() }
+    }
+    return @()
+}
+
+function Save-EvalHistoryEntry($sql, $overallPct, $verdict) {
+    $dir = Split-Path $EvalHistoryPath
+    if (-not (Test-Path $dir)) { New-Item $dir -ItemType Directory | Out-Null }
+    $history = Load-EvalHistory
+    $entry = [PSCustomObject]@{
+        timestamp   = (Get-Date -Format 'yyyy-MM-dd HH:mm')
+        sql_preview = $sql.Substring(0, [Math]::Min(100, $sql.Length)).Trim() -replace "`r`n",' ' -replace "`n",' '
+        overall_pct = $overallPct
+        verdict     = $verdict
+        sql         = $sql
+    }
+    $history = @($entry) + $history | Select-Object -First 50
+    $history | ConvertTo-Json -Depth 4 | Set-Content $EvalHistoryPath -Encoding UTF8
+}
+
+$btnHistory.Add_Click({
+    $history = Load-EvalHistory
+    if ($history.Count -eq 0) {
+        [System.Windows.Forms.MessageBox]::Show('No evaluation history yet.','History') | Out-Null
+        return
+    }
+
+    $dlgHist = New-Object System.Windows.Forms.Form
+    $dlgHist.Text            = 'Evaluation History'
+    $dlgHist.Size            = New-Object System.Drawing.Size(700, 400)
+    $dlgHist.StartPosition   = 'CenterParent'
+    $dlgHist.FormBorderStyle = 'FixedDialog'
+    $dlgHist.MaximizeBox     = $false
+    $dlgHist.BackColor       = $colBackground
+
+    $lstHist = New-Object System.Windows.Forms.ListBox
+    $lstHist.Location  = New-Object System.Drawing.Point(10, 10)
+    $lstHist.Size      = New-Object System.Drawing.Size(660, 300)
+    $lstHist.Font      = $fontLabel
+    foreach ($e in $history) {
+        [void]$lstHist.Items.Add("$($e.timestamp)  [$($e.overall_pct)]  $($e.sql_preview)")
+    }
+    $dlgHist.Controls.Add($lstHist)
+
+    $btnLoadHist = New-Object System.Windows.Forms.Button
+    $btnLoadHist.Text     = 'Load SQL'
+    $btnLoadHist.Location = New-Object System.Drawing.Point(10, 320)
+    $btnLoadHist.Width    = 100
+    Set-PrimaryButton $btnLoadHist
+    $btnLoadHist.Add_Click({
+        $idx = $lstHist.SelectedIndex
+        if ($idx -ge 0) {
+            $txtSQL.Text = $history[$idx].sql
+            $dlgHist.Close()
+        }
+    })
+
+    $btnCloseHist = New-Object System.Windows.Forms.Button
+    $btnCloseHist.Text     = 'Close'
+    $btnCloseHist.Location = New-Object System.Drawing.Point(118, 320)
+    $btnCloseHist.Width    = 80
+    Set-SecondaryButton $btnCloseHist
+    $btnCloseHist.Add_Click({ $dlgHist.Close() })
+
+    $lstHist.Add_DoubleClick({
+        $idx = $lstHist.SelectedIndex
+        if ($idx -ge 0) { $txtSQL.Text = $history[$idx].sql; $dlgHist.Close() }
+    })
+
+    $dlgHist.Controls.AddRange(@($btnLoadHist, $btnCloseHist))
+    $dlgHist.ShowDialog() | Out-Null
 })

@@ -334,7 +334,7 @@ Requirements: (1) Goal titles start with a verb and are specific to the user's d
     $interestsStr = ($Script:InterestChips | ForEach-Object { "$($_.Name) [$($_.Level)]" }) -join ', '
     $usrMsg = "Domain(s) to improve: $domain`nName: $($Global:Profile.name)`nSkills: $skillsStr`nInterests: $interestsStr`nSWOT Analysis: $swotStr`nDiagnostic MCQ Answers: $answersStr"
 
-    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model='gpt-4.1';SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2500} `
+    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model=$Global:OAISettings.model;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2500;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
         -onDone {
             param($result)
             try {

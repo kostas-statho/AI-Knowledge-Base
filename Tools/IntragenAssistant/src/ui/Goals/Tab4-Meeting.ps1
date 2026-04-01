@@ -209,7 +209,7 @@ Be concise and action-oriented. Replace all bracketed placeholders with real con
     if ($notes) { $usrMsg += "`n`nAdditional Topics:`n$notes" }
 
     $apiKey = $Global:ApiKey
-    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model='gpt-4.1';SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2500} `
+    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model=$Global:OAISettings.model;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2500;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
         -onDone {
             param($result)
             $txtMeetingSummary.Text  = $result[0] -replace "(?<!\r)`n", "`r`n"

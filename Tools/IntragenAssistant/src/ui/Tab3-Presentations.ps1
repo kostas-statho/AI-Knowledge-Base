@@ -257,12 +257,14 @@ Provide concise, actionable advice the user can apply manually in PowerPoint.
     $msgs = @(@{ role = 'system'; content = $sysMsg }) + $Script:PresentChatHistory
 
     $params = @{
-        ApiKey    = $Global:ApiKey
-        Model     = $Global:OAISettings.model
-        SystemMsg = ''; UserMsg = ''
-        MaxTokens = 1500
-        JsonMode  = $false
-        Messages  = $msgs
+        ApiKey      = $Global:ApiKey
+        Model       = $Global:OAISettings.model
+        SystemMsg   = ''; UserMsg = ''
+        MaxTokens   = 1500
+        JsonMode    = $false
+        Messages    = $msgs
+        Temperature = [double]$Global:OAISettings.temperature
+        TopP        = [double]$Global:OAISettings.topP
     }
 
     Invoke-Async $Script:ApiCallScript $params {
@@ -277,11 +279,12 @@ Provide concise, actionable advice the user can apply manually in PowerPoint.
         $rtbPresResponse.Text = $advice
 
         $t = Get-Date -Format 'HH:mm'
-        $lblPresChatStatus.Text = "Suggestion added to notes ($t)"
+        $lblPresChatStatus.Text = "Suggestion added ($t)  ($($result[1]) tokens)"
         $btnApplySuggestion.Enabled = $true
         $txtPresChat.Clear()
     } {
         param($err)
+        Write-ErrorLog "Presentations: $err"
         $lblPresChatStatus.Text     = "Error: $err"
         $btnApplySuggestion.Enabled = $true
     }

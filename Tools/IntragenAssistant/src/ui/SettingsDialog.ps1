@@ -56,6 +56,21 @@ function Show-SettingsDialog {
     $txtSysAppend = Dlg-TextBox $tAPI 232 450
     $txtSysAppend.Text = "$($Global:OAISettings.systemPromptAppend)"
 
+    Dlg-Label 'SQL Library Path (for Tab2 browser):' $tAPI 262
+    $txtSqlLib = Dlg-TextBox $tAPI 280 360
+    $txtSqlLib.Text = "$($Global:OAISettings.sqlLibraryPath)"
+    $btnBrowseSqlLib = New-Object System.Windows.Forms.Button
+    $btnBrowseSqlLib.Text     = 'Browse...'
+    $btnBrowseSqlLib.Location = New-Object System.Drawing.Point(378, 278)
+    $btnBrowseSqlLib.Width    = 80
+    Set-SecondaryButton $btnBrowseSqlLib
+    $btnBrowseSqlLib.Add_Click({
+        $fbd = New-Object System.Windows.Forms.FolderBrowserDialog
+        $fbd.Description = 'Select root folder of your SQL library'
+        if ($fbd.ShowDialog() -eq 'OK') { $txtSqlLib.Text = $fbd.SelectedPath }
+    })
+    $tAPI.Controls.Add($btnBrowseSqlLib)
+
     $btnTestKey = New-Object System.Windows.Forms.Button
     $btnTestKey.Text     = 'Test Key'
     $btnTestKey.Location = New-Object System.Drawing.Point(10, 272)
@@ -185,6 +200,10 @@ function Show-SettingsDialog {
         $Global:OAISettings.temperature        = [double]$txtTemp.Text
         $Global:OAISettings.maxTokens          = [int]$txtMaxTok.Text
         $Global:OAISettings.systemPromptAppend = $txtSysAppend.Text.Trim()
+        if (-not $Global:OAISettings.PSObject.Properties['sqlLibraryPath']) {
+            $Global:OAISettings | Add-Member -NotePropertyName 'sqlLibraryPath' -NotePropertyValue ''
+        }
+        $Global:OAISettings.sqlLibraryPath = $txtSqlLib.Text.Trim()
         $Global:OAISettings | ConvertTo-Json | Set-Content $OAISettingsPath -Encoding UTF8
 
         # Presentation Style
