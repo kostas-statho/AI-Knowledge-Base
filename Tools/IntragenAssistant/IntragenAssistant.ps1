@@ -45,7 +45,7 @@ try {
     . "$ScriptDir\src\ui\Tab4-DocBuilder.ps1"
 
     # ── Launch ────────────────────────────────────
-    . "$ScriptDir\src\Launch.ps1"
+    . "$ScriptDir\src\ui\Launch.ps1"
 } catch {
     [void][System.Windows.Forms.MessageBox]::Show(
         "Startup error:`n`n$_`n`nAt: $($_.InvocationInfo.PositionMessage)",
