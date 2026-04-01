@@ -4,9 +4,10 @@
 $Script:PresentChatHistory = @()
 
 $pnlPres = New-Object System.Windows.Forms.Panel
-$pnlPres.Dock      = 'Fill'
-$pnlPres.Padding   = New-Object System.Windows.Forms.Padding(10)
-$pnlPres.BackColor = $colBackground
+$pnlPres.Dock       = 'Fill'
+$pnlPres.Padding    = New-Object System.Windows.Forms.Padding(10)
+$pnlPres.BackColor  = $colBackground
+$pnlPres.AutoScroll = $true
 $tabPresentations.Controls.Add($pnlPres)
 
 # ── Template section ──────────────────────────
@@ -121,7 +122,7 @@ $grpNotes.Controls.Add($txtPresNotes)
 $grpPresChat = New-Object System.Windows.Forms.GroupBox
 $grpPresChat.Text     = 'Chat (advisory)'
 $grpPresChat.Location = New-Object System.Drawing.Point(0, 340)
-$grpPresChat.Size     = New-Object System.Drawing.Size(920, 80)
+$grpPresChat.Size     = New-Object System.Drawing.Size(920, 155)
 $grpPresChat.Font     = $fontSubhead
 $pnlPres.Controls.Add($grpPresChat)
 
@@ -137,15 +138,27 @@ $btnApplySuggestion.Width    = 160
 Set-SecondaryButton $btnApplySuggestion
 $grpPresChat.Controls.Add($btnApplySuggestion)
 
+$rtbPresResponse = New-Object System.Windows.Forms.RichTextBox
+$rtbPresResponse.Location   = New-Object System.Drawing.Point(10, 54)
+$rtbPresResponse.Size       = New-Object System.Drawing.Size(868, 72)
+$rtbPresResponse.Font       = $fontCaption
+$rtbPresResponse.BackColor  = $colPanel
+$rtbPresResponse.ReadOnly   = $true
+$rtbPresResponse.ScrollBars = 'Vertical'
+$rtbPresResponse.Text       = ''
+$grpPresChat.Controls.Add($rtbPresResponse)
+
 $lblPresChatStatus = New-Object System.Windows.Forms.Label
-$lblPresChatStatus.Location = New-Object System.Drawing.Point(0, 430); $lblPresChatStatus.AutoSize = $true
-$lblPresChatStatus.Font = $fontCaption; $lblPresChatStatus.ForeColor = $colTextMuted
-$pnlPres.Controls.Add($lblPresChatStatus)
+$lblPresChatStatus.Location = New-Object System.Drawing.Point(10, 132)
+$lblPresChatStatus.AutoSize = $true
+$lblPresChatStatus.Font     = $fontCaption
+$lblPresChatStatus.ForeColor = $colTextMuted
+$grpPresChat.Controls.Add($lblPresChatStatus)
 
 # ── Recent ────────────────────────────────────
 $grpRecent = New-Object System.Windows.Forms.GroupBox
 $grpRecent.Text     = 'Recent'
-$grpRecent.Location = New-Object System.Drawing.Point(0, 450)
+$grpRecent.Location = New-Object System.Drawing.Point(0, 505)
 $grpRecent.Size     = New-Object System.Drawing.Size(920, 130)
 $grpRecent.Font     = $fontSubhead
 $pnlPres.Controls.Add($grpRecent)
@@ -260,6 +273,8 @@ Provide concise, actionable advice the user can apply manually in PowerPoint.
         $current = $txtPresNotes.Text.Trim()
         $sep     = if ($current) { "`r`n`r`n--- AI Suggestion ---`r`n" } else { '--- AI Suggestion ---`r`n' }
         $txtPresNotes.Text = $current + $sep + $advice
+
+        $rtbPresResponse.Text = $advice
 
         $t = Get-Date -Format 'HH:mm'
         $lblPresChatStatus.Text = "Suggestion added to notes ($t)"

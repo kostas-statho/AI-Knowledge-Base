@@ -91,7 +91,7 @@ $pnlDoc.Controls.Add($lblOutput)
 
 $rtbDocOutput = New-Object System.Windows.Forms.RichTextBox
 $rtbDocOutput.Location   = New-Object System.Drawing.Point(0, 260)
-$rtbDocOutput.Size       = New-Object System.Drawing.Size(910, 200)
+$rtbDocOutput.Size       = New-Object System.Drawing.Size(910, 260)
 $rtbDocOutput.Font       = $fontCode
 $rtbDocOutput.BackColor  = $colPanel
 $rtbDocOutput.ReadOnly   = $true
@@ -100,7 +100,7 @@ $pnlDoc.Controls.Add($rtbDocOutput)
 
 $btnCopyDoc = New-Object System.Windows.Forms.Button
 $btnCopyDoc.Text     = 'Copy to Clipboard'
-$btnCopyDoc.Location = New-Object System.Drawing.Point(0, 468)
+$btnCopyDoc.Location = New-Object System.Drawing.Point(0, 528)
 $btnCopyDoc.Width    = 150
 Set-SecondaryButton $btnCopyDoc
 $btnCopyDoc.Add_Click({
@@ -113,7 +113,7 @@ $pnlDoc.Controls.Add($btnCopyDoc)
 
 $btnSaveMd = New-Object System.Windows.Forms.Button
 $btnSaveMd.Text     = 'Save as .md'
-$btnSaveMd.Location = New-Object System.Drawing.Point(158, 468)
+$btnSaveMd.Location = New-Object System.Drawing.Point(158, 528)
 $btnSaveMd.Width    = 110
 Set-SecondaryButton $btnSaveMd
 $btnSaveMd.Add_Click({
@@ -129,7 +129,7 @@ $pnlDoc.Controls.Add($btnSaveMd)
 
 $btnSaveHtml = New-Object System.Windows.Forms.Button
 $btnSaveHtml.Text     = 'Save as .html'
-$btnSaveHtml.Location = New-Object System.Drawing.Point(276, 468)
+$btnSaveHtml.Location = New-Object System.Drawing.Point(276, 528)
 $btnSaveHtml.Width    = 120
 Set-SecondaryButton $btnSaveHtml
 $btnSaveHtml.Add_Click({
@@ -171,7 +171,7 @@ $pnlDoc.Controls.Add($btnSaveHtml)
 # ── Chat / Refine ─────────────────────────────
 $grpDocChat = New-Object System.Windows.Forms.GroupBox
 $grpDocChat.Text     = 'Chat / Refine'
-$grpDocChat.Location = New-Object System.Drawing.Point(0, 496)
+$grpDocChat.Location = New-Object System.Drawing.Point(0, 556)
 $grpDocChat.Size     = New-Object System.Drawing.Size(920, 72)
 $grpDocChat.Font     = $fontSubhead
 $pnlDoc.Controls.Add($grpDocChat)

@@ -44,7 +44,7 @@ function Show-SettingsDialog {
     $txtModel = Dlg-TextBox $tAPI 88 220
     $txtModel.Text = $Global:OAISettings.model
 
-    Dlg-Label 'Temperature (0.0–1.0):' $tAPI 118
+    Dlg-Label 'Temperature (0.0–2.0):' $tAPI 118
     $txtTemp = Dlg-TextBox $tAPI 136 80
     $txtTemp.Text = "$($Global:OAISettings.temperature)"
 

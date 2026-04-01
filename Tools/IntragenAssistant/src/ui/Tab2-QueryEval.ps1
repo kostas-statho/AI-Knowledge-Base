@@ -6,9 +6,10 @@ $Script:EvalRound     = 0     # current round (max 5)
 $Script:ScorePanels   = @{}   # dim name → @{track; fill; lblPct; lblStatus}
 
 $pnlQE = New-Object System.Windows.Forms.Panel
-$pnlQE.Dock      = 'Fill'
-$pnlQE.Padding   = New-Object System.Windows.Forms.Padding(10)
-$pnlQE.BackColor = $colBackground
+$pnlQE.Dock        = 'Fill'
+$pnlQE.Padding     = New-Object System.Windows.Forms.Padding(10)
+$pnlQE.BackColor   = $colBackground
+$pnlQE.AutoScroll  = $true
 $tabQueryEval.Controls.Add($pnlQE)
 
 # ── Intent ────────────────────────────────────
@@ -108,7 +109,7 @@ $dimensions = @(
 )
 
 $scoreY = 240
-$barW   = 220
+$barW   = 380
 $rowH   = 24
 
 foreach ($dim in $dimensions) {
@@ -136,14 +137,14 @@ foreach ($dim in $dimensions) {
 
     # Percentage label
     $lblPct = New-Object System.Windows.Forms.Label
-    $lblPct.Location  = New-Object System.Drawing.Point(372, ($scoreY + 4))
+    $lblPct.Location  = New-Object System.Drawing.Point(533, ($scoreY + 4))
     $lblPct.Width     = 40; $lblPct.Font = $fontLabel
     $lblPct.Text      = ''
     $pnlQE.Controls.Add($lblPct)
 
     # Status icon label
     $lblStatus = New-Object System.Windows.Forms.Label
-    $lblStatus.Location  = New-Object System.Drawing.Point(416, ($scoreY + 4))
+    $lblStatus.Location  = New-Object System.Drawing.Point(581, ($scoreY + 4))
     $lblStatus.Width     = 120; $lblStatus.Font = $fontCaption
     $lblStatus.ForeColor = $colTextMuted
     $lblStatus.Text      = ''
@@ -180,12 +181,12 @@ $pnlOverallTrack.Controls.Add($pnlOverallFill)
 $pnlQE.Controls.Add($pnlOverallTrack)
 
 $lblOverallPct = New-Object System.Windows.Forms.Label
-$lblOverallPct.Location = New-Object System.Drawing.Point(372, ($scoreY + 4))
+$lblOverallPct.Location = New-Object System.Drawing.Point(533, ($scoreY + 4))
 $lblOverallPct.Width    = 40; $lblOverallPct.Font = $fontSubhead; $lblOverallPct.Text = ''
 $pnlQE.Controls.Add($lblOverallPct)
 
 $lblOverallVerb = New-Object System.Windows.Forms.Label
-$lblOverallVerb.Location  = New-Object System.Drawing.Point(416, ($scoreY + 4))
+$lblOverallVerb.Location  = New-Object System.Drawing.Point(581, ($scoreY + 4))
 $lblOverallVerb.Width     = 200; $lblOverallVerb.Font = $fontSubhead
 $lblOverallVerb.ForeColor = $colPurple; $lblOverallVerb.Text = ''
 $pnlQE.Controls.Add($lblOverallVerb)
