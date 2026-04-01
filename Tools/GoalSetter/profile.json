@@ -1,0 +1,143 @@
+{
+    "name":  "teamMember",
+    "skills":  [
+                   { "name": "One Identity Tools for IAM senior", "level": "Beginner" },
+                   { "name": "SQL expert", "level": "Beginner" },
+                   { "name": "VB.net junior", "level": "Beginner" }
+               ],
+    "interests":  [
+                      { "name": "Cybersecurity", "level": "Beginner" }
+                  ],
+    "domains":  [],
+    "goals":  [
+                  {
+                      "approach":  "Enroll in Coursera's Presentation Skills course, focusing on slide design modules using PowerPoint to build stronger visual elements. Utilize LinkedIn Learning's series on visual storytelling techniques to enhance narrative structure for presentations.",
+                      "title":  "Design Visually Impactful Slides Using Presentation Tools",
+                      "targetDays":  90,
+                      "hoursPerWeek":  5,
+                      "milestones":  [
+                                         {
+                                             "done":  false,
+                                             "step":  "Draft a sample slide deck on an IAM concept using new design principles by week 2."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Seek feedback on your slide design from a peer or mentor by week 3."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Apply feedback to improve your slides and submit a revised version in the course by week 4."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Watch LinkedIn Learning tutorials on visual storytelling and complete exercises by week 5."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Revise a previous presentation using storytelling techniques by week 7."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Test the revised presentation with a small internal team and gather feedback by week 8."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Final revisions and implementation of received feedback by week 10."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Submit this project as part of your course completion by week 12."
+                                         }
+                                     ]
+                  },
+                  {
+                      "approach":  "Join your local Toastmasters club to regularly practice public speaking. Record yourself delivering cybersecurity-focused speeches and review with feedback from club mentors. Use Speechling for additional practice in vocal clarity and pacing.",
+                      "title":  "Enhance Public Speaking Confidence Through Practice",
+                      "targetDays":  90,
+                      "hoursPerWeek":  5,
+                      "milestones":  [
+                                         {
+                                             "done":  false,
+                                             "step":  "Attend the first Toastmasters meeting and introduce yourself by week 1."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Deliver your first prepared speech on a cybersecurity topic and receive feedback by week 3."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Record and review speech videos using Speechling to improve delivery weekly from week 4."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Deliver a second speech at Toastmasters, focusing on narrative and structure improvements, by week 6."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Integrate feedback on speech delivery and pacing by week 7."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Work on impromptu speaking exercises during meetings to handle quick topic changes by week 8."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Deliver a final Toastmasters speech incorporating all learned techniques by week 10."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Collect feedback from peers and mentors and create a presentation improvement plan by week 11."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Reflect on improvements and plan to apply them in external settings by week 12."
+                                         }
+                                     ]
+                  },
+                  {
+                      "approach":  "Utilize your SQL and VB.net skills to create a dynamic cybersecurity dashboard prototype. Use GitHub for version control and collaboration, and schedule a presentation at a cybersecurity meetup to showcase the project.",
+                      "title":  "Develop and Present a Cybersecurity Dashboard Project",
+                      "targetDays":  90,
+                      "hoursPerWeek":  5,
+                      "milestones":  [
+                                         {
+                                             "done":  false,
+                                             "step":  "Draft a project outline detailing the dashboard\u0027s features using SQL and VB.net by week 1."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Begin project development by setting up a GitHub repository and upload initial SQL scripts by week 2."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Create a basic UI for live data visualization with VB.net by week 3."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Incorporate interactivity features allowing dynamic data analysis by week 5."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Conduct a two-stage internal review for technical feedback by week 6."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Revise the dashboard based on feedback and conduct testing by week 8."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Finalize the dashboard for public presentation by week 9."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Submit a proposal to present the project at a local cybersecurity meetup by week 10."
+                                         },
+                                         {
+                                             "done":  false,
+                                             "step":  "Conduct a full rehearsal and refine based on peer feedback by week 11."
+                                         }
+                                     ]
+                  }
+              ],
+    "lastUpdated":  "2026-03-17"
+}

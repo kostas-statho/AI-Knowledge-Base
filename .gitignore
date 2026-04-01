@@ -17,3 +17,16 @@ project.lock.json
 # OS
 Thumbs.db
 desktop.ini
+
+# Claude Code local overrides
+.claude/settings.local.json
+
+# OIM SDK (too large to commit)
+OneIdentityManager9.3/
+OneIdentityManager9.3.zip
+
+# Personal workspace (local only)
+Personal/
+
+# Academy — raw training source, 1,280 files, too large for GitHub HTTP push
+Academy/

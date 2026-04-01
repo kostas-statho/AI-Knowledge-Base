@@ -1,0 +1,22 @@
+{
+  "name": "Alex Chen",
+  "skills": [
+    "Active Directory administration",
+    "Azure AD / Entra ID",
+    "PowerShell scripting",
+    "MFA and Conditional Access policies",
+    "LDAP and directory services",
+    "Role-based access control (RBAC)",
+    "ServiceNow ticketing",
+    "Basic Python scripting"
+  ],
+  "interests": [
+    "Zero Trust architecture",
+    "Cloud security automation",
+    "DevSecOps integration",
+    "Privileged Access Management (PAM)",
+    "Security certifications (SC-300, CISM)"
+  ],
+  "goals": [],
+  "lastUpdated": "2026-03-17"
+}

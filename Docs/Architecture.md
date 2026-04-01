@@ -5,7 +5,7 @@
 | Project | Type | Purpose |
 |---|---|---|
 | `Plugins/CCC_BulkActions` | C# .NET 8.0 | Bulk CSV import/action endpoints for OIM Web Portal |
-| `Plugins/DataExplorerEndpoints` | C# .NET 8.0 | Data Explorer API endpoints (membership removal) |
+| `Plugins/DataExplorerEndpoints` | C# .NET 8.0 | Data Explorer API endpoints (attestation, membership removal, main data update) |
 | `Plugins/StathopoulosK.Plugin` | C# .NET 8.0 | Learning/sample plugin with API exercises |
 | `PowerShell/OIM_ExportTool` | PowerShell | Extracts and processes OIM Transport ZIP files |
 
@@ -20,65 +20,189 @@ All projects target `.NET 8.0`. DLL dependencies come from:
 C:\Program Files\One Identity\One Identity Manager\
 ```
 
-Build:
+Key DLLs (all referenced via `<HintPath>` in .csproj — no NuGet):
+- `QBM.CompositionApi.dll` — core composition API
+- `QBM.CompositionApi.Server.dll` — server-side extensions
+- `QER.CompositionApi.dll` — portal project types
+- `QER.CompositionApi.Server.PlugIn.dll` — plugin discovery
+- `VI.Base.dll` — OIM base utilities
+- `VI.DB.dll` — database access (Query, Entity, UnitOfWork)
+
+Build commands:
 ```bash
 dotnet build CCC_BulkActions.sln
 dotnet build DataExplorerEndpoints.sln
 dotnet build StathopoulosK.CompositionApi.Server.Plugin.sln
 ```
 
-Deploy the built `.dll` to the OIM API Server plugin directory.
+Deploy: copy `*.CompositionApi.Server.Plugin.dll` to the OIM API Server plugin directory, then restart the API Server service.
+
+### Why HintPath, not NuGet
+
+OIM DLLs are not published to NuGet. They ship with the OIM installation and must be referenced directly:
+
+```xml
+<Reference Include="QBM.CompositionApi">
+  <HintPath>..\..\..\..\..\Program Files\One Identity\One Identity Manager\QBM.CompositionApi.dll</HintPath>
+</Reference>
+```
+
+Use `templates/oim_plugin.csproj` as the starting point — it already has all required references.
 
 ### Plugin Registration
 
-Entry point implements `IPlugInMethodSetProvider`. It:
-1. Creates a `MethodSet` with an `AppId`
-2. Wires up all `IApiProvider` implementations via `IExtensibilityService.FindAttributeBasedApiProviders<T>()`
-3. Sets `SessionConfig`
+```
+IPlugInMethodSetProvider          ← discovered by API Server on startup
+    └─> IMethodSetProvider        ← wires up all endpoints
+         └─> IExtensibilityService.FindAttributeBasedApiProviders<T>()
+              └─> IApiProvider (×N)    ← one class per endpoint
+```
+
+ASCII diagram:
+
+```
+API Server startup
+      │
+      ▼
+ [assembly: Module("CCC")]
+ CustomApiPlugin : IPlugInMethodSetProvider
+      │  .Build(resolver)
+      ▼
+ MyCCCPlugin : IMethodSetProvider
+      │  new MethodSet { AppId = "MyPlugin" }
+      │  svc.FindAttributeBasedApiProviders<MyCCCPlugin>()
+      │       ─────────────────────────────────
+      │       discovers all classes in this assembly that implement
+      │       IApiProviderFor<PortalApiProject> + IApiProvider
+      ▼
+ [MyFeatureAction, MyFeatureValidate, ...]
+      │  each .Build(IApiBuilder) registers one endpoint
+      ▼
+ Method.Define("webportalplus/myfeature/action")
+ .Handle<PostedID, object>("POST", async (posted, qr, ct) => { ... })
+```
 
 ### Endpoint Classes
 
-Each endpoint is a separate class implementing `IApiProvider` + `IApiProviderFor<TProject>`.
-
-The `Build(IApiBuilder builder)` method registers one endpoint:
+Each endpoint is a separate class:
 
 ```csharp
-builder.AddMethod(Method.Define("webportalplus/myfeature/action")
-    .Handle<PostedID, object>("POST", async (posted, qr, ct) =>
+public class MyFeatureAction :
+    IApiProviderFor<QER.CompositionApi.Portal.PortalApiProject>, IApiProvider
+{
+    public void Build(IApiBuilder builder)
     {
-        string uid = qr.Session.User().Uid;
-        var q = Query.From("TableName").Select("Column").Where($"...");
-        var result = await qr.Session.Source().TryGetAsync(q, EntityLoadType.DelayedLogic, ct);
+        builder.AddMethod(Method.Define("webportalplus/myfeature/action")
+            .Handle<PostedID, object>("POST", async (posted, qr, ct) =>
+            {
+                string uid = qr.Session.User().Uid;
 
-        using var u = qr.Session.StartUnitOfWork();
-        await u.PutAsync(entity, ct);
-        await u.CommitAsync(ct);
-    }));
+                // DB read
+                var q = Query.From("TableName").Select("Column").Where($"...");
+                var result = await qr.Session.Source()
+                    .TryGetAsync(q, EntityLoadType.DelayedLogic, ct)
+                    .ConfigureAwait(false);
+
+                // DB write
+                using var u = qr.Session.StartUnitOfWork();
+                await u.PutAsync(entity, ct).ConfigureAwait(false);
+                await u.CommitAsync(ct).ConfigureAwait(false);
+            }));
+    }
+}
 ```
 
 Key session helpers:
 - `qr.Session.User().Uid` — current user UID
 - `qr.Session.Source()` — DB access (`TryGetAsync`, `ExistsAsync`, `CreateNewAsync`)
 - `qr.Session.Config().GetConfigParmAsync("Custom\\Path\\...", ct)` — config params
-- All DB calls use `.ConfigureAwait(false)`
-- Namespace: `QBM.CompositionApi`
+- `qr.Session.Resolve<IStatementRunner>()` — raw SQL execution
 
 ### Bulk Action Lifecycle (4-Endpoint Contract)
 
 Web portal calls these endpoints in sequence for bulk CSV operations:
 
-| Suffix | Method | Purpose |
-|---|---|---|
-| `/startaction` | POST | Pre-flight: returns `{ message, permission, collectImportData? }` |
-| `/validate` | POST | Per-row: returns `object[]` with `{ column }` or `{ column, errorMsg }` |
-| `/action` | POST | Per-row: performs the actual DB write/delete |
-| `/endaction` | POST | Post-flight: receives import stats, returns summary message |
+```
+Web Portal
+    │
+    ▼
+POST /startaction    { headerNames[], totalRows }
+    │  ← { message, permission, collectImportData? }
+    │
+    ▼ (for each CSV row)
+POST /validate       { index, columns[{ column, value }] }
+    │  ← object[] — [{ column } | { column, errorMsg }]
+    │
+    ▼ (for each valid row)
+POST /action         { index, columns[{ column, value }] }
+    │  ← void
+    │
+    ▼
+POST /endaction      { totalRows, SuccessfulRowsCount, ErrorRowsCount, ... }
+    └─ ← { message, allImported, ... stats }
+```
 
 All web portal endpoints are registered under `webportalplus/` and implement `IApiProviderFor<PortalApiProject>`.
 
-### String Formatting Note
+---
 
-Use `$"..."` interpolation (not `string.Format`) when the string contains `\n` line breaks — `Format` with verbatim strings produces `\\n` instead of `\n`.
+## Common Pitfalls
+
+### 1. Missing ConfigureAwait(false)
+
+```csharp
+// WRONG — can cause deadlocks in library code
+var result = await qr.Session.Source().TryGetAsync(q, EntityLoadType.DelayedLogic, ct);
+
+// CORRECT — always on every await
+var result = await qr.Session.Source().TryGetAsync(q, EntityLoadType.DelayedLogic, ct)
+    .ConfigureAwait(false);
+```
+
+### 2. string.Format with \n
+
+```csharp
+// WRONG — produces \\n instead of \n in the response
+{ "message", string.Format(@"Row {0} failed.\nCheck the value.", index) }
+
+// CORRECT — use $ interpolation
+{ "message", $"Row {index} failed.\nCheck the value." }
+```
+
+### 3. Not checking TryGetAsync success
+
+```csharp
+// WRONG — .Result throws if !Success
+var entity = (await qr.Session.Source().TryGetAsync(q, ..., ct)).Result;
+
+// CORRECT
+var tryGet = await qr.Session.Source().TryGetAsync(q, EntityLoadType.DelayedLogic, ct)
+    .ConfigureAwait(false);
+if (!tryGet.Success) throw new InvalidOperationException("Not found.");
+var entity = tryGet.Result;
+```
+
+### 4. Writing outside a UnitOfWork
+
+```csharp
+// WRONG — direct SaveAsync works but bypasses UoW tracking
+await entity.SaveAsync(qr.Session, ct).ConfigureAwait(false);
+
+// CORRECT — use UnitOfWork for all writes
+using var u = qr.Session.StartUnitOfWork();
+await u.PutAsync(entity, ct).ConfigureAwait(false);
+await u.CommitAsync(ct).ConfigureAwait(false);
+```
+
+### 5. DLL output conflict
+
+If the build copies OIM DLLs to the output folder (causing assembly conflicts), add to .csproj:
+```xml
+<Reference Include="QBM.CompositionApi">
+  <HintPath>...</HintPath>
+  <Private>false</Private>  <!-- prevents copy to output -->
+</Reference>
+```
 
 ---
 
@@ -129,9 +253,15 @@ MainPsModule.ps1
 - `PasswordEncryption.psm1` — handles `[E]`-prefixed encrypted passwords
 - `Encrypt-Password.ps1` — utility to pre-encrypt a password
 
+### PowerShell 5.1 Compatibility Notes
+
+- Use `[ValidateNotNullOrEmpty()]` not `[ValidateNotNullOrWhiteSpace()]` (PS 6.0+ only)
+- Wrap `Get-ChildItem` results with `@()` — returns single object (not array) for 1 result in PS5.1
+- Use `New-Object GenericType[T](args)` not `[GenericType[T]]::new(args)` constructor overloads
+
 ### Adding a New Object Type
 
-Each object type needs three modules following the naming pattern:
+Each object type needs three modules:
 - `<Type>_Main_PsModule.psm1` — orchestrates the type's export
 - `<Type>_XmlParser.psm1` — parses the XML from the ZIP
 - `<Type>_Exporter_PsModule.psm1` — writes the output files

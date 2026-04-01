@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f4;padding:20px 0;">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" border="0"
+           style="background:#fff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);overflow:hidden;">
+
+      <!-- Header -->
+      <tr><td style="background:#D9534F;padding:24px 32px;">
+        <p style="margin:0;font-size:11px;color:#FFD0CE;letter-spacing:1.5px;
+                   text-transform:uppercase;">One Identity Manager — Automated Alert</p>
+        <h1 style="margin:6px 0 0;color:#fff;font-size:20px;font-weight:700;">
+          AAD Account Missing EXO Mailbox</h1>
+      </td></tr>
+
+      <!-- Body -->
+      <tr><td style="padding:28px 32px;">
+        <p style="margin:0 0 16px;font-size:15px;color:#333;">Hello IT Service Desk,</p>
+        <p style="margin:0 0 20px;font-size:14px;color:#555;line-height:1.6;">
+          An Azure AD account has been active for <strong>more than 1 hour</strong>
+          without an associated Exchange Online mailbox being provisioned.
+          Please investigate immediately.</p>
+
+        <!-- Account detail block -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="background:#F9F5FC;border-left:4px solid #7B2D8B;border-radius:4px;margin-bottom:24px;">
+          <tr><td style="padding:16px 20px;">
+            <p style="margin:0 0 8px;font-size:10px;color:#7B2D8B;font-weight:700;
+                       letter-spacing:1px;text-transform:uppercase;">Account Details</p>
+            <table width="100%" cellpadding="4" cellspacing="0" border="0">
+              <tr>
+                <td style="font-size:12px;color:#888;width:160px;">Display Name</td>
+                <td style="font-size:13px;color:#222;font-weight:600;">$DisplayName$</td>
+              </tr>
+              <tr>
+                <td style="font-size:12px;color:#888;">User Principal Name</td>
+                <td style="font-size:13px;color:#222;">$UserPrincipalName$</td>
+              </tr>
+              <tr>
+                <td style="font-size:12px;color:#888;">Created (UTC)</td>
+                <td style="font-size:13px;color:#222;">$XDateInserted$</td>
+              </tr>
+              <tr>
+                <td style="font-size:12px;color:#888;">Account Disabled</td>
+                <td style="font-size:13px;color:#222;">$AccountDisabled$</td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+
+        <!-- Actions -->
+        <p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#333;">
+          Recommended Actions</p>
+        <ol style="margin:0 0 20px 20px;font-size:13px;color:#555;line-height:1.8;">
+          <li>Check the M365 Admin Centre for the user's licence and provisioning state.</li>
+          <li>Verify an Exchange Online plan is assigned to this user.</li>
+          <li>Review OIM Azure connector sync logs for provisioning errors.</li>
+          <li>Re-provision via OIM Web Portal if the automated sync has stalled.</li>
+        </ol>
+
+        <!-- Escalation warning -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="background:#FFF8E1;border-left:4px solid #F59E0B;border-radius:4px;margin-bottom:24px;">
+          <tr><td style="padding:12px 16px;font-size:13px;color:#7A5800;">
+            <strong>Note:</strong> If no mailbox is provisioned within 4 hours of account
+            creation, an escalation email will be sent automatically to the IT Manager.
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- Footer -->
+      <tr><td style="background:#F5F5F5;padding:12px 32px;font-size:11px;color:#999;
+                      border-top:1px solid #E0E0E0;">
+        Automated notification — One Identity Manager. Do not reply.
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OIM Process Chain — AAD No-Mailbox (Quick Ref)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+:root{--purple:#7B2D8B;--purple-dark:#5C1F6B;--teal:#007B77;--body-bg:#FAF8F5;--code-bg:#1E1E1E;--border:#DDD;--text:#2C2C2C;--muted:#6B6B6B;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#DDDDD5;color:var(--text);font-size:13px;line-height:1.65;}
+.page{background:var(--body-bg);width:210mm;min-height:297mm;margin:20px auto;position:relative;box-shadow:0 4px 24px rgba(0,0,0,.18);overflow:hidden;}
+.intragen-logo{position:absolute;top:24px;right:28px;font-size:15px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;z-index:10;}
+.logo-dot{color:#F0A800;}
+.page-footer{position:absolute;bottom:18px;left:32px;right:32px;display:flex;justify-content:space-between;align-items:center;font-size:9px;color:#999;border-top:1px solid #DDD;padding-top:6px;}
+/* Cover */
+.cover-page{min-height:297mm;}
+.title-badge{position:absolute;top:110px;left:44px;background:var(--purple);color:#fff;font-size:20px;font-weight:700;padding:18px 28px;border-radius:10px;max-width:340px;line-height:1.35;}
+.cover-subtitle{position:absolute;top:240px;left:44px;color:var(--muted);font-size:14px;font-weight:300;}
+.cover-version{position:absolute;top:268px;left:44px;color:var(--muted);font-size:12px;}
+.cover-tag{position:absolute;top:300px;left:44px;background:#F0EDE8;border:1px solid var(--border);border-radius:3px;padding:3px 10px;font-size:11px;color:var(--muted);letter-spacing:.5px;}
+.circle-blue{position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(180,210,225,.5);top:140px;right:-50px;}
+.circle-peach{position:absolute;width:340px;height:340px;border-radius:50%;background:rgba(230,185,165,.4);bottom:-100px;right:-70px;}
+.circle-yellow{position:absolute;width:100px;height:100px;border-radius:50%;background:rgba(235,220,160,.5);bottom:90px;left:70px;}
+/* Content */
+.content-page{padding:40px 46px 72px;}
+.section-banner{background:var(--purple-dark);color:#fff;font-size:11px;font-weight:700;letter-spacing:.8px;padding:7px 12px;margin-bottom:14px;margin-top:8px;}
+.section-banner .section-num{opacity:.7;margin-right:5px;}
+.subsection-title{font-size:10px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:#444;margin:14px 0 6px;border-top:1.5px solid #C0B0C0;padding-top:8px;}
+.label-teal{display:block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal);border-bottom:1px dotted var(--teal);padding-bottom:2px;margin:10px 0 5px;}
+p{margin-bottom:8px;font-size:13px;}
+ul,ol{margin:4px 0 8px 18px;font-size:13px;}
+li{margin-bottom:2px;}
+li::marker{color:var(--purple);}
+.code-block{background:var(--code-bg);color:#D4D4D4;font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:11px;line-height:1.45;padding:11px 13px;border-radius:4px;overflow-x:auto;margin:7px 0 10px;white-space:pre;}
+code{background:#EDE8F0;color:#8B2080;font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:11px;padding:1px 4px;border-radius:3px;}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:12px;}
+th{background:var(--purple-dark);color:#fff;padding:6px 10px;text-align:left;font-size:10.5px;font-weight:600;letter-spacing:.3px;}
+td{padding:5px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
+tr:nth-child(even) td{background:rgba(0,0,0,.02);}
+td.diff{background:#F0FDF4;font-weight:600;color:#166534;}
+.callout{padding:9px 12px;border-radius:0 4px 4px 0;margin:8px 0;font-size:12px;}
+.callout strong{display:block;margin-bottom:2px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;}
+.callout-note{background:#E8F4FF;border-left:3px solid #2D6DB5;}
+.callout-warn{background:#FFF8E1;border-left:3px solid #F59E0B;}
+.callout-important{background:#F5EFF8;border-left:3px solid var(--purple);}
+.callout-tip{background:#F0FDF4;border-left:3px solid #22C55E;}
+.state-flow{display:flex;flex-wrap:wrap;gap:3px;align-items:center;margin:6px 0 10px;font-size:11.5px;}
+.state-box{background:#fff;border:1px solid var(--border);border-radius:3px;padding:2px 8px;font-family:monospace;font-size:11px;}
+.state-arrow{color:#888;font-size:12px;}
+/* Compact flow diagram */
+.flow-row{display:flex;align-items:center;gap:6px;margin:8px 0;}
+.flow-cond{background:#F5EFF8;border:1.5px solid var(--purple);border-radius:5px;padding:7px 14px;font-size:11.5px;flex:1;text-align:center;}
+.flow-action{background:#fff;border:1.5px solid var(--teal);border-radius:5px;padding:7px 14px;font-size:11.5px;flex:1;text-align:center;}
+.flow-label{font-size:9.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:2px;}
+.flow-label-purple{color:var(--purple);}
+.flow-label-teal{color:var(--teal);}
+.flow-connector{display:flex;flex-direction:column;align-items:center;color:#AAA;font-size:14px;flex-shrink:0;}
+/* Two-column layout for paired config */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 12px;}
+.col-card{border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.col-card-header{background:var(--purple-dark);color:#fff;font-size:10px;font-weight:700;letter-spacing:.6px;padding:5px 10px;text-transform:uppercase;}
+.col-card-body{padding:8px 10px;font-size:12px;}
+.col-card-body table{margin:0;}
+.col-card-body th{font-size:10px;}
+.col-card-body td{font-size:11.5px;padding:4px 8px;}
+@media print{body{background:#fff;}.page{box-shadow:none;margin:0;width:100%;page-break-after:always;}.page:last-child{page-break-after:auto;}}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="page cover-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="circle-blue"></div>
+  <div class="circle-peach"></div>
+  <div class="circle-yellow"></div>
+  <div class="title-badge">OIM Process Chain<br/>AAD No-Mailbox<br/>Alerting</div>
+  <div class="cover-subtitle">One Identity Manager — Quick Reference Guide</div>
+  <div class="cover-version">Version 1.0 &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; OIM 9.3</div>
+  <div class="cover-tag">SIMPLIFIED EDITION</div>
+  <div class="page-footer">
+    <span>OIM Process Chain — AAD No-Mailbox Alerting (Quick Ref)</span>
+    <span>© Intragen International. This document remains strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- PAGE 1 — Overview + Prerequisites -->
+<div class="page content-page" id="page-1">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">1.</span> PROCESS FLOW &amp; PREREQUISITES</div>
+
+  <!-- Flow -->
+  <div class="subsection-title">Three-Stage Flow</div>
+
+  <div class="flow-row">
+    <div class="flow-cond"><div class="flow-label flow-label-purple">Gen Condition</div>New AAD account — no <code>O3EMailbox</code> row — &gt; 1 hour old</div>
+    <div class="flow-connector">→</div>
+    <div class="flow-action"><div class="flow-label flow-label-teal">Send Email</div><code>CCC_AAD_NoMailbox_Alert</code><br/><span style="font-size:10.5px;color:var(--muted);">→ Service Desk</span></div>
+  </div>
+  <div class="flow-row" style="margin-left:48%;">
+    <div class="flow-connector" style="transform:rotate(90deg);margin:0 0 4px 0;">↓</div>
+  </div>
+  <div class="flow-row">
+    <div class="flow-cond"><div class="flow-label flow-label-purple">Gen Condition</div>Same account — still no mailbox — &gt; 4 hours old</div>
+    <div class="flow-connector">→</div>
+    <div class="flow-action"><div class="flow-label flow-label-teal">Send 2nd Email</div><code>CCC_AAD_NoMailbox_Escalation</code><br/><span style="font-size:10.5px;color:var(--muted);">→ IT Manager</span></div>
+  </div>
+
+  <div class="callout callout-important" style="margin-top:10px;">
+    <strong>Pattern: Process Automation (not event-based)</strong>
+    Both "Gen Conditions" are <strong>Process Automations</strong> — scheduled SQL queries that find matching objects and trigger a regular Process per object. Each stage is independent: two automations, two processes, two deduplication flags.
+  </div>
+
+  <!-- Prerequisites as compact checklist -->
+  <div class="subsection-title">Prerequisites Checklist</div>
+  <table>
+    <thead><tr><th>What</th><th>Where in Designer</th><th>Values / Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Mail template — Alert</td><td>Base Data → Notifications → Mail templates</td><td><code>CCC_AAD_NoMailbox_Alert</code> — base obj <code>AADUser</code></td></tr>
+      <tr><td>Mail template — Escalation</td><td>Base Data → Notifications → Mail templates</td><td><code>CCC_AAD_NoMailbox_Escalation</code> — base obj <code>AADUser</code></td></tr>
+      <tr><td>Schema column</td><td>One Identity Manager Schema → Schema extensions → AADUser</td><td><code>CCC_IsFirstAlertSent</code> — Bool, default <code>0</code></td></tr>
+      <tr><td>Schema column</td><td>One Identity Manager Schema → Schema extensions → AADUser</td><td><code>CCC_IsEscalationSent</code> — Bool, default <code>0</code></td></tr>
+      <tr><td>Config param — Service Desk</td><td>Base Data → Configuration parameters</td><td><code>Custom\AAD\Notifications\ServiceDeskEmail</code></td></tr>
+      <tr><td>Config param — IT Manager</td><td>Base Data → Configuration parameters</td><td><code>Custom\AAD\Notifications\ITManagerEmail</code></td></tr>
+      <tr><td>Hourly schedule</td><td>Base Data → Schedules</td><td>Any existing 1-hour schedule, or create one</td></tr>
+      <tr><td>SMTP server</td><td>Base Data → General → Mail connections</td><td>Verify with a test send before building processes</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warn">
+    <strong>Schema Compile</strong>
+    After adding the two custom columns, run <strong>Database → Commit to database</strong>. The columns will not appear in process parameters until this is done.
+  </div>
+
+  <div class="page-footer">
+    <span>Page 1 — Process Flow &amp; Prerequisites</span>
+    <span>© Intragen International. This document remains strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- PAGE 2 — Both Automations + Both Processes -->
+<div class="page content-page" id="page-2">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">2.</span> PROCESS AUTOMATION &amp; PROCESSES — DESIGNER CONFIGURATION</div>
+
+  <!-- Both Automations side by side -->
+  <div class="subsection-title">Step A — Create Both Process Automations</div>
+  <div class="state-flow">
+    <span class="state-box">Process Orchestration</span><span class="state-arrow">→</span>
+    <span class="state-box">Process automation</span><span class="state-arrow">→</span>
+    <span class="state-box">New (×2)</span>
+  </div>
+
+  <table>
+    <thead><tr><th>Field</th><th>Alert Automation</th><th>Escalation Automation</th></tr></thead>
+    <tbody>
+      <tr><td>Name</td><td><code>CCC_AAD_AutomationAlert</code></td><td><code>CCC_AAD_AutomationEscalation</code></td></tr>
+      <tr><td>Object type</td><td colspan="2" style="text-align:center;"><code>AADUser</code></td></tr>
+      <tr><td>Process</td><td><code>CCC_AAD_SendNoMailboxAlert</code></td><td><code>CCC_AAD_SendNoMailboxEscalation</code></td></tr>
+      <tr><td>Schedule</td><td colspan="2" style="text-align:center;">Every 1 hour</td></tr>
+      <tr><td>Enabled</td><td colspan="2" style="text-align:center;">Yes</td></tr>
+      <tr><td>SQL time threshold</td><td class="diff">DATEADD(HOUR, <strong>-1</strong>, GETUTCDATE())</td><td class="diff">DATEADD(HOUR, <strong>-4</strong>, GETUTCDATE())</td></tr>
+      <tr><td>SQL dedup flag</td><td class="diff"><code>CCC_IsFirstAlertSent</code></td><td class="diff"><code>CCC_IsEscalationSent</code></td></tr>
+    </tbody>
+  </table>
+
+  <span class="label-teal">SQL Query Template (apply threshold and flag from table above)</span>
+  <div class="code-block">UID_AADUser NOT IN (SELECT UID_AADUser FROM O3EMailbox WHERE UID_AADUser IS NOT NULL)
+AND XDateInserted &lt; <span style="color:#FFD700;">{THRESHOLD}</span>
+AND XDateInserted &gt; DATEADD(HOUR, -48, GETUTCDATE())
+AND ISNULL(<span style="color:#FFD700;">{FLAG_COLUMN}</span>, 0) = 0</div>
+
+  <div class="callout callout-note">
+    <strong>O3EMailbox — Verified Table Name</strong>
+    <code>O3EMailbox</code> is the Exchange Online mailbox table in OIM 9.3. It has a direct <code>UID_AADUser</code> FK. Do not use <code>EX0MailBox</code> (on-prem) or <code>O365Mailbox</code>.
+  </div>
+
+  <!-- Both Processes side by side -->
+  <div class="subsection-title">Step B — Create Both Processes</div>
+  <div class="state-flow">
+    <span class="state-box">Process Orchestration</span><span class="state-arrow">→</span>
+    <span class="state-box">Processes</span><span class="state-arrow">→</span>
+    <span class="state-box">New (×2)</span>
+  </div>
+
+  <p style="margin-bottom:6px;">Both processes follow the same 2-step structure. Create the alert process first; duplicate and adjust for escalation.</p>
+
+  <table>
+    <thead><tr><th>Field / Step</th><th>Alert Process</th><th>Escalation Process</th></tr></thead>
+    <tbody>
+      <tr><td>Process name</td><td><code>CCC_AAD_SendNoMailboxAlert</code></td><td><code>CCC_AAD_SendNoMailboxEscalation</code></td></tr>
+      <tr><td>Object type</td><td colspan="2" style="text-align:center;"><code>AADUser</code> — Event: blank — Gen Condition: blank</td></tr>
+      <tr><td><strong>Step 1</strong> — name</td><td><code>Send_AlertEmail</code></td><td><code>Send_EscalationEmail</code></td></tr>
+      <tr><td>Step 1 — component</td><td colspan="2" style="text-align:center;">Notifications / Mail</td></tr>
+      <tr><td>Step 1 — template</td><td class="diff"><code>CCC_AAD_NoMailbox_Alert</code></td><td class="diff"><code>CCC_AAD_NoMailbox_Escalation</code></td></tr>
+      <tr><td>Step 1 — recipient</td><td class="diff">Config: <code>…\ServiceDeskEmail</code></td><td class="diff">Config: <code>…\ITManagerEmail</code></td></tr>
+      <tr><td><strong>Step 2</strong> — name</td><td><code>Set_AlertSentFlag</code></td><td><code>Set_EscalationSentFlag</code></td></tr>
+      <tr><td>Step 2 — component</td><td colspan="2" style="text-align:center;">SQL / HandleObject</td></tr>
+      <tr><td>Step 2 — sets</td><td class="diff"><code>CCC_IsFirstAlertSent = 1</code></td><td class="diff"><code>CCC_IsEscalationSent = 1</code></td></tr>
+      <tr><td>Step 2 — WhereClause</td><td colspan="2" style="text-align:center;"><code>UID_AADUser = '$UID_AADUser$'</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-tip">
+    <strong>Optional — Pre-Script on Step 1 (recommended)</strong>
+    Adds a late-check: if an <code>O3EMailbox</code> row appeared between automation query and step execution, skip the email. Step 2 still runs to prevent re-queuing.
+    <div class="code-block" style="margin-top:6px;">Dim count As Integer = Session.Source().Count("O3EMailbox", "UID_AADUser = '$UID_AADUser$'")
+If count &gt; 0 Then Return False
+Return True</div>
+  </div>
+
+  <div class="page-footer">
+    <span>Page 2 — Process Automation &amp; Processes</span>
+    <span>© Intragen International. This document remains strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- PAGE 3 — Commit & Verification -->
+<div class="page content-page" id="page-3">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">3.</span> COMMIT &amp; VERIFICATION</div>
+
+  <div class="subsection-title">Commit to Database</div>
+  <ol>
+    <li>Click <strong>Commit to database</strong> (Designer toolbar, top left).</li>
+    <li>Confirm both automations appear in <strong>Process Orchestration → Process automation</strong>.</li>
+    <li>Confirm both processes appear in <strong>Process Orchestration → Processes</strong>.</li>
+    <li>Confirm custom columns exist: <strong>Schema Browser → AADUser</strong> → search <code>CCC_Is</code>.</li>
+  </ol>
+
+  <div class="subsection-title">End-to-End Test (Alert)</div>
+  <ol>
+    <li>Create a test <code>AADUser</code> with no linked <code>O3EMailbox</code> row.</li>
+    <li>Temporarily set the threshold to <code>0 MINUTE</code> in <code>CCC_AAD_AutomationAlert</code>.</li>
+    <li>Right-click the automation → <strong>Run now</strong>.</li>
+    <li>Watch <strong>Job Queue Info</strong> — both steps reach <code>Finished</code>.</li>
+    <li>Check the Service Desk inbox. Verify tokens resolved (no literal <code>$DisplayName$</code>).</li>
+    <li>Confirm <code>CCC_IsFirstAlertSent = 1</code> in the database.</li>
+    <li>Run the automation again — account must <em>not</em> be re-queued.</li>
+    <li>Restore threshold to <code>-1 HOUR</code>. Repeat steps 1–7 for the escalation automation.</li>
+  </ol>
+
+  <div class="subsection-title">Verification Checklist</div>
+  <table>
+    <thead><tr><th>Test</th><th>Expected</th><th>&#10003;</th></tr></thead>
+    <tbody>
+      <tr><td>Alert automation collects test account</td><td>Process queued in Job Queue Info</td><td></td></tr>
+      <tr><td>Alert email delivered to Service Desk</td><td>Subject and all tokens correct</td><td></td></tr>
+      <tr><td><code>CCC_IsFirstAlertSent = 1</code></td><td>Confirmed in AADUser table</td><td></td></tr>
+      <tr><td>No re-send on second automation run</td><td>Flag excludes account from query</td><td></td></tr>
+      <tr><td>Pre-Script skips if mailbox appears mid-run</td><td>Step 1 returns False; Step 2 still sets flag</td><td></td></tr>
+      <tr><td>Escalation automation collects &gt;4hr accounts</td><td>Only accounts past 4-hour mark collected</td><td></td></tr>
+      <tr><td>Escalation email delivered to IT Manager</td><td>Dark red header, correct escalation tone</td><td></td></tr>
+      <tr><td><code>CCC_IsEscalationSent = 1</code></td><td>Neither automation re-picks the account</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection-title">Troubleshooting Quick-Reference</div>
+  <table>
+    <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>Automation never picks up objects</td><td>Run SQL directly in SSMS. Check <code>O3EMailbox</code> has a matching <code>UID_AADUser</code> column (Schema Browser). Temporarily remove the time threshold.</td></tr>
+      <tr><td>Process queued but no email arrives</td><td>Check <strong>Base Data → Mail Server</strong> and send a test email. Verify config param values.</td></tr>
+      <tr><td>Token renders as <code>$DisplayName$</code></td><td>Base object on the template must be <code>AADUser</code>. Cross-check column name in Schema Browser.</td></tr>
+      <tr><td>Same account emailed every run</td><td><code>Set_*Flag</code> step is failing. Check Job Queue for that step — inspect error, fix WhereClause.</td></tr>
+      <tr><td>Custom columns missing in process params</td><td>Run <strong>Database → Commit to database</strong> after schema extension compile.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer">
+    <span>Page 3 — Commit &amp; Verification</span>
+    <span>© Intragen International. This document remains strictly private and confidential.</span>
+  </div>
+</div>
+
+</body>
+</html>

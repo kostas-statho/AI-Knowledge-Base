@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OIM Process Chain — AAD No-Mailbox Improvements v1.1</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+:root{--purple:#7B2D8B;--purple-dark:#5C1F6B;--teal:#007B77;--body-bg:#FAF8F5;--code-bg:#1E1E1E;--border:#DDD;--text:#2C2C2C;--muted:#6B6B6B;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#DDDDD5;color:var(--text);font-size:14px;line-height:1.7;}
+.page{background:var(--body-bg);width:210mm;min-height:297mm;margin:20px auto;position:relative;box-shadow:0 4px 24px rgba(0,0,0,.18);overflow:hidden;}
+.intragen-logo{position:absolute;top:24px;right:28px;font-size:15px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;z-index:10;}
+.logo-dot{color:#F0A800;}
+.page-footer{position:absolute;bottom:18px;left:32px;right:32px;display:flex;justify-content:space-between;align-items:center;font-size:9.5px;color:#999;border-top:1px solid #DDD;padding-top:7px;}
+.cover-page{min-height:297mm;}
+.title-badge{position:absolute;top:110px;left:44px;background:var(--purple);color:#fff;font-size:20px;font-weight:700;padding:18px 28px;border-radius:10px;max-width:360px;line-height:1.35;}
+.cover-subtitle{position:absolute;top:255px;left:44px;color:var(--muted);font-size:14px;font-weight:300;}
+.cover-version{position:absolute;top:283px;left:44px;color:var(--muted);font-size:12px;}
+.cover-companion{position:absolute;top:315px;left:44px;background:#F5EFF8;border-left:4px solid var(--purple);padding:10px 14px;font-size:12px;color:#444;max-width:380px;border-radius:0 4px 4px 0;}
+.circle-blue{position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(180,210,225,.5);top:140px;right:-50px;}
+.circle-peach{position:absolute;width:340px;height:340px;border-radius:50%;background:rgba(230,185,165,.4);bottom:-100px;right:-70px;}
+.circle-yellow{position:absolute;width:100px;height:100px;border-radius:50%;background:rgba(235,220,160,.5);bottom:90px;left:70px;}
+.toc-page{padding:44px 48px 70px;}
+.contents-banner{background:var(--purple-dark);color:#fff;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:9px 14px;margin:52px 0 24px;}
+.toc-entry{display:flex;align-items:baseline;margin-bottom:5px;font-size:13px;}
+.toc-entry .toc-title{flex:0 0 auto;}
+.toc-entry .toc-dots{flex:1;border-bottom:1px dotted #AAA;margin:0 8px 3px;}
+.toc-entry .toc-num{flex:0 0 auto;color:var(--muted);font-size:11px;}
+.toc-sub{padding-left:20px;font-size:11.5px;color:var(--muted);margin-bottom:3px;display:flex;align-items:baseline;}
+.content-page{padding:44px 48px 80px;}
+.section-banner{background:var(--purple-dark);color:#fff;font-size:12px;font-weight:700;letter-spacing:.8px;padding:9px 14px;margin-bottom:20px;margin-top:10px;}
+.section-banner .section-num{opacity:.7;margin-right:6px;}
+.subsection-box{border-top:2px solid #C0B0C0;padding-top:10px;margin:20px 0 12px;}
+.subsection-title{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#444;margin-bottom:10px;}
+.label-teal{display:block;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal);border-bottom:1px dotted var(--teal);padding-bottom:2px;margin:14px 0 7px;}
+h3{font-size:14.5px;font-weight:700;color:var(--purple);margin:16px 0 8px;}
+h4{font-size:11.5px;font-weight:700;color:#444;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 5px;}
+p{margin-bottom:10px;font-size:13.5px;}
+ul,ol{margin:6px 0 10px 20px;font-size:13.5px;}
+li{margin-bottom:3px;}
+li::marker{color:var(--purple);}
+.code-block{background:var(--code-bg);color:#D4D4D4;font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:11.5px;line-height:1.5;padding:13px 15px;border-radius:4px;overflow-x:auto;margin:10px 0 14px;white-space:pre;}
+.code-highlight{color:#9CDCFE;}
+.code-comment{color:#6A9955;}
+.code-keyword{color:#569CD6;}
+.code-old{color:#F48771;text-decoration:line-through;opacity:.8;}
+.code-new{color:#4EC9B0;font-weight:600;}
+code{background:#EDE8F0;color:#8B2080;font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:11.5px;padding:1px 5px;border-radius:3px;}
+table{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:12.5px;}
+th{background:var(--purple-dark);color:#fff;padding:7px 11px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.4px;}
+td{padding:6px 11px;border-bottom:1px solid var(--border);vertical-align:top;}
+tr:nth-child(even) td{background:rgba(0,0,0,.02);}
+.callout{padding:11px 13px;border-radius:0 4px 4px 0;margin:10px 0;font-size:13px;}
+.callout strong{display:block;margin-bottom:2px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+.callout-note{background:#E8F4FF;border-left:4px solid #2D6DB5;}
+.callout-warn{background:#FFF8E1;border-left:4px solid #F59E0B;}
+.callout-important{background:#F5EFF8;border-left:4px solid var(--purple);}
+.callout-tip{background:#F0FDF4;border-left:4px solid #22C55E;}
+.callout-danger{background:#FFF0F0;border-left:4px solid #DC2626;}
+.step-num{display:inline-block;background:var(--purple);color:#fff;border-radius:50%;width:20px;height:20px;text-align:center;line-height:20px;font-size:10px;font-weight:700;margin-right:6px;flex-shrink:0;}
+.designer-step{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:13px;}
+.improvement-card{border:1px solid #C0B0C0;border-radius:6px;margin:16px 0;overflow:hidden;}
+.improvement-card-header{background:var(--purple);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;}
+.improvement-card-badge{background:rgba(255,255,255,.2);border-radius:3px;font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 7px;text-transform:uppercase;}
+.improvement-card-title{font-size:13px;font-weight:700;}
+.improvement-card-body{padding:14px;}
+.diff-block{margin:10px 0;border-radius:4px;overflow:hidden;font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:11.5px;line-height:1.6;}
+.diff-before{background:#2C1A1A;color:#F48771;padding:10px 15px;border-bottom:1px solid #444;}
+.diff-after{background:#1A2C1A;color:#4EC9B0;padding:10px 15px;}
+.diff-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.6;margin-bottom:4px;}
+.impact-row{display:flex;gap:8px;margin:10px 0;}
+.impact-chip{background:#F5EFF8;border:1px solid #C0A0CC;border-radius:12px;font-size:11px;font-weight:600;padding:3px 10px;color:var(--purple);}
+.impact-chip.perf{background:#E8F4FF;border-color:#90B8DD;color:#1A5A9A;}
+.impact-chip.correct{background:#F0FDF4;border-color:#86EFAC;color:#166534;}
+.impact-chip.ops{background:#FFF8E1;border-color:#FCD34D;color:#92400E;}
+.flow-diagram{display:flex;flex-direction:column;align-items:center;gap:0;margin:18px 0;}
+.flow-node{background:#fff;border:2px solid var(--teal);border-radius:6px;padding:10px 20px;text-align:center;width:280px;font-size:12.5px;}
+.flow-node-new{background:#F0FDF4;border:2px solid #22C55E;border-radius:6px;padding:10px 20px;text-align:center;width:280px;font-size:12.5px;}
+.flow-node-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal);margin-bottom:3px;}
+.flow-node-new .flow-node-title{color:#16A34A;}
+.flow-arrow{display:flex;flex-direction:column;align-items:center;color:#888;font-size:11px;margin:2px 0;}
+.flow-arrow-line{width:2px;height:18px;background:#AAA;}
+.flow-arrow-head{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid #AAA;}
+.new-badge{display:inline-block;background:#22C55E;color:#fff;font-size:9px;font-weight:700;letter-spacing:1px;padding:1px 5px;border-radius:2px;text-transform:uppercase;margin-left:6px;vertical-align:middle;}
+@media print{body{background:#fff;}.page{box-shadow:none;margin:0;width:100%;page-break-after:always;}.page:last-child{page-break-after:auto;}}
+@media(max-width:800px){.page{width:100%;margin:0;}.title-badge{left:16px;right:16px;}.content-page,.toc-page{padding:24px 20px 60px;}}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="page cover-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="circle-blue"></div>
+  <div class="circle-peach"></div>
+  <div class="circle-yellow"></div>
+  <div class="title-badge">OIM Process Chain<br/>AAD No-Mailbox<br/>Improvements v1.1</div>
+  <div class="cover-subtitle">One Identity Manager — Process Chain Optimisation Supplement</div>
+  <div class="cover-version">Version 1.1 &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; OIM 9.3</div>
+  <div class="cover-companion">Companion to: <strong>AAD_NoMailbox_ProcessChain_Guide.html (v1.0)</strong><br/>
+  Read the base guide first. This document covers 4 targeted improvements to the original implementation.</div>
+  <div class="page-footer">
+    <span>OIM Process Chain — AAD No-Mailbox Improvements v1.1</span>
+    <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International. All documents remain strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="page toc-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="contents-banner">CONTENTS</div>
+
+  <div class="toc-entry"><span class="toc-title">Overview — What Changed and Why</span><span class="toc-dots"></span><span class="toc-num">3</span></div>
+
+  <div class="toc-entry" style="margin-top:8px;"><span class="toc-title">Improvement 1 — SQL: NOT EXISTS over NOT IN</span><span class="toc-dots"></span><span class="toc-num">4</span></div>
+  <div class="toc-sub"><span class="toc-title">The Problem with NOT IN and NULLs</span><span class="toc-dots"></span><span class="toc-num">4</span></div>
+  <div class="toc-sub"><span class="toc-title">Corrected Alert Query</span><span class="toc-dots"></span><span class="toc-num">4</span></div>
+  <div class="toc-sub"><span class="toc-title">Corrected Escalation Query</span><span class="toc-dots"></span><span class="toc-num">4</span></div>
+
+  <div class="toc-entry" style="margin-top:8px;"><span class="toc-title">Improvement 2 — Config Parameter for Age Cap</span><span class="toc-dots"></span><span class="toc-num">5</span></div>
+  <div class="toc-sub"><span class="toc-title">New Configuration Parameter</span><span class="toc-dots"></span><span class="toc-num">5</span></div>
+  <div class="toc-sub"><span class="toc-title">Pre-Script Pattern to Read the Parameter</span><span class="toc-dots"></span><span class="toc-num">5</span></div>
+
+  <div class="toc-entry" style="margin-top:8px;"><span class="toc-title">Improvement 3 — Retry and Flag Dependency Fix</span><span class="toc-dots"></span><span class="toc-num">6</span></div>
+  <div class="toc-sub"><span class="toc-title">The Silent Failure Problem</span><span class="toc-dots"></span><span class="toc-num">6</span></div>
+  <div class="toc-sub"><span class="toc-title">Wait-Mode Retry Configuration</span><span class="toc-dots"></span><span class="toc-num">6</span></div>
+  <div class="toc-sub"><span class="toc-title">Step Dependency: On Success</span><span class="toc-dots"></span><span class="toc-num">6</span></div>
+
+  <div class="toc-entry" style="margin-top:8px;"><span class="toc-title">Improvement 4 — Reset Automation for Resolved Accounts</span><span class="toc-dots"></span><span class="toc-num">7</span></div>
+  <div class="toc-sub"><span class="toc-title">Why Permanent Flags Are Problematic</span><span class="toc-dots"></span><span class="toc-num">7</span></div>
+  <div class="toc-sub"><span class="toc-title">CCC_AAD_AutomationResetFlags</span><span class="toc-dots"></span><span class="toc-num">7</span></div>
+  <div class="toc-sub"><span class="toc-title">CCC_AAD_ResetNoMailboxFlags Process</span><span class="toc-dots"></span><span class="toc-num">7</span></div>
+
+  <div class="toc-entry" style="margin-top:8px;"><span class="toc-title">Updated Architecture Overview</span><span class="toc-dots"></span><span class="toc-num">8</span></div>
+  <div class="toc-sub"><span class="toc-title">Full Component List (v1.1)</span><span class="toc-dots"></span><span class="toc-num">8</span></div>
+  <div class="toc-sub"><span class="toc-title">Verification Checklist</span><span class="toc-dots"></span><span class="toc-num">8</span></div>
+
+  <div class="page-footer">
+    <span>OIM Process Chain — AAD No-Mailbox Improvements v1.1</span>
+    <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International.</span>
+  </div>
+</div>
+
+<!-- PAGE 3 — OVERVIEW -->
+<div class="page content-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">Overview</span> What Changed and Why</div>
+
+  <p>The v1.0 process chain architecture is sound. The two-stage escalation pattern with independent flag deduplication is the correct approach for scheduled monitoring in OIM. The improvements in this supplement address four specific weaknesses identified during review.</p>
+
+  <div class="callout callout-note">
+    <strong>Scope</strong>
+    This document does not change the overall architecture — the same 4 OIM objects from v1.0 still apply. You are patching SQL queries, adding one config parameter, adjusting two process step settings, and adding one new automation + process pair.
+  </div>
+
+  <h3>Summary of Changes</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Improvement</th><th>Type</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><strong>NOT EXISTS over NOT IN</strong> — fixes potential NULL-safety issue; improves query performance on large O3EMailbox tables</td>
+        <td>SQL Correctness</td>
+        <td style="color:#DC2626;font-weight:700;">High</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>Config parameter for 48-hour age cap</strong> — makes SLA window ops-configurable without a Designer edit</td>
+        <td>Flexibility</td>
+        <td style="color:#D97706;font-weight:700;">Medium</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>Retry + flag dependency fix</strong> — prevents the flag being set when an email send fails silently</td>
+        <td>Resilience</td>
+        <td style="color:#DC2626;font-weight:700;">High</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><strong>Reset automation for resolved accounts</strong> — clears flags when mailbox appears so accounts can be re-monitored if mailbox is later removed</td>
+        <td>State Integrity</td>
+        <td style="color:#D97706;font-weight:700;">Medium</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warn">
+    <strong>Apply improvements 1 and 3 first</strong>
+    These address correctness issues. Improvements 2 and 4 add capability. If you are applying changes to a live environment, prioritise 1 and 3 in the first deployment window.
+  </div>
+
+  <div class="page-footer">
+    <span>OIM Process Chain — AAD No-Mailbox Improvements v1.1</span>
+    <span>Intragen International — Private &amp; Confidential</span>
+  </div>
+</div>
+
+<!-- PAGE 4 — IMPROVEMENT 1 -->
+<div class="page content-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">Improvement 1</span> SQL: NOT EXISTS over NOT IN</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">The Problem with NOT IN and NULLs</div>
+    <p>The v1.0 generating conditions use:</p>
+    <div class="code-block">UID_AADUser NOT IN (
+    SELECT UID_AADUser FROM O3EMailbox WHERE UID_AADUser IS NOT NULL
+)</div>
+    <p>The <code>WHERE UID_AADUser IS NOT NULL</code> guard was added specifically to prevent a SQL NULL-propagation trap: if any row in the subquery returns a NULL, <code>NOT IN</code> silently returns zero rows for the entire outer query — no accounts are picked up, no errors are raised, and the automation appears to succeed. The guard patches this, but it is fragile. If the schema is extended and a new O3EMailbox row is inserted with a NULL FK before the join column is populated, the guard may not fire depending on transaction timing.</p>
+
+    <div class="callout callout-danger">
+      <strong>Why this matters</strong>
+      A single NULL in the O3EMailbox subquery silently disables the entire automation. Accounts without mailboxes are never alerted. This failure mode produces no errors in the Job Queue and no system journal entries — it is invisible.
+    </div>
+
+    <p><strong>NOT EXISTS</strong> avoids this entirely. It evaluates row-by-row against the outer query's current <code>UID_AADUser</code> — a correlated subquery — and handles NULLs correctly by design. It also allows the database engine to short-circuit on first match, making it faster on large O3EMailbox tables.</p>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Corrected Alert Query (Generating Condition — CCC_AAD_AutomationAlert)</div>
+    <div class="diff-block">
+      <div class="diff-before"><div class="diff-label">Before (v1.0)</div>UID_AADUser NOT IN (
+    SELECT UID_AADUser FROM O3EMailbox WHERE UID_AADUser IS NOT NULL
+)
+AND XDateInserted &lt; DATEADD(HOUR, -1, GETUTCDATE())
+AND XDateInserted &gt; DATEADD(HOUR, -48, GETUTCDATE())
+AND ISNULL(CCC_IsFirstAlertSent, 0) = 0</div>
+      <div class="diff-after"><div class="diff-label">After (v1.1)</div>NOT EXISTS (
+    SELECT 1 FROM O3EMailbox m WHERE m.UID_AADUser = AADUser.UID_AADUser
+)
+AND XDateInserted &lt; DATEADD(HOUR, -1, GETUTCDATE())
+AND XDateInserted &gt; DATEADD(HOUR, -48, GETUTCDATE())
+AND ISNULL(CCC_IsFirstAlertSent, 0) = 0</div>
+    </div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Corrected Escalation Query (Generating Condition — CCC_AAD_AutomationEscalation)</div>
+    <div class="diff-block">
+      <div class="diff-before"><div class="diff-label">Before (v1.0)</div>UID_AADUser NOT IN (
+    SELECT UID_AADUser FROM O3EMailbox WHERE UID_AADUser IS NOT NULL
+)
+AND XDateInserted &lt; DATEADD(HOUR, -4, GETUTCDATE())
+AND XDateInserted &gt; DATEADD(HOUR, -48, GETUTCDATE())
+AND ISNULL(CCC_IsEscalationSent, 0) = 0</div>
+      <div class="diff-after"><div class="diff-label">After (v1.1)</div>NOT EXISTS (
+    SELECT 1 FROM O3EMailbox m WHERE m.UID_AADUser = AADUser.UID_AADUser
+)
+AND XDateInserted &lt; DATEADD(HOUR, -4, GETUTCDATE())
+AND XDateInserted &gt; DATEADD(HOUR, -48, GETUTCDATE())
+AND ISNULL(CCC_IsEscalationSent, 0) = 0</div>
+    </div>
+
+    <div class="impact-row">
+      <span class="impact-chip correct">NULL-safe</span>
+      <span class="impact-chip perf">Better performance on large tables</span>
+      <span class="impact-chip">No schema changes required</span>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>OIM Process Chain — AAD No-Mailbox Improvements v1.1</span>
+    <span>Intragen International — Private &amp; Confidential</span>
+  </div>
+</div>
+
+<!-- PAGE 5 — IMPROVEMENT 2 -->
+<div class="page content-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">Improvement 2</span> Config Parameter for Age Cap</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">The Problem — Hardcoded SLA Window</div>
+    <p>The v1.0 queries cap account age at 48 hours:</p>
+    <div class="code-block">AND XDateInserted &gt; DATEADD(HOUR, -48, GETUTCDATE())</div>
+    <p>This value is hardcoded in both automation generating conditions. Changing the SLA window (e.g. from 48 to 72 hours as the organisation grows its provisioning pipeline) requires opening Designer, editing the SQL in both automations, and recompiling. This is an admin-level task gated on a developer tool.</p>
+    <p>Moving this to a configuration parameter makes it an operations-level setting — no Designer access required.</p>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">New Configuration Parameter</div>
+    <p>Create the following parameter under <strong>Base Data → Configuration parameters</strong>:</p>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Full path</td><td><code>Custom\AAD\Notifications\MaxAgeHours</code></td></tr>
+        <tr><td>Data type</td><td>String</td></tr>
+        <tr><td>Default value</td><td><code>48</code></td></tr>
+        <tr><td>Description</td><td>Maximum age (hours) of AADUser accounts to include in no-mailbox alerting. Accounts older than this value are ignored. Default: 48. Increase if your provisioning pipeline SLA exceeds 48 hours.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-note">
+      <strong>Why String, not Integer?</strong>
+      OIM configuration parameters are typed as String in Designer. The value is read as a string and cast to an integer in the Pre-Script before use. This is standard OIM practice.
+    </div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Pre-Script Pattern to Read the Parameter</div>
+    <p>Add the following Pre-Script to Step 1 (<code>Send_AlertEmail</code> / <code>Send_EscalationEmail</code>) to perform the late-check using the configurable cap. This replaces the optional Pre-Script from v1.0 and adds the config-driven age check.</p>
+
+    <span class="label-teal">Pre-Script (VBScript) — applies to both alert and escalation processes</span>
+    <div class="code-block"><span class="code-comment">' Read configurable max-age cap from OIM configuration</span>
+Dim maxHoursStr As String
+maxHoursStr = Session.Config().GetConfigParm("Custom\AAD\Notifications\MaxAgeHours")
+Dim maxHours As Integer = 48
+If IsNumeric(maxHoursStr) Then maxHours = CInt(maxHoursStr)
+
+<span class="code-comment">' Late-check: skip if mailbox has appeared since automation queued this process</span>
+Dim mailboxCount As Integer = Session.Source().Count( _
+    "O3EMailbox", "UID_AADUser = '$UID_AADUser$'")
+If mailboxCount > 0 Then Return False
+
+<span class="code-comment">' Late-check: skip if account is now older than the configured cap</span>
+Dim insertedUtc As Date = CDate("$XDateInserted$")
+Dim ageHours As Double = DateDiff("h", insertedUtc, Now())
+If ageHours > maxHours Then Return False
+
+Return True</div>
+
+    <div class="callout callout-tip">
+      <strong>Step 2 (Set_*Flag) still runs unconditionally</strong>
+      If the Pre-Script returns False on Step 1 because the account is now too old, Step 2 should still set the flag to prevent the account from being re-queued on every automation run. This is the same design principle as v1.0.
+    </div>
+
+    <div class="impact-row">
+      <span class="impact-chip ops">Ops-configurable — no Designer access needed</span>
+      <span class="impact-chip">No SQL changes required</span>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>OIM Process Chain — AAD No-Mailbox Improvements v1.1</span>
+    <span>Intragen International — Private &amp; Confidential</span>
+  </div>
+</div>
+
+<!-- PAGE 6 — IMPROVEMENT 3 -->
+<div class="page content-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">Improvement 3</span> Retry and Flag Dependency Fix</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">The Silent Failure Problem</div>
+    <p>In v1.0, both processes have two steps:</p>
+    <ol>
+      <li><strong>Send_AlertEmail</strong> — sends the email via the Notifications component</li>
+      <li><strong>Set_AlertSentFlag</strong> — sets <code>CCC_IsFirstAlertSent = 1</code> unconditionally</li>
+    </ol>
+    <p>Step 2 runs regardless of whether Step 1 succeeded. If the SMTP server is temporarily unavailable or the mail component throws an error, Step 1 fails — but Step 2 still runs and sets the flag. The account is now permanently marked as alerted, but no email was ever sent. The next automation run excludes the account from the query. The failure is invisible.</p>
+
+    <div class="callout callout-danger">
+      <strong>Consequence</strong>
+      An SMTP outage during an automation run silently marks all accounts as alerted without any notifications being delivered. There is no audit trail, no retry, and no way to detect this without manually querying the database.
+    </div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Fix A — Enable Wait-Mode Retry on Email Steps</div>
+    <p>In Designer, open each Send step (<code>Send_AlertEmail</code>, <code>Send_EscalationEmail</code>) and configure the following on the <strong>Error Handling</strong> tab:</p>
+    <table>
+      <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>On error</td><td><strong>Wait</strong></td></tr>
+        <tr><td>Number of retries</td><td><code>3</code></td></tr>
+        <tr><td>Retry interval (minutes)</td><td><code>10</code></td></tr>
+      </tbody>
+    </table>
+    <p>This causes OIM to hold the process step in the Job Queue and retry it up to 3 times before marking the step as failed. Transient SMTP outages lasting less than 30 minutes are handled automatically.</p>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Fix B — Make Flag Step Conditional on Email Success</div>
+    <p>Open the <code>Set_AlertSentFlag</code> step (and <code>Set_EscalationSentFlag</code>) in Designer and change the <strong>previous step condition</strong>:</p>
+    <div class="diff-block">
+      <div class="diff-before"><div class="diff-label">Before (v1.0) — unconditional</div>Previous step result: &lt;Always&gt;</div>
+      <div class="diff-after"><div class="diff-label">After (v1.1) — conditional on success</div>Previous step result: On success</div>
+    </div>
+    <p>With this change, if <code>Send_AlertEmail</code> exhausts all 3 retries and ultimately fails, <code>Set_AlertSentFlag</code> does not run. The account remains unalerted and un-flagged. On the next hourly automation run, the account is picked up again and the process is re-queued. The failure is also now visible in the Job Queue error log.</p>
+
+    <div class="callout callout-important">
+      <strong>Designer navigation</strong>
+      Process → Process Step → <em>Set_AlertSentFlag</em> → Properties → General tab → "Previous step" dropdown. Change from <em>Always</em> to <em>On success</em>. Repeat for <em>Set_EscalationSentFlag</em>.
+    </div>
+
+    <div class="impact-row">
+      <span class="impact-chip correct">Prevents silent missed alerts</span>
+      <span class="impact-chip perf">Auto-recovers from transient SMTP outages</span>
+      <span class="impact-chip">No schema changes required</span>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>OIM Process Chain — AAD No-Mailbox Improvements v1.1</span>
+    <span>Intragen International — Private &amp; Confidential</span>
+  </div>
+</div>
+
+<!-- PAGE 7 — IMPROVEMENT 4 -->
+<div class="page content-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">Improvement 4</span> Reset Automation for Resolved Accounts</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Why Permanent Flags Are Problematic</div>
+    <p>In v1.0, <code>CCC_IsFirstAlertSent</code> and <code>CCC_IsEscalationSent</code> are set to <code>1</code> and never cleared. This is appropriate for the common case — an account is provisioned normally and its mailbox arrives within the SLA window.</p>
+    <p>The problem arises in edge cases:</p>
+    <ul>
+      <li>A mailbox is provisioned (flags set), then later <strong>removed</strong> (e.g. licence revoked, migration error). The account now has no mailbox again, but the flags prevent re-alerting.</li>
+      <li>A test account is created, alerted on, then the mailbox is manually removed and the account is re-used. Same result — permanently suppressed.</li>
+      <li>An administrator clears an O3EMailbox row directly in the database during troubleshooting. The alert system does not recover.</li>
+    </ul>
+    <p>The fix is a third automation that runs on accounts where a mailbox <em>now exists</em> but the alert flags are still set. It clears both flags, restoring the account to a monitorable state.</p>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">New: CCC_AAD_AutomationResetFlags <span class="new-badge">New</span></div>
+    <p>Create a third Process Automation in Designer alongside the existing two:</p>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td><code>CCC_AAD_AutomationResetFlags</code></td></tr>
+        <tr><td>Object type</td><td>AADUser</td></tr>
+        <tr><td>Schedule</td><td>Same hourly schedule as alert and escalation automations</td></tr>
+        <tr><td>Process to queue</td><td><code>CCC_AAD_ResetNoMailboxFlags</code></td></tr>
+      </tbody>
+    </table>
+
+    <span class="label-teal">Generating Condition SQL</span>
+    <div class="code-block">EXISTS (
+    SELECT 1 FROM O3EMailbox m WHERE m.UID_AADUser = AADUser.UID_AADUser
+)
+AND (
+    ISNULL(CCC_IsFirstAlertSent, 0) = 1
+    OR ISNULL(CCC_IsEscalationSent, 0) = 1
+)</div>
+
+    <p>This picks up accounts that now have a mailbox but still carry one or both alert flags — exactly the accounts that were previously alerted and have since been resolved.</p>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">New: CCC_AAD_ResetNoMailboxFlags Process <span class="new-badge">New</span></div>
+    <p>Create a new Regular Process with one step:</p>
+
+    <div class="designer-step">
+      <span class="step-num">1</span>
+      <div>
+        <strong>Reset_AlertFlags</strong><br/>
+        <span style="font-size:12.5px;color:#555;">Component: <em>SQL</em> / HandleObject &nbsp;|&nbsp; Action: <em>UpdateData</em></span>
+        <table style="margin-top:8px;">
+          <thead><tr><th>Field</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Table</td><td><code>AADUser</code></td></tr>
+            <tr><td>WhereClause</td><td><code>UID_AADUser = '$UID_AADUser$'</code></td></tr>
+            <tr><td>UpdateData</td><td><code>CCC_IsFirstAlertSent=0,CCC_IsEscalationSent=0</code></td></tr>
+            <tr><td>Previous step result</td><td>Always</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <strong>No email is sent on reset</strong>
+      This is an internal housekeeping process. It clears flags silently. The next time this account loses its mailbox, the alert and escalation automations will pick it up again as a fresh unalerted account.
+    </div>
+
+    <div class="impact-row">
+      <span class="impact-chip correct">Restores monitoring for re-occurring issues</span>
+      <span class="impact-chip ops">Handles edge cases: licence revocation, migration errors</span>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>OIM Process Chain — AAD No-Mailbox Improvements v1.1</span>
+    <span>Intragen International — Private &amp; Confidential</span>
+  </div>
+</div>
+
+<!-- PAGE 8 — UPDATED ARCHITECTURE -->
+<div class="page content-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">Updated Architecture</span> Full Component List v1.1</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Complete OIM Object List</div>
+    <table>
+      <thead>
+        <tr><th>Object Name</th><th>Type</th><th>Change</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>CCC_AAD_AutomationAlert</code></td>
+          <td>Process Automation</td>
+          <td>SQL query — replace NOT IN with NOT EXISTS</td>
+        </tr>
+        <tr>
+          <td><code>CCC_AAD_SendNoMailboxAlert</code></td>
+          <td>Regular Process</td>
+          <td>Send step: add retry (3×10min). Flag step: set On Success dependency. Update Pre-Script.</td>
+        </tr>
+        <tr>
+          <td><code>CCC_AAD_AutomationEscalation</code></td>
+          <td>Process Automation</td>
+          <td>SQL query — replace NOT IN with NOT EXISTS</td>
+        </tr>
+        <tr>
+          <td><code>CCC_AAD_SendNoMailboxEscalation</code></td>
+          <td>Regular Process</td>
+          <td>Send step: add retry (3×10min). Flag step: set On Success dependency. Update Pre-Script.</td>
+        </tr>
+        <tr style="background:#F0FDF4;">
+          <td><code>CCC_AAD_AutomationResetFlags</code> <span class="new-badge">New</span></td>
+          <td>Process Automation</td>
+          <td>New — hourly reset for accounts with mailbox and stale flags</td>
+        </tr>
+        <tr style="background:#F0FDF4;">
+          <td><code>CCC_AAD_ResetNoMailboxFlags</code> <span class="new-badge">New</span></td>
+          <td>Regular Process</td>
+          <td>New — clears CCC_IsFirstAlertSent and CCC_IsEscalationSent</td>
+        </tr>
+        <tr style="background:#FFF8E1;">
+          <td><code>Custom\AAD\Notifications\MaxAgeHours</code> <span class="new-badge">New</span></td>
+          <td>Config Parameter</td>
+          <td>New — configurable SLA age cap (default: 48)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="font-size:12px;color:var(--muted);">All other objects from v1.0 are unchanged: mail templates, custom schema columns (CCC_IsFirstAlertSent, CCC_IsEscalationSent), existing config params, and SMTP server configuration.</p>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Updated Flow Diagram</div>
+    <div class="flow-diagram">
+      <div class="flow-node">
+        <div class="flow-node-title">Every Hour (Scheduled)</div>
+        All 3 Process Automations run
+      </div>
+      <div class="flow-arrow"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+      <div style="display:flex;gap:14px;">
+        <div class="flow-diagram" style="margin:0;">
+          <div class="flow-node" style="width:190px;font-size:11.5px;">
+            <div class="flow-node-title">Alert Automation</div>
+            No mailbox &gt;1h &lt;cap, no flag
+          </div>
+          <div class="flow-arrow"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+          <div class="flow-node" style="width:190px;font-size:11.5px;">
+            <div class="flow-node-title">Alert Process</div>
+            Send email → (on success) set flag
+          </div>
+        </div>
+        <div class="flow-diagram" style="margin:0;">
+          <div class="flow-node" style="width:190px;font-size:11.5px;">
+            <div class="flow-node-title">Escalation Automation</div>
+            No mailbox &gt;4h &lt;cap, no flag
+          </div>
+          <div class="flow-arrow"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+          <div class="flow-node" style="width:190px;font-size:11.5px;">
+            <div class="flow-node-title">Escalation Process</div>
+            Send email → (on success) set flag
+          </div>
+        </div>
+        <div class="flow-diagram" style="margin:0;">
+          <div class="flow-node-new" style="width:190px;font-size:11.5px;">
+            <div class="flow-node-title">Reset Automation ✦ New</div>
+            Has mailbox AND has stale flag
+          </div>
+          <div class="flow-arrow"><div class="flow-arrow-line"></div><div class="flow-arrow-head"></div></div>
+          <div class="flow-node-new" style="width:190px;font-size:11.5px;">
+            <div class="flow-node-title">Reset Process ✦ New</div>
+            Clear both flags → account re-monitorable
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Verification Checklist</div>
+    <table>
+      <thead><tr><th>Test</th><th>Expected</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Alert automation SQL (NOT EXISTS) picks up test account with no O3EMailbox row</td><td>Process queued in Job Queue</td><td>&#9744;</td></tr>
+        <tr><td>Escalation automation SQL (NOT EXISTS) picks up same test account at 4-hour mark</td><td>Escalation process queued</td><td>&#9744;</td></tr>
+        <tr><td>Disable SMTP — run alert automation — verify no flag is set and account re-queued next run</td><td>Flag stays 0; Job Queue shows retry then failure</td><td>&#9744;</td></tr>
+        <tr><td>Restore SMTP — retry step succeeds — flag set to 1</td><td>Flag = 1 after successful send</td><td>&#9744;</td></tr>
+        <tr><td>Provision O3EMailbox row for a flagged account — run reset automation</td><td>Both flags reset to 0</td><td>&#9744;</td></tr>
+        <tr><td>Remove O3EMailbox row again — alert automation picks account up as fresh</td><td>Alert process re-queued; email sent again</td><td>&#9744;</td></tr>
+        <tr><td>Change MaxAgeHours config param to 1 — verify accounts older than 1h are skipped by Pre-Script</td><td>Step 1 skips; Step 2 sets flag normally</td><td>&#9744;</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <span>OIM Process Chain — AAD No-Mailbox Improvements v1.1</span>
+    <span>Intragen International — Private &amp; Confidential</span>
+  </div>
+</div>
+
+</body>
+</html>

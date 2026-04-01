@@ -1,0 +1,52 @@
+﻿================================================
+  1-ON-1 GOAL REVIEW BRIEF
+================================================
+
+MEETING CONTEXT
+  Employee  : teamMember
+  Team Lead : [name]
+  Date      : 2026-03-18
+  Purpose   : Goal progress review and alignment
+
+------------------------------------------------
+GOALS OVERVIEW
+------------------------------------------------
+  Goal      : Develop a Secure VB.net Application with Integrated IAM
+  Progress  : 0/1 milestones (0% complete)
+  Pace      : Behind Schedule
+  Hrs/week  : 5
+  Note      : Requires dedicated focus on completing the Udemy course for security concepts.
+
+  Goal      : Enhance Automation Skills Using PowerShell for Security Testing
+  Progress  : 0/1 milestones (0% complete)
+  Pace      : Behind Schedule
+  Hrs/week  : 4
+  Note      : Needs to accelerate course completion on Pluralsight.
+
+  Goal      : Gain Proficiency in Modern Authentication Protocols
+  Progress  : 0/1 milestones (0% complete)
+  Pace      : Behind Schedule
+  Hrs/week  : 4
+  Note      : Must engage with practical applications to reinforce learning.
+
+------------------------------------------------
+KEY DISCUSSION POINTS
+------------------------------------------------
+  * Need to increase weekly hours to meet learning goals.
+  * Strategies to overcome obstacles in learning advanced VB.net.
+  * Potential engagement with practical projects or communities to enhance skills.
+
+------------------------------------------------
+BLOCKERS & SUPPORT NEEDED
+------------------------------------------------
+  * Limited time availability due to workload.
+  * Support required for time management strategies.
+
+------------------------------------------------
+COMMITMENTS FOR NEXT REVIEW
+------------------------------------------------
+  * Allocate an additional 2 hours per week for Udemy course completion.
+  * Engage with a mentor for hands-on experience in secure coding practices.
+  * Schedule regular check-ins for accountability on learning progression.
+
+================================================

@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Control 3 — AD Group Automation Evidence | Intragen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple:      #7B2D8B;
+  --purple-dark: #5C1F6B;
+  --teal:        #007B77;
+  --golden:      #F0A800;
+  --body-bg:     #FAF8F5;
+  --code-bg:     #1E1E1E;
+  --border:      #DDD;
+  --text:        #2C2C2C;
+  --muted:       #6B6B6B;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.6; background: #F0EDE8; color: var(--text); }
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  background: var(--purple);
+  color: #fff;
+  width: 260px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.intragen-logo {
+  padding: 1.25rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+.logo-dot { color: var(--golden); }
+.module-label {
+  padding: 0.75rem 1rem 0.25rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.45);
+}
+.module-title-sidebar {
+  padding: 0.5rem 1rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--golden);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.nav-section-label {
+  padding: 0.75rem 1rem 0.2rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+}
+.sidebar a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.82rem;
+  border-left: 3px solid transparent;
+}
+.sidebar a:hover {
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--teal);
+  color: #fff;
+}
+
+/* Main */
+main { padding: 2rem; max-width: 1080px; }
+
+/* Module Header */
+.module-header {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+  color: #fff;
+  padding: 2rem 2rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.module-header::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.module-header .intragen-watermark {
+  position: absolute;
+  top: 1rem; right: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+.module-header .intragen-watermark .dot { color: var(--golden); }
+.module-header h1 { font-size: 1.6rem; margin-bottom: 0.4rem; font-weight: 700; }
+.module-header p { opacity: 0.85; font-size: 0.9rem; }
+
+/* Badges */
+.badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.audit   { background: #e8f4ff; color: #1a5fa8; }
+.control { background: #f5eff8; color: #5C1F6B; }
+
+/* Overview grid */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 2rem; }
+.info-card {
+  background: #fff;
+  border-left: 4px solid var(--teal);
+  padding: 1.1rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.info-card h3 { color: var(--purple-dark); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.info-card ul { padding-left: 1.2rem; }
+.info-card li { font-size: 0.9rem; margin-bottom: 0.25rem; }
+
+/* Sections */
+section { margin-bottom: 2.5rem; }
+
+/* Section Banner */
+.section-banner {
+  background: var(--purple-dark);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.55rem 0.9rem;
+  margin-bottom: 1.25rem;
+  border-radius: 3px;
+}
+
+/* Section sub-label */
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--purple);
+  margin: 0.9rem 0 0.3rem;
+}
+
+/* Query Cards */
+.query-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--teal);
+  border-radius: 0 8px 8px 0;
+  padding: 1.5rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.q-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.q-num {
+  background: var(--purple-dark);
+  color: #fff;
+  min-width: 48px;
+  height: 38px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+.q-header h3 { color: var(--purple-dark); font-size: 1rem; margin: 0; font-weight: 600; }
+
+/* Callouts */
+.callout {
+  padding: 0.85rem 1rem;
+  border-radius: 0 6px 6px 0;
+  margin: 0.75rem 0;
+  font-size: 0.88rem;
+}
+.callout strong, .callout b {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.callout-tip      { background: #F0FDF4; border-left: 4px solid #22C55E; }
+.callout-warn     { background: #FFF8E1; border-left: 4px solid #F59E0B; }
+.callout-important{ background: #F5EFF8; border-left: 4px solid var(--purple); }
+.callout-note     { background: #E8F4FF; border-left: 4px solid #2D6DB5; }
+.callout-error    { background: #FFF0F0; border-left: 4px solid #DC2626; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1rem; font-size: 0.87rem; }
+th {
+  background: var(--purple-dark);
+  color: #fff;
+  padding: 0.55rem 0.8rem;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:nth-child(even) td { background: #F8F5FB; }
+td.pass { color: #15803D; font-weight: 600; }
+td.fail { color: #B91C1C; font-weight: 600; }
+td.warn { color: #92400E; font-weight: 600; }
+
+/* Steps */
+.steps { padding-left: 1.4rem; margin: 0.4rem 0; }
+.steps li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+
+/* Code */
+pre {
+  background: var(--code-bg);
+  color: #D4D4D4;
+  font-family: 'Cascadia Code','Fira Code', Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  padding: 1rem 1.1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+code {
+  background: #EDE8F0;
+  color: #8B2080;
+  font-family: 'Cascadia Code','Fira Code', Consolas, monospace;
+  font-size: 0.82rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* XOrigin pill */
+.xo {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-right: 4px;
+}
+.xo-1 { background: #fee2e2; color: #991b1b; }
+.xo-2 { background: #dcfce7; color: #166534; }
+.xo-4 { background: #dbeafe; color: #1e40af; }
+.xo-8 { background: #fef9c3; color: #854d0e; }
+
+/* Footer */
+footer {
+  margin-top: 3rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+}
+.footer-dot { color: var(--golden); }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+    <div class="module-label">Audit Evidence</div>
+    <div class="module-title-sidebar">CONTROL 3 &mdash; AD GROUP AUTOMATION</div>
+    <nav>
+      <div class="nav-section-label">Navigation</div>
+      <a href="#overview">Overview</a>
+      <a href="#xorigin-reference">XOrigin Reference</a>
+      <div class="nav-section-label">Queries</div>
+      <a href="#q1">Q1 &mdash; Assignment Origin Summary</a>
+      <a href="#q2">Q2 &mdash; Process Change Log</a>
+      <a href="#q3">Q3 &mdash; HR &rarr; AD Path</a>
+      <a href="#q4">Q4 &mdash; Leaver Cleanup Check</a>
+      <div class="nav-section-label">Reference</div>
+      <a href="#howtorun">How to Run</a>
+      <a href="#expected">Expected Results</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- HEADER -->
+    <div class="module-header">
+      <div class="intragen-watermark">INTRAGEN<span class="dot">.</span> Audit</div>
+      <h1>Control 3 &mdash; AD Group Automation Evidence</h1>
+      <p>
+        <span class="badge control">Control 3</span>&nbsp;
+        <span class="badge audit">Audit Walkthrough</span>&nbsp;
+        &nbsp;4 queries &nbsp;|&nbsp; One Identity Manager 9.3
+      </p>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section id="overview">
+      <div class="section-banner">Overview</div>
+      <div class="callout callout-note">
+        <strong>Control Statement</strong>
+        "Adding / removing users to AD groups is an automated process triggered by HR and updates are
+        executed by the tool One Identity Manager. New / leaving / moving employees are automatically
+        updated on AD groups by the tool."
+      </div>
+
+      <div class="overview-grid">
+        <div class="info-card">
+          <h3>What these queries prove</h3>
+          <ul>
+            <li>AD group memberships originate from automated assignment (not manual)</li>
+            <li>The automation is driven by HR data (Business Role &rarr; AD Group wiring)</li>
+            <li>No unauthorised changes were made to process configuration</li>
+            <li>Leaver accounts are disabled and group memberships cleaned up automatically</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Prerequisites</h3>
+          <ul>
+            <li>Read access to OIM SQL Server (<code>STATHOPOULOSK\OneIM</code> or client DB)</li>
+            <li>SSMS or equivalent query tool</li>
+            <li>No schema changes required — all tables are standard OIM 9.x</li>
+            <li>Run queries in the order presented for a logical audit narrative</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Key tables touched</h3>
+          <ul>
+            <li><code>ADSAccountInADSGroup</code> &mdash; membership + XOrigin</li>
+            <li><code>OrgHasADSGroup</code> &mdash; HR role &rarr; AD group wiring</li>
+            <li><code>PersonInOrg</code> &mdash; HR-driven role assignments</li>
+            <li><code>JobChain</code> &mdash; process definition change log</li>
+            <li><code>Person</code>, <code>ADSAccount</code> &mdash; identity + AD account</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Audit narrative order</h3>
+          <ul>
+            <li><strong>Q1</strong> &mdash; Show memberships are mostly automated</li>
+            <li><strong>Q2</strong> &mdash; Confirm no config changes were made</li>
+            <li><strong>Q3</strong> &mdash; Show the HR &rarr; AD assignment path</li>
+            <li><strong>Q4</strong> &mdash; Confirm leavers are cleaned up</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- XORIGIN REFERENCE -->
+    <section id="xorigin-reference">
+      <div class="section-banner">XOrigin Bitfield Reference</div>
+      <p style="font-size:0.9rem; margin-bottom:0.75rem;">
+        Every membership record in OIM carries an <code>XOrigin</code> integer that records
+        <em>how</em> the assignment was created. This is the primary audit evidence that
+        memberships are automated rather than manually maintained.
+      </p>
+      <table>
+        <thead>
+          <tr><th>XOrigin Value</th><th>Label</th><th>Meaning</th><th>Audit Implication</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="xo xo-1">1</span> Direct</td>
+            <td>Manual assignment</td>
+            <td>An administrator explicitly added this person to this group inside OIM.</td>
+            <td class="warn">Requires justification — should be rare or zero for automated controls.</td>
+          </tr>
+          <tr>
+            <td><span class="xo xo-2">2</span> Inherited</td>
+            <td>Role-based (HR)</td>
+            <td>Assigned automatically because the person holds a Business Role (Org) that is linked to this AD group.</td>
+            <td class="pass">Expected — confirms HR-driven automation.</td>
+          </tr>
+          <tr>
+            <td><span class="xo xo-4">4</span> Dynamic</td>
+            <td>Rule-based</td>
+            <td>Assigned by a dynamic group rule (SQL WHERE clause evaluated at sync time).</td>
+            <td class="pass">Expected — confirms rule-based automation.</td>
+          </tr>
+          <tr>
+            <td><span class="xo xo-8">8</span> Requested</td>
+            <td>IT Shop request</td>
+            <td>Employee or manager placed an IT Shop request that was approved.</td>
+            <td class="pass">Acceptable — governed by approval workflow.</td>
+          </tr>
+          <tr>
+            <td>3, 6, 10 &hellip;</td>
+            <td>Combined</td>
+            <td>Bitwise combination — e.g. 3 = Direct + Inherited (both apply simultaneously).</td>
+            <td>Interpret each bit independently.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout callout-important">
+        <strong>Key point for auditors</strong>
+        XOrigin values 2, 4, and 8 all represent <em>system-managed</em> assignments. Only
+        XOrigin = 1 (Direct) represents a purely manual entry. Q1 below quantifies the
+        distribution across all current memberships.
+      </div>
+    </section>
+
+    <!-- Q1 -->
+    <section id="q1">
+      <div class="section-banner">Query 1 — AD Group Assignment Origin Summary</div>
+      <div class="query-card">
+        <div class="q-header">
+          <div class="q-num">Q1</div>
+          <h3>ADGroup_OriginSummary &mdash; Automated vs. Manual Breakdown</h3>
+        </div>
+
+        <div class="section-label">Purpose</div>
+        <p>Proves what percentage of current AD group memberships are automated (XOrigin &ne; 1) versus manually assigned (XOrigin = 1). The distribution summary is the headline figure for the auditor. The second query lists any purely manual memberships with timestamps for spot-check.</p>
+
+        <div class="section-label">Query A &mdash; Origin Distribution (headline figure)</div>
+        <pre>-- AD group assignment origin breakdown — automated vs. manual audit proof
+-- Tables: ADSAccountInADSGroup, ADSGroup, Person, ADSAccount
+-- OIM 9.3
+
+SELECT
+    CASE aag.XOrigin
+        WHEN 1 THEN 'Direct (manual)'
+        WHEN 2 THEN 'Inherited (role-based)'
+        WHEN 4 THEN 'Dynamic (rule-based)'
+        WHEN 8 THEN 'Requested (IT Shop)'
+        ELSE        CAST(aag.XOrigin AS VARCHAR(10)) + ' (combined)'
+    END                        AS AssignmentOrigin,
+    COUNT(*)                   AS MembershipCount,
+    CAST(COUNT(*) * 100.0 /
+        SUM(COUNT(*)) OVER ()
+        AS DECIMAL(5,2))       AS PctOfTotal
+FROM ADSAccountInADSGroup aag
+GROUP BY aag.XOrigin
+ORDER BY MembershipCount DESC;</pre>
+
+        <div class="section-label">Query B &mdash; Detail of Manual-Only Entries (XOrigin = 1)</div>
+        <pre>-- Show any purely manual (direct) AD group assignments with identity detail
+SELECT TOP 50
+    p.FirstName + ' ' + p.LastName  AS FullName,
+    p.CentralAccount,
+    ag.cn                           AS ADGroup,
+    ag.DistinguishedName,
+    aag.XDateInserted               AS AssignedOn
+FROM ADSAccountInADSGroup aag
+JOIN ADSAccount a  ON a.UID_ADSAccount = aag.UID_ADSAccount
+JOIN Person     p  ON p.UID_Person     = a.UID_Person
+JOIN ADSGroup   ag ON ag.UID_ADSGroup  = aag.UID_ADSGroup
+WHERE aag.XOrigin = 1   -- direct / manual only
+ORDER BY aag.XDateInserted DESC;</pre>
+
+        <div class="section-label">How to Interpret Results</div>
+        <table>
+          <thead><tr><th>Scenario</th><th>Query A shows</th><th>Audit conclusion</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Control operating effectively</td>
+              <td>XOrigin 2 / 4 / 8 account for &gt;95% of rows; XOrigin 1 is zero or near-zero</td>
+              <td class="pass">Automation confirmed. Manual entries absent or negligible.</td>
+            </tr>
+            <tr>
+              <td>Some manual entries exist</td>
+              <td>XOrigin 1 appears with a small count</td>
+              <td class="warn">Review Query B. Each entry needs a business justification or exception record.</td>
+            </tr>
+            <tr>
+              <td>High manual count</td>
+              <td>XOrigin 1 &gt; 20% of total</td>
+              <td class="fail">Control gap — automated process may not be functioning or is being bypassed.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-tip">
+          <strong>Presenter tip</strong>
+          Run Query A first — present the percentage table on screen. If XOrigin 1 is zero, state it clearly:
+          <em>"All current AD group memberships were created by the automation — no manually assigned entries exist."</em>
+          If XOrigin 1 entries do exist, use Query B to walk through each one with the auditor.
+        </div>
+      </div>
+    </section>
+
+    <!-- Q2 -->
+    <section id="q2">
+      <div class="section-banner">Query 2 — Process Configuration Change Log</div>
+      <div class="query-card">
+        <div class="q-header">
+          <div class="q-num">Q2</div>
+          <h3>Control3_ProcessChangeLog &mdash; Were Any Process Definitions Changed?</h3>
+        </div>
+
+        <div class="section-label">Purpose</div>
+        <p>Directly answers the auditor's question: <em>"Please confirm if there were further changes performed to the automated functionality."</em> The <code>JobChain</code> table holds all process definitions. Its <code>XDateUpdated</code> column is updated every time a process is saved in OIM Designer. Zero rows in the date range = zero configuration changes.</p>
+
+        <div class="section-label">Query A &mdash; All Process Chains Changed (last 90 days)</div>
+        <pre>-- All process chain definitions changed in last 90 days
+-- Zero rows = no changes to automation configuration
+-- Tables: JobChain
+-- OIM 9.3
+
+SELECT
+    Name                AS ProcessChain,
+    ProcessDisplay      AS FriendlyName,
+    XDateUpdated        AS LastModified,
+    XUserUpdated        AS ModifiedBy
+FROM JobChain
+WHERE XDateUpdated &gt;= DATEADD(DAY, -90, GETDATE())
+ORDER BY XDateUpdated DESC;</pre>
+
+        <div class="section-label">Query B &mdash; Narrowed to AD-Related Chains</div>
+        <pre>-- AD-group-related process chains changed in last 90 days
+-- Covers common OIM naming patterns for AD provisioning processes
+
+SELECT
+    Name,
+    ProcessDisplay      AS FriendlyName,
+    XDateUpdated        AS LastModified,
+    XUserUpdated        AS ModifiedBy
+FROM JobChain
+WHERE XDateUpdated &gt;= DATEADD(DAY, -90, GETDATE())
+  AND (
+       Name LIKE '%ADS%'
+    OR Name LIKE '%ADSGroup%'
+    OR Name LIKE '%Membership%'
+    OR Name LIKE '%Synchroniz%'
+    OR Name LIKE '%Provision%'
+  )
+ORDER BY XDateUpdated DESC;</pre>
+
+        <div class="section-label">Query C &mdash; Full Process Inventory (all registered chains)</div>
+        <pre>-- All registered process chains — baseline inventory
+-- Use to show auditors the complete list of automation processes
+
+SELECT
+    Name                AS ProcessChain,
+    ProcessDisplay      AS FriendlyName,
+    XDateUpdated        AS LastModified
+FROM JobChain
+ORDER BY XDateUpdated DESC;</pre>
+
+        <div class="section-label">How to Interpret Results</div>
+        <table>
+          <thead><tr><th>Scenario</th><th>What you see</th><th>Audit conclusion</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>No changes since last audit</td>
+              <td>Query A returns 0 rows</td>
+              <td class="pass">No modifications to process automation. Control unchanged.</td>
+            </tr>
+            <tr>
+              <td>Changes exist — AD-unrelated</td>
+              <td>Query A has rows; Query B returns 0</td>
+              <td class="pass">Changes were to unrelated processes. AD automation untouched.</td>
+            </tr>
+            <tr>
+              <td>AD-related changes exist</td>
+              <td>Query B returns rows</td>
+              <td class="warn">Review each row. If changes were authorised improvements, provide change request reference. If unexpected, investigate.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-important">
+          <strong>Note on date range</strong>
+          The queries default to <strong>last 90 days</strong>. Adjust <code>DATEADD(DAY, -90, ...)</code>
+          to match the audit period (e.g. <code>-365</code> for a full-year review, or replace with
+          a specific date: <code>WHERE XDateUpdated &gt;= '2025-01-01'</code>).
+        </div>
+      </div>
+    </section>
+
+    <!-- Q3 -->
+    <section id="q3">
+      <div class="section-banner">Query 3 — HR to AD Provisioning Path</div>
+      <div class="query-card">
+        <div class="q-header">
+          <div class="q-num">Q3</div>
+          <h3>Control3_HRtoAD_Path &mdash; How HR Data Drives AD Group Membership</h3>
+        </div>
+
+        <div class="section-label">Purpose</div>
+        <p>Visualises the complete chain: <strong>Person &rarr; Business Role (Org) &rarr; AD Group</strong>. The join <code>OrgHasADSGroup</code> is the configuration record that wires an HR organisational unit or business role to an AD group. This is the structural proof that the control is "triggered by HR".</p>
+
+        <div class="section-label">Query A &mdash; Full Person &rarr; Business Role &rarr; AD Group Chain</div>
+        <pre>-- HR-to-AD provisioning path: Person &rarr; Business Role &rarr; AD Group
+-- OrgHasADSGroup is the key config record linking HR roles to AD groups
+-- Tables: Person, PersonInOrg, Org, OrgHasADSGroup, ADSGroup
+-- OIM 9.3
+
+SELECT
+    p.FirstName + ' ' + p.LastName  AS Employee,
+    p.CentralAccount,
+    o.Ident_Org                     AS BusinessRole,
+    ag.cn                           AS ADGroup,
+    ag.DistinguishedName,
+    pio.XDateInserted               AS HRAssignmentDate,
+    CASE pio.XOrigin
+        WHEN 1 THEN 'Direct'
+        WHEN 2 THEN 'Inherited'
+        WHEN 4 THEN 'Dynamic'
+        WHEN 8 THEN 'Requested'
+        ELSE CAST(pio.XOrigin AS VARCHAR)
+    END                             AS BRAssignmentOrigin
+FROM PersonInOrg       pio
+JOIN Person            p   ON p.UID_Person    = pio.UID_Person
+JOIN Org               o   ON o.UID_Org       = pio.UID_Org
+JOIN OrgHasADSGroup    oag ON oag.UID_Org     = o.UID_Org
+JOIN ADSGroup          ag  ON ag.UID_ADSGroup = oag.UID_ADSGroup
+ORDER BY p.LastName, o.Ident_Org, ag.cn;</pre>
+
+        <div class="section-label">Query B &mdash; Business Role &rarr; AD Group Wiring Summary</div>
+        <pre>-- Summary: how many AD groups each Business Role provisions
+-- Use to show auditors that the wiring is configuration-controlled, not ad-hoc
+
+SELECT
+    o.Ident_Org      AS BusinessRole,
+    COUNT(*)         AS LinkedADGroups
+FROM OrgHasADSGroup oag
+JOIN Org o ON o.UID_Org = oag.UID_Org
+GROUP BY o.Ident_Org
+ORDER BY LinkedADGroups DESC;</pre>
+
+        <div class="section-label">How to Interpret Results</div>
+        <table>
+          <thead><tr><th>Scenario</th><th>What you see</th><th>Audit conclusion</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Automation fully wired</td>
+              <td>Query A returns rows; Query B shows Business Roles with &ge;1 linked AD group</td>
+              <td class="pass">HR role assignments directly drive AD group provisioning. The path is configuration-managed.</td>
+            </tr>
+            <tr>
+              <td>No wiring exists</td>
+              <td>Query B returns 0 rows</td>
+              <td class="fail">OrgHasADSGroup is empty — the HR&rarr;AD automation path is not configured. Investigate before the meeting.</td>
+            </tr>
+            <tr>
+              <td>Partial wiring</td>
+              <td>Some business roles have no linked AD groups</td>
+              <td class="warn">Some roles may be managed outside OIM (e.g. direct AD, another tool). Document scope boundary.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-tip">
+          <strong>Presenter tip</strong>
+          Walk the auditor through one concrete example row from Query A:
+          <em>"This person was assigned to Business Role [X] by HR. OIM detected that change, looked up
+          which AD groups [X] maps to via OrgHasADSGroup, and automatically provisioned the
+          corresponding ADSAccountInADSGroup record. No manual step was involved."</em>
+        </div>
+      </div>
+    </section>
+
+    <!-- Q4 -->
+    <section id="q4">
+      <div class="section-banner">Query 4 — Leaver Cleanup Check</div>
+      <div class="query-card">
+        <div class="q-header">
+          <div class="q-num">Q4</div>
+          <h3>Control3_LeaverCheck &mdash; Leavers Disabled and Groups Removed</h3>
+        </div>
+
+        <div class="section-label">Purpose</div>
+        <p>Proves the "leaving employees" leg of the control. When a person is deactivated in OIM (typically fed from HR), the tool should automatically disable their AD account and remove them from all AD groups. This query shows inactive persons alongside their AD account status and remaining group count.</p>
+
+        <div class="section-label">Query — Inactive Persons with AD Account Status</div>
+        <pre>-- Leaver check: confirm disabled persons have disabled AD accounts and zero group memberships
+-- IsInActive = 1 on Person means the identity has been deactivated (leaver)
+-- IsDisabled = 1 on ADSAccount means the AD account is locked/disabled
+-- Tables: Person, ADSAccount, ADSAccountInADSGroup
+-- OIM 9.3
+
+SELECT
+    p.FirstName + ' ' + p.LastName  AS Employee,
+    p.CentralAccount,
+    p.XDateUpdated                  AS PersonDeactivatedOn,
+    a.SAMAccountName,
+    CASE a.IsDisabled
+        WHEN 1 THEN 'Yes — Disabled'
+        WHEN 0 THEN 'No — Still Active'
+        ELSE 'No AD Account'
+    END                             AS ADAccountDisabled,
+    COUNT(aag.UID_ADSGroup)         AS RemainingGroupMemberships
+FROM Person p
+LEFT JOIN ADSAccount           a   ON a.UID_Person      = p.UID_Person
+LEFT JOIN ADSAccountInADSGroup aag ON aag.UID_ADSAccount = a.UID_ADSAccount
+WHERE p.IsInActive = 1
+GROUP BY
+    p.FirstName, p.LastName, p.CentralAccount, p.XDateUpdated,
+    a.SAMAccountName, a.IsDisabled
+ORDER BY p.XDateUpdated DESC;</pre>
+
+        <div class="section-label">How to Interpret Results</div>
+        <table>
+          <thead><tr><th>Scenario</th><th>ADAccountDisabled</th><th>RemainingGroupMemberships</th><th>Audit conclusion</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Clean leaver</td>
+              <td class="pass">Yes — Disabled</td>
+              <td class="pass">0</td>
+              <td class="pass">Control working. Account disabled and all group memberships removed by OIM.</td>
+            </tr>
+            <tr>
+              <td>Account disabled, groups pending sync</td>
+              <td class="pass">Yes — Disabled</td>
+              <td class="warn">&gt; 0</td>
+              <td class="warn">Account is locked. Groups may be queued for removal — check if sync has run recently (see SyncJournal.sql).</td>
+            </tr>
+            <tr>
+              <td>Account still active</td>
+              <td class="fail">No — Still Active</td>
+              <td>Any</td>
+              <td class="fail">Gap — deactivation has not propagated to AD. Investigate process chain execution for this identity.</td>
+            </tr>
+            <tr>
+              <td>No AD account</td>
+              <td>No AD Account</td>
+              <td>0</td>
+              <td class="pass">Person never had an AD account, or account was deleted. Acceptable if consistent with HR record.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-warn">
+          <strong>Timing note</strong>
+          OIM processes changes via an asynchronous job queue. A person deactivated today may show
+          1&ndash;2 remaining group memberships if the AD sync has not yet run. Check
+          <code>DPRJournal</code> (SyncJournal.sql) to confirm the last successful sync time before
+          drawing conclusions from this query.
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW TO RUN -->
+    <section id="howtorun">
+      <div class="section-banner">How to Run These Queries</div>
+      <div class="query-card">
+        <div class="q-header">
+          <div class="q-num" style="min-width:38px;">&#9654;</div>
+          <h3>Step-by-step instructions for the meeting</h3>
+        </div>
+
+        <div class="section-label">Before the meeting</div>
+        <ol class="steps">
+          <li>Open SSMS and connect to the client's OIM SQL Server (confirm server name in advance).</li>
+          <li>Select the OIM database (typically <code>OneIM</code> or <code>IdentityManager</code>).</li>
+          <li>Run each query in a new query tab — keep all 4 tabs open and ready.</li>
+          <li>Check that all queries return rows without errors before the meeting starts.</li>
+          <li>Note any XOrigin = 1 entries or inactive persons with active accounts — prepare explanations.</li>
+        </ol>
+
+        <div class="section-label">During the walkthrough</div>
+        <ol class="steps">
+          <li><strong>Q1</strong> — Present the origin distribution table. Confirm automated % to auditor.</li>
+          <li><strong>Q2</strong> — Run live. If 0 rows: state "no process configuration changes in the audit period". If rows exist: walk through each change and reference the corresponding change request.</li>
+          <li><strong>Q3</strong> — Pick one specific employee, show their Business Role &rarr; AD Group path. This is your <em>"here is how HR triggers the automation"</em> moment.</li>
+          <li><strong>Q4</strong> — Show the leaver list. Confirm disabled = Yes and groups = 0 for the majority. Address any exceptions.</li>
+        </ol>
+
+        <div class="callout callout-important">
+          <strong>Supplementary queries (already in the SQL library)</strong>
+          <ul style="padding-left:1.2rem; margin-top:0.4rem;">
+            <li><code>OIM/SQL/Sync/SyncJournal.sql</code> &mdash; last AD sync run times (supports Q4 timing disclaimer)</li>
+            <li><code>OIM/SQL/Queue/ProcessChain.sql</code> &mdash; job execution history by chain name</li>
+            <li><code>OIM/SQL/Membership/BusinessRole_Membership.sql</code> &mdash; full business role membership detail</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPECTED RESULTS SUMMARY -->
+    <section id="expected">
+      <div class="section-banner">Expected Results Summary</div>
+      <table>
+        <thead>
+          <tr><th>Query</th><th>Green (control effective)</th><th>Amber (investigate)</th><th>Red (control gap)</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Q1</strong> Origin Summary</td>
+            <td class="pass">XOrigin 1 = 0% or &lt;2%</td>
+            <td class="warn">XOrigin 1 between 2%&ndash;20% with documented exceptions</td>
+            <td class="fail">XOrigin 1 &gt;20% — automation not operating</td>
+          </tr>
+          <tr>
+            <td><strong>Q2</strong> Change Log</td>
+            <td class="pass">0 rows in audit period</td>
+            <td class="warn">Rows exist for non-AD chains only</td>
+            <td class="fail">AD-related chains modified without change record</td>
+          </tr>
+          <tr>
+            <td><strong>Q3</strong> HR&rarr;AD Path</td>
+            <td class="pass">OrgHasADSGroup populated; rows returned</td>
+            <td class="warn">Partial coverage — some roles not wired</td>
+            <td class="fail">OrgHasADSGroup empty — no automated wiring</td>
+          </tr>
+          <tr>
+            <td><strong>Q4</strong> Leaver Check</td>
+            <td class="pass">All inactive: IsDisabled=1, Groups=0</td>
+            <td class="warn">Disabled=1 but Groups&gt;0 (pending sync)</td>
+            <td class="fail">Any inactive person with IsDisabled=0</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      INTRAGEN<span class="footer-dot">.</span> &mdash; Audit Evidence Reference &mdash;
+      One Identity Manager 9.3 &mdash;
+      &copy; Intragen International. This document remains strictly private and confidential.
+    </footer>
+
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "colourScheme": "Intragen Corporate",
+  "tone": "Professional",
+  "targetAudience": "Junior Developers",
+  "language": "English",
+  "slideStructure": ["Title", "Agenda", "Content", "Summary", "Q&A"],
+  "brandingNotes": "Use Intragen purple/gold palette. Always include company logo placeholder on title slide."
+}

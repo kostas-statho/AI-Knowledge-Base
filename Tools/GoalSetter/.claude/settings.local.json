@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -ExecutionPolicy Bypass -File scripts/Take-Screenshot.ps1 -AllTabs)"
+    ]
+  }
+}

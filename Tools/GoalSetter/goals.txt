@@ -1,0 +1,12 @@
+﻿GOAL: Learn AI-driven Cybersecurity Basics  [Target: 30 days | 2 hrs/week]
+  [ ] Enroll in an online course focusing on AI in cybersecurity
+  [ ] Watch introductory video lectures
+  [ ] Complete beginner hands-on labs with AI/ML frameworks
+  [ ] Participate in discussion forums to clarify doubts
+
+GOAL: Develop a Simple AI-based Security Tool  [Target: 30 days | 1 hrs/week]
+  [ ] Research popular AI/ML frameworks used in cybersecurity
+  [ ] Start a small project to apply AI knowledge
+  [ ] Iteratively improve and test the tool
+  [ ] Document the development process and lessons learned
+

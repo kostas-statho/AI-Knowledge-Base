@@ -1,0 +1,34 @@
+﻿
+Searching for OIM window containing: 'Designer'...
+
+Found: "Designer - viadmin@STATHOPOULOSK\OneIM (Main Database)"
+Size : 1944x1164 @ (-12, -12)
+Class: WindowsForms10.Window.8.app.0.378734a_r3_ad1
+
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+ CONTROL TREE  (depthΓëñ10, filter='Tree')
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+[TREE] "databaseNavigator1" id=Navigator cls=WindowsForms10.Window.8.app.0.378734a_r3_ad1
+  [  Γå│ node] "Getting Started"
+  [  Γå│ node] "Create system user"
+  [  Γå│ node] "Edit configuration parameters"
+  [  Γå│ node] "Edit Job server"
+  [  Γå│ node] "Edit schedules (64)"
+[TREE] id=tlcObjects cls=WindowsForms10.Window.8.app.0.378734a_r3_ad1
+  [  Γå│ node] "CCC_15daysBeforeExpire"
+  [  Γå│ node] "Onboarding_Success"
+  [  Γå│ node] "SystemRole_Membership_Lost"
+[TREE] id=198088 cls=WindowsForms10.Window.8.app.0.378734a_r3_ad1
+  [  Γå│ node] "Create administrative user"
+  [  Γå│ node] "Edit configuration parameters"
+  [  Γå│ node] "Add Job server"
+  [  Γå│ node] "Edit schedules"
+
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+ Total controls printed: 15
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+Tip: Use --filter Tree to see only the nav tree nodes.
+     Use --filter Edit to see only text input fields.
+     Use --filter Grid to see data grids.

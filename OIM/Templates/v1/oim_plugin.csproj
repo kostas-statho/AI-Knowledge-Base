@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- Output DLL must match: *.CompositionApi.Server.Plugin.dll for auto-discovery -->
+    <AssemblyName>$(MSBuildProjectName).CompositionApi.Server.Plugin</AssemblyName>
+  </PropertyGroup>
+
+  <!--
+    All DLLs referenced via HintPath from the OIM installation directory.
+    Do NOT use NuGet packages for OIM DLLs — they are not published to NuGet.
+    The relative path below assumes the project is at:
+      Knowledge_Base\Plugins\<PluginName>\
+    Adjust depth (..\..\..\..) if the project is elsewhere.
+  -->
+  <ItemGroup>
+    <Reference Include="QBM.CompositionApi">
+      <HintPath>..\..\..\..\..\Program Files\One Identity\One Identity Manager\QBM.CompositionApi.dll</HintPath>
+    </Reference>
+    <Reference Include="QBM.CompositionApi.Server">
+      <HintPath>..\..\..\..\..\Program Files\One Identity\One Identity Manager\QBM.CompositionApi.Server.dll</HintPath>
+    </Reference>
+    <Reference Include="QER.CompositionApi">
+      <HintPath>..\..\..\..\..\Program Files\One Identity\One Identity Manager\QER.CompositionApi.dll</HintPath>
+    </Reference>
+    <Reference Include="QER.CompositionApi.Server.PlugIn">
+      <HintPath>..\..\..\..\..\Program Files\One Identity\One Identity Manager\QER.CompositionApi.Server.PlugIn.dll</HintPath>
+    </Reference>
+    <Reference Include="VI.Base">
+      <HintPath>..\..\..\..\..\Program Files\One Identity\One Identity Manager\VI.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="VI.DB">
+      <HintPath>..\..\..\..\..\Program Files\One Identity\One Identity Manager\VI.DB.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\..\..\Program Files\One Identity\One Identity Manager\NLog.dll</HintPath>
+    </Reference>
+    <!-- Add further DLLs from the OIM directory as needed (AAD.TypedWrappers, etc.) -->
+  </ItemGroup>
+
+</Project>

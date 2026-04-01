@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OIM — AAD No-Mailbox Bare Minimum Implementation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+:root{--purple:#7B2D8B;--purple-dark:#5C1F6B;--teal:#007B77;--body-bg:#FAF8F5;--code-bg:#1E1E1E;--border:#DDD;--text:#2C2C2C;--muted:#6B6B6B;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#DDDDD5;color:var(--text);font-size:14px;line-height:1.7;}
+.page{background:var(--body-bg);width:210mm;min-height:297mm;margin:20px auto;position:relative;box-shadow:0 4px 24px rgba(0,0,0,.18);overflow:hidden;}
+.intragen-logo{position:absolute;top:24px;right:28px;font-size:15px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;z-index:10;}
+.logo-dot{color:#F0A800;}
+.page-footer{position:absolute;bottom:18px;left:32px;right:32px;display:flex;justify-content:space-between;align-items:center;font-size:9.5px;color:#999;border-top:1px solid #DDD;padding-top:7px;}
+.content-page{padding:44px 48px 80px;}
+.section-banner{background:var(--purple-dark);color:#fff;font-size:12px;font-weight:700;letter-spacing:.8px;padding:9px 14px;margin-bottom:20px;margin-top:10px;}
+.section-banner .section-num{opacity:.7;margin-right:6px;}
+.subsection-box{border-top:2px solid #C0B0C0;padding-top:10px;margin:16px 0 10px;}
+.subsection-title{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#444;margin-bottom:8px;}
+.label-teal{display:block;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal);border-bottom:1px dotted var(--teal);padding-bottom:2px;margin:12px 0 6px;}
+h3{font-size:14.5px;font-weight:700;color:var(--purple);margin:14px 0 6px;}
+p{margin-bottom:8px;font-size:13.5px;}
+ul,ol{margin:4px 0 8px 20px;font-size:13.5px;}
+li{margin-bottom:2px;}
+li::marker{color:var(--purple);}
+.code-block{background:var(--code-bg);color:#D4D4D4;font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:11px;line-height:1.5;padding:11px 14px;border-radius:4px;overflow-x:auto;margin:8px 0 12px;white-space:pre;}
+code{background:#EDE8F0;color:#8B2080;font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:11px;padding:1px 5px;border-radius:3px;}
+table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:12px;}
+th{background:var(--purple-dark);color:#fff;padding:6px 10px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.4px;}
+td{padding:5px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
+tr:nth-child(even) td{background:rgba(0,0,0,.02);}
+.callout{padding:9px 12px;border-radius:0 4px 4px 0;margin:8px 0;font-size:12.5px;}
+.callout strong{display:block;margin-bottom:2px;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;}
+.callout-note{background:#E8F4FF;border-left:4px solid #2D6DB5;}
+.callout-warn{background:#FFF8E1;border-left:4px solid #F59E0B;}
+.callout-tip{background:#F0FDF4;border-left:4px solid #22C55E;}
+.step-num{display:inline-block;background:var(--purple);color:#fff;border-radius:50%;width:18px;height:18px;text-align:center;line-height:18px;font-size:10px;font-weight:700;margin-right:5px;flex-shrink:0;}
+.designer-step{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:13px;}
+.obj-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dotted var(--border);font-size:12.5px;}
+.obj-type{background:#F5EFF8;border:1px solid #C0A0CC;border-radius:3px;font-size:10px;font-weight:700;padding:2px 6px;color:var(--purple);white-space:nowrap;}
+.obj-new{background:#F0FDF4;border:1px solid #86EFAC;border-radius:3px;font-size:10px;font-weight:700;padding:2px 6px;color:#166534;white-space:nowrap;}
+@media print{body{background:#fff;}.page{box-shadow:none;margin:0;width:100%;page-break-after:always;}.page:last-child{page-break-after:auto;}}
+@media(max-width:800px){.page{width:100%;margin:0;}.content-page{padding:24px 20px 60px;}}
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 — SETUP AND SQL -->
+<div class="page content-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+
+  <div style="margin-top:42px;">
+    <div style="font-size:19px;font-weight:700;color:var(--purple);line-height:1.3;">AAD No-Mailbox Alerting<br/>Bare Minimum Implementation</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:6px;">OIM 9.3 &nbsp;|&nbsp; All improvements incorporated &nbsp;|&nbsp; Single notification address &nbsp;|&nbsp; March 2026</div>
+    <div class="callout callout-note" style="margin-top:12px;">
+      <strong>What this covers</strong>
+      Everything required to run the no-mailbox alerting chain with all v1.1 improvements. Nothing more. One email address for all notifications.
+    </div>
+  </div>
+
+  <div class="section-banner" style="margin-top:14px;"><span class="section-num">Step 1</span> Prerequisites</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Schema Extensions (AADUser table)</div>
+    <p>Add two custom Bool columns via Designer → Schema Extensions → AADUser:</p>
+    <div class="obj-row"><span style="font-family:monospace;">CCC_IsFirstAlertSent</span><span style="color:var(--muted);font-size:12px;">Bool (Bit), default 0</span></div>
+    <div class="obj-row"><span style="font-family:monospace;">CCC_IsEscalationSent</span><span style="color:var(--muted);font-size:12px;">Bool (Bit), default 0</span></div>
+    <p style="font-size:12px;color:var(--muted);margin-top:6px;">After adding both: <strong>Database → Commit to database</strong></p>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Configuration Parameters (Base Data → Configuration parameters)</div>
+    <table>
+      <thead><tr><th>Path</th><th>Default Value</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>Custom\AAD\Notifications\AlertEmail</code></td><td><code>it-admin@contoso.com</code></td><td>All alert and escalation emails sent here</td></tr>
+        <tr><td><code>Custom\AAD\Notifications\MaxAgeHours</code></td><td><code>48</code></td><td>Ignore accounts older than this (hours). Adjust per SLA.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Mail Templates (Base Data → Mail templates → New)</div>
+    <p>Create two templates, both with base object <strong>AADUser</strong>:</p>
+    <table>
+      <thead><tr><th>Name</th><th>Subject</th></tr></thead>
+      <tbody>
+        <tr><td><code>CCC_AAD_NoMailbox_Alert</code></td><td><code>[ACTION] AAD '$DisplayName$' has no EXO mailbox (created: $XDateInserted$)</code></td></tr>
+        <tr><td><code>CCC_AAD_NoMailbox_Escalation</code></td><td><code>[ESCALATION] AAD '$DisplayName$' STILL has no EXO mailbox — 4h since $XDateInserted$</code></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--muted);">Body content: include <code>$DisplayName$</code>, <code>$UserPrincipalName$</code>, <code>$XDateInserted$</code>. Plain text body is acceptable.</p>
+  </div>
+
+  <div class="section-banner"><span class="section-num">Step 2</span> Generating Condition SQL (use in both automations)</div>
+
+  <span class="label-teal">Alert Automation — Generating Condition (object type: AADUser)</span>
+  <div class="code-block">NOT EXISTS (
+    SELECT 1 FROM O3EMailbox m WHERE m.UID_AADUser = AADUser.UID_AADUser
+)
+AND XDateInserted &lt; DATEADD(HOUR, -1, GETUTCDATE())
+AND XDateInserted &gt; DATEADD(HOUR, -48, GETUTCDATE())
+AND ISNULL(CCC_IsFirstAlertSent, 0) = 0</div>
+
+  <span class="label-teal">Escalation Automation — Generating Condition (object type: AADUser)</span>
+  <div class="code-block">NOT EXISTS (
+    SELECT 1 FROM O3EMailbox m WHERE m.UID_AADUser = AADUser.UID_AADUser
+)
+AND XDateInserted &lt; DATEADD(HOUR, -4, GETUTCDATE())
+AND XDateInserted &gt; DATEADD(HOUR, -48, GETUTCDATE())
+AND ISNULL(CCC_IsEscalationSent, 0) = 0</div>
+
+  <span class="label-teal">Reset Automation — Generating Condition (object type: AADUser)</span>
+  <div class="code-block">EXISTS (
+    SELECT 1 FROM O3EMailbox m WHERE m.UID_AADUser = AADUser.UID_AADUser
+)
+AND (
+    ISNULL(CCC_IsFirstAlertSent, 0) = 1
+    OR ISNULL(CCC_IsEscalationSent, 0) = 1
+)</div>
+
+  <div class="callout callout-note" style="margin-top:6px;">
+    <strong>NOT EXISTS vs NOT IN</strong>
+    <code>NOT EXISTS</code> is NULL-safe and faster. Do not switch back to <code>NOT IN</code> — a single NULL in O3EMailbox silently breaks the entire automation.
+  </div>
+
+  <div class="page-footer">
+    <span>AAD No-Mailbox — Bare Minimum Implementation</span>
+    <span>Intragen International — Private &amp; Confidential</span>
+  </div>
+</div>
+
+<!-- PAGE 2 — PROCESSES -->
+<div class="page content-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div style="margin-top:42px;"></div>
+
+  <div class="section-banner"><span class="section-num">Step 3</span> Process Automations (Designer → Process Automation)</div>
+
+  <p>Create three Process Automations, all using the same hourly schedule:</p>
+  <table>
+    <thead><tr><th>Name</th><th>Process to Queue</th><th>SQL</th></tr></thead>
+    <tbody>
+      <tr><td><code>CCC_AAD_AutomationAlert</code></td><td><code>CCC_AAD_SendNoMailboxAlert</code></td><td>Alert query (page 1)</td></tr>
+      <tr><td><code>CCC_AAD_AutomationEscalation</code></td><td><code>CCC_AAD_SendNoMailboxEscalation</code></td><td>Escalation query (page 1)</td></tr>
+      <tr><td><code>CCC_AAD_AutomationResetFlags</code></td><td><code>CCC_AAD_ResetNoMailboxFlags</code></td><td>Reset query (page 1)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-banner"><span class="section-num">Step 4</span> Processes — Alert and Escalation (identical structure)</div>
+
+  <p>Build both <code>CCC_AAD_SendNoMailboxAlert</code> and <code>CCC_AAD_SendNoMailboxEscalation</code> with the same two-step structure:</p>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Step 1 — Send_Email</div>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Component</td><td>Notifications / Mail</td></tr>
+        <tr><td>Template</td><td><code>CCC_AAD_NoMailbox_Alert</code> (or Escalation template for the second process)</td></tr>
+        <tr><td>Recipient</td><td>Config param: <code>Custom\AAD\Notifications\AlertEmail</code></td></tr>
+        <tr><td><strong>On error</strong></td><td><strong>Wait</strong> — 3 retries, 10 minutes apart</td></tr>
+        <tr><td>Previous step result</td><td>Always</td></tr>
+      </tbody>
+    </table>
+
+    <span class="label-teal">Pre-Script (apply to both processes)</span>
+    <div class="code-block"><span style="color:#6A9955;">' Late-check: skip if mailbox appeared since automation queued this</span>
+Dim mailboxCount As Integer = Session.Source().Count( _
+    "O3EMailbox", "UID_AADUser = '$UID_AADUser$'")
+If mailboxCount > 0 Then Return False
+
+<span style="color:#6A9955;">' Late-check: skip if account now exceeds configured age cap</span>
+Dim maxHours As Integer = 48
+Dim cfg As String = Session.Config().GetConfigParm("Custom\AAD\Notifications\MaxAgeHours")
+If IsNumeric(cfg) Then maxHours = CInt(cfg)
+If DateDiff("h", CDate("$XDateInserted$"), Now()) > maxHours Then Return False
+
+Return True</div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Step 2 — Set_Flag</div>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Component</td><td>SQL / HandleObject → UpdateData</td></tr>
+        <tr><td>Table</td><td><code>AADUser</code></td></tr>
+        <tr><td>WhereClause</td><td><code>UID_AADUser = '$UID_AADUser$'</code></td></tr>
+        <tr><td>UpdateData (Alert process)</td><td><code>CCC_IsFirstAlertSent=1</code></td></tr>
+        <tr><td>UpdateData (Escalation process)</td><td><code>CCC_IsEscalationSent=1</code></td></tr>
+        <tr><td><strong>Previous step result</strong></td><td><strong>On success</strong> — flag only sets if email sent</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-warn">
+      <strong>Critical: On success dependency</strong>
+      If Step 1 fails all retries, Step 2 must NOT run. Setting this to "On success" ensures a failed email send does not silently mark the account as alerted.
+    </div>
+  </div>
+
+  <div class="section-banner"><span class="section-num">Step 5</span> Reset Process</div>
+
+  <p>Create <code>CCC_AAD_ResetNoMailboxFlags</code> with one step:</p>
+  <table>
+    <thead><tr><th>Field</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Component</td><td>SQL / HandleObject → UpdateData</td></tr>
+      <tr><td>Table</td><td><code>AADUser</code></td></tr>
+      <tr><td>WhereClause</td><td><code>UID_AADUser = '$UID_AADUser$'</code></td></tr>
+      <tr><td>UpdateData</td><td><code>CCC_IsFirstAlertSent=0,CCC_IsEscalationSent=0</code></td></tr>
+      <tr><td>Previous step result</td><td>Always</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--muted);">No email. No Pre-Script. This step only resets flags when a mailbox appears, so the account can be re-monitored if the mailbox is later removed.</p>
+
+  <div class="section-banner"><span class="section-num">Done</span> Verify</div>
+  <ol style="font-size:13px;">
+    <li>Create a test AADUser with no O3EMailbox row. Run alert automation manually (right-click → Run now in Designer).</li>
+    <li>Confirm process queues in Job Queue and email arrives at <code>AlertEmail</code> address.</li>
+    <li>Confirm <code>CCC_IsFirstAlertSent = 1</code> in the database.</li>
+    <li>Provision O3EMailbox row. Run reset automation. Confirm both flags reset to 0.</li>
+    <li>Remove SMTP config temporarily. Rerun alert automation. Confirm flag stays 0 after retries exhaust.</li>
+  </ol>
+
+  <div class="callout callout-tip" style="margin-top:10px;">
+    <strong>All 7 OIM objects to create</strong>
+    Config param <code>AlertEmail</code>, config param <code>MaxAgeHours</code>, mail template Alert, mail template Escalation, 3 automations, 3 processes (Alert, Escalation, Reset) = <strong>10 objects total</strong>.
+  </div>
+
+  <div class="page-footer">
+    <span>AAD No-Mailbox — Bare Minimum Implementation</span>
+    <span>Intragen International — Private &amp; Confidential</span>
+  </div>
+</div>
+
+</body>
+</html>

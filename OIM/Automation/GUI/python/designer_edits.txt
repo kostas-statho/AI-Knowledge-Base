@@ -1,0 +1,29 @@
+﻿
+Searching for OIM window containing: 'Designer'...
+
+Found: "Designer - viadmin@STATHOPOULOSK\OneIM (Main Database)"
+Size : 1944x1164 @ (-12, -12)
+Class: WindowsForms10.Window.8.app.0.378734a_r3_ad1
+
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+ CONTROL TREE  (depthΓëñ10, filter='Edit')
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+[EDIT] cls=WindowsForms10.Edit.app.0.378734a_r3_ad1
+[EDIT] "Mail template" id=editIdent_DialogRichMail cls=WindowsForms10.Window.8.app.0.378734a_r3_ad1
+  [EDIT] "CCC_AADNoEXOAlert" id=TextBox cls=WindowsForms10.Edit.app.0.378734a_r3_ad1 = 'CCC_AADNoEXOAlert'
+[EDIT] "Description" id=edtDescription cls=WindowsForms10.Window.8.app.0.378734a_r3_ad1
+  [EDIT] id=TextBox cls=WindowsForms10.Edit.app.0.378734a_r3_ad1
+[EDIT] "AADUser" cls=WindowsForms10.Edit.app.0.378734a_r3_ad1 = 'AADUser'
+[EDIT] cls=WindowsForms10.Edit.app.0.378734a_r3_ad1
+[EDIT] "Page 1 header" id=m_RichEditControl Page 1 Header
+[EDIT] "Page 1 footer" id=m_RichEditControl Page 1 Header
+[EDIT] id=textBox cls=WindowsForms10.Edit.app.0.378734a_r3_ad1
+
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+ Total controls printed: 10
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+Tip: Use --filter Tree to see only the nav tree nodes.
+     Use --filter Edit to see only text input fields.
+     Use --filter Grid to see data grids.

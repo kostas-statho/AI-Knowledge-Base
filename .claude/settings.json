@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -File \"$CLAUDE_PROJECT_DIR\\.claude\\hooks\\file_written_notify.ps1\""
+          }
+        ]
+      }
+    ]
+  }
+}

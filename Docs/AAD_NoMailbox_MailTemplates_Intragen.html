@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OIM Mail Templates — AAD No-Mailbox Alerting Process</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+:root{--purple:#7B2D8B;--purple-dark:#5C1F6B;--teal:#007B77;--body-bg:#FAF8F5;--code-bg:#1E1E1E;--border:#DDD;--text:#2C2C2C;--muted:#6B6B6B;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#DDDDD5;color:var(--text);font-size:14px;line-height:1.7;}
+.page{background:var(--body-bg);width:210mm;min-height:297mm;margin:20px auto;position:relative;box-shadow:0 4px 24px rgba(0,0,0,.18);overflow:hidden;}
+.intragen-logo{position:absolute;top:24px;right:28px;font-size:15px;font-weight:700;letter-spacing:2px;color:#1A1A1A;text-transform:uppercase;z-index:10;}
+.logo-dot{color:#F0A800;}
+.page-footer{position:absolute;bottom:18px;left:32px;right:32px;display:flex;justify-content:space-between;align-items:center;font-size:9.5px;color:#999;border-top:1px solid #DDD;padding-top:7px;}
+.cover-page{min-height:297mm;}
+.title-badge{position:absolute;top:110px;left:44px;background:var(--purple);color:#fff;font-size:20px;font-weight:700;padding:18px 28px;border-radius:10px;max-width:340px;line-height:1.35;}
+.cover-subtitle{position:absolute;top:240px;left:44px;color:var(--muted);font-size:14px;font-weight:300;}
+.cover-version{position:absolute;top:268px;left:44px;color:var(--muted);font-size:12px;}
+.circle-blue{position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(180,210,225,.5);top:140px;right:-50px;}
+.circle-peach{position:absolute;width:340px;height:340px;border-radius:50%;background:rgba(230,185,165,.4);bottom:-100px;right:-70px;}
+.circle-yellow{position:absolute;width:100px;height:100px;border-radius:50%;background:rgba(235,220,160,.5);bottom:90px;left:70px;}
+.toc-page{padding:44px 48px 70px;}
+.contents-banner{background:var(--purple-dark);color:#fff;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:9px 14px;margin:52px 0 24px;}
+.toc-entry{display:flex;align-items:baseline;margin-bottom:5px;font-size:13px;}
+.toc-entry .toc-title{flex:0 0 auto;}
+.toc-entry .toc-dots{flex:1;border-bottom:1px dotted #AAA;margin:0 8px 3px;}
+.toc-entry .toc-num{flex:0 0 auto;color:var(--muted);font-size:11px;}
+.toc-sub{padding-left:20px;font-size:11.5px;color:var(--muted);margin-bottom:3px;display:flex;align-items:baseline;}
+.content-page{padding:44px 48px 80px;}
+.section-banner{background:var(--purple-dark);color:#fff;font-size:12px;font-weight:700;letter-spacing:.8px;padding:9px 14px;margin-bottom:20px;margin-top:10px;}
+.section-banner .section-num{opacity:.7;margin-right:6px;}
+.subsection-box{border-top:2px solid #C0B0C0;padding-top:10px;margin:20px 0 12px;}
+.subsection-title{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#444;margin-bottom:10px;}
+.label-teal{display:block;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal);border-bottom:1px dotted var(--teal);padding-bottom:2px;margin:14px 0 7px;}
+h3{font-size:14.5px;font-weight:700;color:var(--purple);margin:16px 0 8px;}
+h4{font-size:11.5px;font-weight:700;color:#444;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 5px;}
+p{margin-bottom:10px;font-size:13.5px;}
+ul,ol{margin:6px 0 10px 20px;font-size:13.5px;}
+li{margin-bottom:3px;}
+li::marker{color:var(--purple);}
+.code-block{background:var(--code-bg);color:#D4D4D4;font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:11.5px;line-height:1.5;padding:13px 15px;border-radius:4px;overflow-x:auto;margin:10px 0 14px;white-space:pre;}
+code{background:#EDE8F0;color:#8B2080;font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:11.5px;padding:1px 5px;border-radius:3px;}
+table{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:12.5px;}
+th{background:var(--purple-dark);color:#fff;padding:7px 11px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.4px;}
+td{padding:6px 11px;border-bottom:1px solid var(--border);vertical-align:top;}
+tr:nth-child(even) td{background:rgba(0,0,0,.02);}
+.callout{padding:11px 13px;border-radius:0 4px 4px 0;margin:10px 0;font-size:13px;}
+.callout strong{display:block;margin-bottom:2px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+.callout-note{background:#E8F4FF;border-left:4px solid #2D6DB5;}
+.callout-warn{background:#FFF8E1;border-left:4px solid #F59E0B;}
+.callout-important{background:#F5EFF8;border-left:4px solid var(--purple);}
+.callout-tip{background:#F0FDF4;border-left:4px solid #22C55E;}
+.state-flow{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:10px 0;font-size:12px;}
+.state-box{background:#fff;border:1px solid var(--border);border-radius:3px;padding:3px 9px;font-family:monospace;font-size:11.5px;}
+.state-arrow{color:#888;font-size:13px;}
+.step-num{display:inline-block;background:var(--purple);color:#fff;border-radius:50%;width:20px;height:20px;text-align:center;line-height:20px;font-size:10px;font-weight:700;margin-right:6px;flex-shrink:0;}
+.designer-step{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:13px;}
+@media print{body{background:#fff;}.page{box-shadow:none;margin:0;width:100%;page-break-after:always;}.page:last-child{page-break-after:auto;}}
+@media(max-width:800px){.page{width:100%;margin:0;}.title-badge{left:16px;right:16px;}.content-page,.toc-page{padding:24px 20px 60px;}}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="page cover-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="circle-blue"></div>
+  <div class="circle-peach"></div>
+  <div class="circle-yellow"></div>
+  <div class="title-badge">OIM Mail Templates<br/>AAD No-Mailbox<br/>Alerting Process</div>
+  <div class="cover-subtitle">One Identity Manager — Technical Design Reference</div>
+  <div class="cover-version">Version 2.0 &nbsp;|&nbsp; March 2026 &nbsp;|&nbsp; OIM 9.3</div>
+  <div class="page-footer">
+    <span>OIM Mail Templates — AAD No-Mailbox Alerting Process</span>
+    <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International. All documents remain strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="page toc-page">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="contents-banner">CONTENTS</div>
+
+  <div class="toc-entry"><span class="toc-title">1. Architecture Overview</span><span class="toc-dots"></span><span class="toc-num">3</span></div>
+  <div class="toc-sub"><span class="toc-title">Correct Process Architecture (Process Automation Pattern)</span><span class="toc-dots"></span><span class="toc-num">3</span></div>
+  <div class="toc-sub"><span class="toc-title">OIM Scripting Concepts Clarified</span><span class="toc-dots"></span><span class="toc-num">3</span></div>
+
+  <div class="toc-entry" style="margin-top:8px;"><span class="toc-title">2. Prerequisites</span><span class="toc-dots"></span><span class="toc-num">4</span></div>
+  <div class="toc-sub"><span class="toc-title">Custom Column: CCC_IsFirstAlertSent</span><span class="toc-dots"></span><span class="toc-num">4</span></div>
+  <div class="toc-sub"><span class="toc-title">Custom Column: CCC_IsEscalationSent</span><span class="toc-dots"></span><span class="toc-num">4</span></div>
+  <div class="toc-sub"><span class="toc-title">Configuration Parameters</span><span class="toc-dots"></span><span class="toc-num">4</span></div>
+
+  <div class="toc-entry" style="margin-top:8px;"><span class="toc-title">3. Mail Template 1 — CCC_AAD_NoMailbox_Alert</span><span class="toc-dots"></span><span class="toc-num">5</span></div>
+  <div class="toc-sub"><span class="toc-title">Designer Configuration</span><span class="toc-dots"></span><span class="toc-num">5</span></div>
+  <div class="toc-sub"><span class="toc-title">Subject Line</span><span class="toc-dots"></span><span class="toc-num">5</span></div>
+  <div class="toc-sub"><span class="toc-title">HTML Body</span><span class="toc-dots"></span><span class="toc-num">5</span></div>
+  <div class="toc-sub"><span class="toc-title">Plain-Text Body</span><span class="toc-dots"></span><span class="toc-num">5</span></div>
+
+  <div class="toc-entry" style="margin-top:8px;"><span class="toc-title">4. Mail Template 2 — CCC_AAD_NoMailbox_Escalation</span><span class="toc-dots"></span><span class="toc-num">6</span></div>
+  <div class="toc-sub"><span class="toc-title">Designer Configuration</span><span class="toc-dots"></span><span class="toc-num">6</span></div>
+  <div class="toc-sub"><span class="toc-title">Subject Line</span><span class="toc-dots"></span><span class="toc-num">6</span></div>
+  <div class="toc-sub"><span class="toc-title">HTML Body</span><span class="toc-dots"></span><span class="toc-num">6</span></div>
+  <div class="toc-sub"><span class="toc-title">Plain-Text Body</span><span class="toc-dots"></span><span class="toc-num">6</span></div>
+
+  <div class="toc-entry" style="margin-top:8px;"><span class="toc-title">5. Process Automation — Step-by-Step Designer Guide</span><span class="toc-dots"></span><span class="toc-num">7</span></div>
+  <div class="toc-sub"><span class="toc-title">Part A: Process Automation (1-Hour Alert)</span><span class="toc-dots"></span><span class="toc-num">7</span></div>
+  <div class="toc-sub"><span class="toc-title">Part B: Process Automation (4-Hour Escalation)</span><span class="toc-dots"></span><span class="toc-num">7</span></div>
+  <div class="toc-sub"><span class="toc-title">Part C: Alert Process CCC_AAD_SendNoMailboxAlert</span><span class="toc-dots"></span><span class="toc-num">7</span></div>
+  <div class="toc-sub"><span class="toc-title">Part D: Escalation Process CCC_AAD_SendNoMailboxEscalation</span><span class="toc-dots"></span><span class="toc-num">8</span></div>
+
+  <div class="toc-entry" style="margin-top:8px;"><span class="toc-title">6. Testing &amp; Validation</span><span class="toc-dots"></span><span class="toc-num">9</span></div>
+  <div class="toc-entry" style="margin-top:8px;"><span class="toc-title">7. Troubleshooting</span><span class="toc-dots"></span><span class="toc-num">10</span></div>
+
+  <div class="page-footer">
+    <span>OIM Mail Templates — AAD No-Mailbox Alerting Process</span>
+    <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International. All documents remain strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- SECTION 1 — Architecture -->
+<div class="page content-page" id="section-1">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">1.</span> ARCHITECTURE OVERVIEW</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Correct Process Architecture — Process Automation Pattern</div>
+    <p>The alerting process is <strong>time-based, not event-based</strong>. A regular OIM Process fires once on an INSERT/UPDATE event and does not re-evaluate itself later. For time-gap checks (1 hour, 4 hours), the correct OIM pattern is a <strong>Process Automation</strong> — a scheduled job that runs a SQL query and then triggers a regular Process for each matching object.</p>
+
+    <p>This is the same pattern used in the SCN-3 "Email 15 Days Before Expiry" exercise. The architecture requires four components:</p>
+
+    <table>
+      <thead><tr><th>#</th><th>Component</th><th>Type</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>CCC_AAD_AutomationAlert</code></td><td>Process Automation</td><td>Runs hourly. Queries <code>AADUser</code> records with no mailbox, created &gt;1hr ago, flag not yet set</td></tr>
+        <tr><td>2</td><td><code>CCC_AAD_AutomationEscalation</code></td><td>Process Automation</td><td>Runs hourly. Same query but for &gt;4hr and escalation flag not set</td></tr>
+        <tr><td>3</td><td><code>CCC_AAD_SendNoMailboxAlert</code></td><td>Regular Process</td><td>Triggered by Automation 1. Sends email via Template 1. Sets <code>CCC_IsFirstAlertSent = 1</code></td></tr>
+        <tr><td>4</td><td><code>CCC_AAD_SendNoMailboxEscalation</code></td><td>Regular Process</td><td>Triggered by Automation 2. Sends email via Template 2. Sets <code>CCC_IsEscalationSent = 1</code></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-important">
+      <strong>Important — Why Not Retries?</strong>
+      Do not use process step retries for time-based logic. Retry intervals are coarse and unreliable for precision timing. The Process Automation approach queries the live database state at execution time, making it accurate and idempotent by design.
+    </div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">OIM Scripting Concepts Clarified</div>
+    <p>There are three distinct scripting contexts in OIM processes, each with different syntax and capability. These must not be confused:</p>
+
+    <table>
+      <thead><tr><th>Context</th><th>Where</th><th>Syntax</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Process Generating Condition</strong></td>
+          <td>Process-level or Step-level "Generating Condition" field</td>
+          <td>Single inline VB.NET expression wrapped in <code>{ }</code><br/>e.g. <code>{Value = $IsTemporaryDeactivated:Bool$}</code></td>
+          <td>Boolean gate — should this process or step be queued at all?</td>
+        </tr>
+        <tr>
+          <td><strong>Pre-Script on Process Step</strong></td>
+          <td>"Pre-Script" tab on a Process Step</td>
+          <td>Full VB.NET code block. Returns <code>True</code> to execute step, <code>False</code> to skip it</td>
+          <td>Complex conditional logic evaluated at step execution time</td>
+        </tr>
+        <tr>
+          <td><strong>Process Automation Query</strong></td>
+          <td>SQL query on the Process Automation object</td>
+          <td>SQL WHERE clause returning <code>UID_AADUser</code> values</td>
+          <td>Collects the objects the automation will act on</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warn">
+      <strong>Important</strong>
+      The Generating Condition is a <em>simple inline expression</em> — it does NOT support multi-line VB.NET, <code>Dim</code> statements, database queries, or async/await. Those belong in a Pre-Script or the Process Automation SQL query instead.
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>Section 1 — Architecture Overview</span>
+    <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International. All documents remain strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- SECTION 2 — Prerequisites -->
+<div class="page content-page" id="section-2">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">2.</span> PREREQUISITES</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Custom Boolean Columns on AADUser</div>
+    <p>Two custom boolean columns must be added to the <code>AADUser</code> table via Designer Schema Extensions. These are the deduplication flags — without them, each automation run would re-send the email. This follows the same pattern as <code>CCC_IsManagerNotifiedForExpire</code> in the SCN-3 exercise.</p>
+
+    <span class="label-teal">How to Add in Designer</span>
+    <div class="state-flow">
+      <span class="state-box">Schema Extensions</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">AADUser table</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">Add column</span>
+    </div>
+
+    <table>
+      <thead><tr><th>Column Name</th><th>Data Type</th><th>Default</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>CCC_IsFirstAlertSent</code></td>
+          <td>Bool (Bit)</td>
+          <td><code>0</code></td>
+          <td>Set to <code>1</code> after the 1-hour alert email is sent. The Process Automation query filters this out, ensuring the email is only sent once per account.</td>
+        </tr>
+        <tr>
+          <td><code>CCC_IsEscalationSent</code></td>
+          <td>Bool (Bit)</td>
+          <td><code>0</code></td>
+          <td>Set to <code>1</code> after the 4-hour escalation email is sent. Same mechanism as above.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-note">
+      <strong>Note</strong>
+      After adding schema extensions in Designer, you must compile and deploy the schema change before these columns appear in the database or are available in process parameters.
+    </div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Configuration Parameters for Recipient Addresses</div>
+    <p>Store recipient email addresses as OIM Configuration Parameters rather than hardcoding them in process steps. This allows routing to be changed by an operations administrator without touching Designer.</p>
+
+    <span class="label-teal">How to Add in Designer</span>
+    <div class="state-flow">
+      <span class="state-box">Base Data</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">General</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">Configuration Parameters</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">New</span>
+    </div>
+
+    <table>
+      <thead><tr><th>Config Parameter Path</th><th>Type</th><th>Example Value</th></tr></thead>
+      <tbody>
+        <tr><td><code>Custom\AAD\Notifications\ServiceDeskEmail</code></td><td>String</td><td><code>it-servicedesk@contoso.com</code></td></tr>
+        <tr><td><code>Custom\AAD\Notifications\ITManagerEmail</code></td><td>String</td><td><code>it-manager@contoso.com</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">SMTP Server</div>
+    <p>Verify the OIM Job Server has a working SMTP configuration before building any processes. Navigate to:</p>
+    <div class="state-flow">
+      <span class="state-box">Base Data</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">General</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">Mail Server</span>
+    </div>
+    <p>Send a test email using the built-in test function to confirm connectivity before proceeding.</p>
+  </div>
+
+  <div class="page-footer">
+    <span>Section 2 — Prerequisites</span>
+    <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International. All documents remain strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- SECTION 3 — Template 1 -->
+<div class="page content-page" id="section-3">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">3.</span> MAIL TEMPLATE 1 — CCC_AAD_NOMAILBOX_ALERT</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Designer Configuration</div>
+    <div class="state-flow">
+      <span class="state-box">Notifications</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">Mail templates</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">Right-click → New mail template</span>
+    </div>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td><code>CCC_AAD_NoMailbox_Alert</code></td></tr>
+        <tr><td>Display name</td><td>AAD Account — Missing EXO Mailbox Alert (1hr)</td></tr>
+        <tr><td>Base object</td><td><code>AADUser</code></td></tr>
+        <tr><td>Importance</td><td>High</td></tr>
+        <tr><td>Designer path</td><td>Notifications → Mail templates</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-note">
+      <strong>Note — Token Syntax</strong>
+      In OIM mail template bodies and subject lines, column values from the base object are substituted using the <code>$ColumnName$</code> format. OIM resolves these at send time using the object instance passed to the step. Type casting can be applied: <code>$XDateInserted:Date$</code>.
+    </div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Subject Line</div>
+    <div class="code-block">[ACTION REQUIRED] AAD account '$DisplayName$' has no EXO mailbox (created: $XDateInserted$)</div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">HTML Body</div>
+    <div class="code-block">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;&lt;head&gt;&lt;meta charset="UTF-8"&gt;&lt;/head&gt;
+&lt;body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;"&gt;
+&lt;table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f4;padding:20px 0;"&gt;
+  &lt;tr&gt;&lt;td align="center"&gt;
+    &lt;table width="600" cellpadding="0" cellspacing="0" border="0"
+           style="background:#fff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);overflow:hidden;"&gt;
+
+      &lt;!-- Header --&gt;
+      &lt;tr&gt;&lt;td style="background:#D9534F;padding:24px 32px;"&gt;
+        &lt;p style="margin:0;font-size:11px;color:#FFD0CE;letter-spacing:1.5px;
+                   text-transform:uppercase;"&gt;One Identity Manager — Automated Alert&lt;/p&gt;
+        &lt;h1 style="margin:6px 0 0;color:#fff;font-size:20px;font-weight:700;"&gt;
+          AAD Account Missing EXO Mailbox&lt;/h1&gt;
+      &lt;/td&gt;&lt;/tr&gt;
+
+      &lt;!-- Body --&gt;
+      &lt;tr&gt;&lt;td style="padding:28px 32px;"&gt;
+        &lt;p style="margin:0 0 16px;font-size:15px;color:#333;"&gt;Hello IT Service Desk,&lt;/p&gt;
+        &lt;p style="margin:0 0 20px;font-size:14px;color:#555;line-height:1.6;"&gt;
+          An Azure AD account has been active for &lt;strong&gt;more than 1 hour&lt;/strong&gt;
+          without an associated Exchange Online mailbox being provisioned.
+          Please investigate immediately.&lt;/p&gt;
+
+        &lt;!-- Account detail block --&gt;
+        &lt;table width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="background:#F9F5FC;border-left:4px solid #7B2D8B;border-radius:4px;margin-bottom:24px;"&gt;
+          &lt;tr&gt;&lt;td style="padding:16px 20px;"&gt;
+            &lt;p style="margin:0 0 8px;font-size:10px;color:#7B2D8B;font-weight:700;
+                       letter-spacing:1px;text-transform:uppercase;"&gt;Account Details&lt;/p&gt;
+            &lt;table width="100%" cellpadding="4" cellspacing="0" border="0"&gt;
+              &lt;tr&gt;
+                &lt;td style="font-size:12px;color:#888;width:160px;"&gt;Display Name&lt;/td&gt;
+                &lt;td style="font-size:13px;color:#222;font-weight:600;"&gt;$DisplayName$&lt;/td&gt;
+              &lt;/tr&gt;
+              &lt;tr&gt;
+                &lt;td style="font-size:12px;color:#888;"&gt;User Principal Name&lt;/td&gt;
+                &lt;td style="font-size:13px;color:#222;"&gt;$UserPrincipalName$&lt;/td&gt;
+              &lt;/tr&gt;
+              &lt;tr&gt;
+                &lt;td style="font-size:12px;color:#888;"&gt;Created (UTC)&lt;/td&gt;
+                &lt;td style="font-size:13px;color:#222;"&gt;$XDateInserted$&lt;/td&gt;
+              &lt;/tr&gt;
+              &lt;tr&gt;
+                &lt;td style="font-size:12px;color:#888;"&gt;Account Enabled&lt;/td&gt;
+                &lt;td style="font-size:13px;color:#222;"&gt;$AccountEnabled$&lt;/td&gt;
+              &lt;/tr&gt;
+            &lt;/table&gt;
+          &lt;/td&gt;&lt;/tr&gt;
+        &lt;/table&gt;
+
+        &lt;!-- Actions --&gt;
+        &lt;p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#333;"&gt;
+          Recommended Actions&lt;/p&gt;
+        &lt;ol style="margin:0 0 20px 20px;font-size:13px;color:#555;line-height:1.8;"&gt;
+          &lt;li&gt;Check the M365 Admin Centre for the user's licence and provisioning state.&lt;/li&gt;
+          &lt;li&gt;Verify an Exchange Online plan is assigned to this user.&lt;/li&gt;
+          &lt;li&gt;Review OIM Azure connector sync logs for provisioning errors.&lt;/li&gt;
+          &lt;li&gt;Re-provision via OIM Web Portal if the automated sync has stalled.&lt;/li&gt;
+        &lt;/ol&gt;
+
+        &lt;!-- Escalation warning --&gt;
+        &lt;table width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="background:#FFF8E1;border-left:4px solid #F59E0B;border-radius:4px;margin-bottom:24px;"&gt;
+          &lt;tr&gt;&lt;td style="padding:12px 16px;font-size:13px;color:#7A5800;"&gt;
+            &lt;strong&gt;Note:&lt;/strong&gt; If no mailbox is provisioned within 4 hours of account
+            creation, an escalation email will be sent automatically to the IT Manager.
+          &lt;/td&gt;&lt;/tr&gt;
+        &lt;/table&gt;
+      &lt;/td&gt;&lt;/tr&gt;
+
+      &lt;!-- Footer --&gt;
+      &lt;tr&gt;&lt;td style="background:#F5F5F5;padding:12px 32px;font-size:11px;color:#999;
+                      border-top:1px solid #E0E0E0;"&gt;
+        Automated notification — One Identity Manager. Do not reply.
+      &lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;</div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Plain-Text Body</div>
+    <div class="code-block">ACTION REQUIRED: AAD Account Missing EXO Mailbox (1-Hour Alert)
+================================================================
+
+Hello IT Service Desk,
+
+An Azure AD account has been active for MORE THAN 1 HOUR without
+an Exchange Online mailbox being provisioned.
+
+ACCOUNT DETAILS
+  Display Name    : $DisplayName$
+  UPN             : $UserPrincipalName$
+  Created (UTC)   : $XDateInserted$
+  Account Enabled : $AccountEnabled$
+
+RECOMMENDED ACTIONS
+  1. Check M365 Admin Centre for licence and provisioning state.
+  2. Verify an Exchange Online plan is assigned.
+  3. Review OIM Azure connector sync logs.
+  4. Re-provision via OIM Web Portal if sync is stalled.
+
+NOTE: A 4-hour escalation email will follow if unresolved.
+
+---
+Automated notification from One Identity Manager. Do not reply.</div>
+  </div>
+
+  <div class="page-footer">
+    <span>Section 3 — Mail Template 1: CCC_AAD_NoMailbox_Alert</span>
+    <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International. All documents remain strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- SECTION 4 — Template 2 -->
+<div class="page content-page" id="section-4">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">4.</span> MAIL TEMPLATE 2 — CCC_AAD_NOMAILBOX_ESCALATION</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Designer Configuration</div>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td><code>CCC_AAD_NoMailbox_Escalation</code></td></tr>
+        <tr><td>Display name</td><td>AAD Account — Missing EXO Mailbox ESCALATION (4hr)</td></tr>
+        <tr><td>Base object</td><td><code>AADUser</code></td></tr>
+        <tr><td>Importance</td><td>High</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Subject Line</div>
+    <div class="code-block">[ESCALATION] AAD account '$DisplayName$' STILL has no EXO mailbox — 4hrs since $XDateInserted$</div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">HTML Body</div>
+    <div class="code-block">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;&lt;head&gt;&lt;meta charset="UTF-8"&gt;&lt;/head&gt;
+&lt;body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;"&gt;
+&lt;table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f4;padding:20px 0;"&gt;
+  &lt;tr&gt;&lt;td align="center"&gt;
+    &lt;table width="600" cellpadding="0" cellspacing="0" border="0"
+           style="background:#fff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);overflow:hidden;"&gt;
+
+      &lt;!-- Escalation header — dark maroon --&gt;
+      &lt;tr&gt;&lt;td style="background:#7B1818;padding:24px 32px;"&gt;
+        &lt;p style="margin:0;font-size:11px;color:#FFBBBB;letter-spacing:1.5px;
+                   text-transform:uppercase;"&gt;One Identity Manager — ESCALATION ALERT&lt;/p&gt;
+        &lt;h1 style="margin:6px 0 0;color:#fff;font-size:20px;font-weight:700;"&gt;
+          SLA Breach Risk: No EXO Mailbox After 4 Hours&lt;/h1&gt;
+      &lt;/td&gt;&lt;/tr&gt;
+
+      &lt;!-- Banner strip --&gt;
+      &lt;tr&gt;&lt;td style="background:#FFE5E5;padding:10px 32px;font-size:13px;
+                      color:#7B1818;font-weight:700;border-bottom:1px solid #FFBBBB;"&gt;
+        A first alert was sent at the 1-hour mark. The issue has not been resolved.
+      &lt;/td&gt;&lt;/tr&gt;
+
+      &lt;!-- Body --&gt;
+      &lt;tr&gt;&lt;td style="padding:28px 32px;"&gt;
+        &lt;p style="margin:0 0 16px;font-size:15px;color:#333;"&gt;Hello IT Manager,&lt;/p&gt;
+        &lt;p style="margin:0 0 20px;font-size:14px;color:#555;line-height:1.6;"&gt;
+          An Azure AD account was created &lt;strong&gt;over 4 hours ago&lt;/strong&gt; and still has
+          no Exchange Online mailbox provisioned. Immediate intervention is required.&lt;/p&gt;
+
+        &lt;!-- Account detail block --&gt;
+        &lt;table width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="background:#FFF0F0;border-left:4px solid #7B1818;border-radius:4px;margin-bottom:24px;"&gt;
+          &lt;tr&gt;&lt;td style="padding:16px 20px;"&gt;
+            &lt;p style="margin:0 0 8px;font-size:10px;color:#7B1818;font-weight:700;
+                       letter-spacing:1px;text-transform:uppercase;"&gt;Affected Account&lt;/p&gt;
+            &lt;table width="100%" cellpadding="4" cellspacing="0" border="0"&gt;
+              &lt;tr&gt;
+                &lt;td style="font-size:12px;color:#888;width:160px;"&gt;Display Name&lt;/td&gt;
+                &lt;td style="font-size:13px;color:#222;font-weight:700;"&gt;$DisplayName$&lt;/td&gt;
+              &lt;/tr&gt;
+              &lt;tr&gt;
+                &lt;td style="font-size:12px;color:#888;"&gt;User Principal Name&lt;/td&gt;
+                &lt;td style="font-size:13px;color:#222;"&gt;$UserPrincipalName$&lt;/td&gt;
+              &lt;/tr&gt;
+              &lt;tr&gt;
+                &lt;td style="font-size:12px;color:#888;"&gt;Created (UTC)&lt;/td&gt;
+                &lt;td style="font-size:13px;color:#B91C1C;font-weight:700;"&gt;$XDateInserted$&lt;/td&gt;
+              &lt;/tr&gt;
+              &lt;tr&gt;
+                &lt;td style="font-size:12px;color:#888;"&gt;Account Enabled&lt;/td&gt;
+                &lt;td style="font-size:13px;color:#222;"&gt;$AccountEnabled$&lt;/td&gt;
+              &lt;/tr&gt;
+            &lt;/table&gt;
+          &lt;/td&gt;&lt;/tr&gt;
+        &lt;/table&gt;
+
+        &lt;!-- Escalation actions --&gt;
+        &lt;p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#7B1818;"&gt;
+          Immediate Actions Required&lt;/p&gt;
+        &lt;ol style="margin:0 0 20px 20px;font-size:13px;color:#555;line-height:1.8;"&gt;
+          &lt;li&gt;Contact the Service Desk lead to confirm a ticket was raised.&lt;/li&gt;
+          &lt;li&gt;Log in to M365 Admin Centre and manually verify licence and provisioning.&lt;/li&gt;
+          &lt;li&gt;Check the OIM Azure connector for sync failures or outages.&lt;/li&gt;
+          &lt;li&gt;Perform a manual provisioning run in OIM if automated sync has stalled.&lt;/li&gt;
+          &lt;li&gt;Raise a P1 incident if provisioning cannot be restored within 30 minutes.&lt;/li&gt;
+        &lt;/ol&gt;
+
+        &lt;!-- Final warning --&gt;
+        &lt;table width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="background:#7B1818;border-radius:4px;margin-bottom:24px;"&gt;
+          &lt;tr&gt;&lt;td style="padding:14px 18px;font-size:13px;color:#fff;line-height:1.6;"&gt;
+            &lt;strong&gt;This is the final automated notification.&lt;/strong&gt;
+            No further emails will be sent. Manual investigation and closure is required.
+          &lt;/td&gt;&lt;/tr&gt;
+        &lt;/table&gt;
+      &lt;/td&gt;&lt;/tr&gt;
+
+      &lt;!-- Footer --&gt;
+      &lt;tr&gt;&lt;td style="background:#F5F5F5;padding:12px 32px;font-size:11px;color:#999;
+                      border-top:1px solid #E0E0E0;"&gt;
+        Automated escalation — One Identity Manager. Do not reply.
+      &lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;</div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Plain-Text Body</div>
+    <div class="code-block">*** ESCALATION *** AAD Account Missing EXO Mailbox — 4-Hour Escalation
+=======================================================================
+
+Hello IT Manager,
+
+An Azure AD account was created OVER 4 HOURS AGO and still has no
+Exchange Online mailbox provisioned. Immediate intervention required.
+
+AFFECTED ACCOUNT
+  Display Name    : $DisplayName$
+  UPN             : $UserPrincipalName$
+  Created (UTC)   : $XDateInserted$   &lt;&lt;&lt; OVER 4 HOURS AGO
+  Account Enabled : $AccountEnabled$
+
+IMMEDIATE ACTIONS
+  1. Contact Service Desk lead — confirm ticket from 1-hour alert.
+  2. Log in to M365 Admin Centre and verify licence + provisioning.
+  3. Check OIM Azure connector for sync failures.
+  4. Perform manual provisioning run if automated sync stalled.
+  5. Raise P1 incident if not resolved within 30 minutes.
+
+*** FINAL AUTOMATED NOTIFICATION — manual closure now required ***
+
+---
+Automated escalation from One Identity Manager. Do not reply.</div>
+  </div>
+
+  <div class="page-footer">
+    <span>Section 4 — Mail Template 2: CCC_AAD_NoMailbox_Escalation</span>
+    <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International. All documents remain strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- SECTION 5 — Designer Step-by-Step -->
+<div class="page content-page" id="section-5">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">5.</span> PROCESS AUTOMATION — STEP-BY-STEP DESIGNER GUIDE</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Part A — Process Automation: CCC_AAD_AutomationAlert (1-Hour)</div>
+    <div class="state-flow">
+      <span class="state-box">Process Orchestration</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">Process Automations</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">New</span>
+    </div>
+
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td><code>CCC_AAD_AutomationAlert</code></td></tr>
+        <tr><td>Object type</td><td><code>AADUser</code></td></tr>
+        <tr><td>Process</td><td><code>CCC_AAD_SendNoMailboxAlert</code> (created in Part C)</td></tr>
+        <tr><td>Schedule</td><td>Every 1 hour (create under Base Data → Schedules if needed)</td></tr>
+        <tr><td>Enabled</td><td>Yes</td></tr>
+      </tbody>
+    </table>
+
+    <span class="label-teal">SQL Query (returns UIDs of matching AADUser objects)</span>
+    <div class="code-block">UID_AADUser NOT IN (
+    SELECT UID_AADUser FROM O365Mailbox WHERE UID_AADUser IS NOT NULL
+)
+AND XDateInserted &lt; DATEADD(HOUR, -1, GETUTCDATE())
+AND XDateInserted &gt; DATEADD(HOUR, -48, GETUTCDATE())
+AND ISNULL(CCC_IsFirstAlertSent, 0) = 0</div>
+
+    <div class="callout callout-note">
+      <strong>Note</strong>
+      The 48-hour upper cap prevents the automation from endlessly picking up very old unresolved accounts. Adjust to your operational SLA. Confirm the exact foreign key column name in <code>O365Mailbox</code> by checking the Schema Browser before deploying.
+    </div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Part B — Process Automation: CCC_AAD_AutomationEscalation (4-Hour)</div>
+    <p>Create a second Process Automation with the same settings as Part A, with these differences:</p>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td><code>CCC_AAD_AutomationEscalation</code></td></tr>
+        <tr><td>Process</td><td><code>CCC_AAD_SendNoMailboxEscalation</code></td></tr>
+      </tbody>
+    </table>
+
+    <span class="label-teal">SQL Query</span>
+    <div class="code-block">UID_AADUser NOT IN (
+    SELECT UID_AADUser FROM O365Mailbox WHERE UID_AADUser IS NOT NULL
+)
+AND XDateInserted &lt; DATEADD(HOUR, -4, GETUTCDATE())
+AND XDateInserted &gt; DATEADD(HOUR, -48, GETUTCDATE())
+AND ISNULL(CCC_IsEscalationSent, 0) = 0</div>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Part C — Process: CCC_AAD_SendNoMailboxAlert</div>
+    <div class="state-flow">
+      <span class="state-box">Process Orchestration</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">Processes</span>
+      <span class="state-arrow">→</span>
+      <span class="state-box">New</span>
+    </div>
+
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td><code>CCC_AAD_SendNoMailboxAlert</code></td></tr>
+        <tr><td>Object type</td><td><code>AADUser</code></td></tr>
+        <tr><td>Event</td><td>Leave blank — triggered by Process Automation, not table event</td></tr>
+        <tr><td>Generating Condition</td><td>Leave blank — the Automation SQL already filters</td></tr>
+      </tbody>
+    </table>
+
+    <span class="label-teal">Step 1 — Send alert email</span>
+    <table>
+      <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Step name</td><td><code>Send_AlertEmail</code></td></tr>
+        <tr><td>Component</td><td>Notifications / Mail</td></tr>
+        <tr><td>Mail template parameter</td><td><code>CCC_AAD_NoMailbox_Alert</code></td></tr>
+        <tr><td>Recipient parameter</td><td>Value of config param <code>Custom\AAD\Notifications\ServiceDeskEmail</code></td></tr>
+        <tr><td>Pre-Script</td><td>See below</td></tr>
+      </tbody>
+    </table>
+
+    <span class="label-teal">Step 1 Pre-Script (skip if mailbox appeared since automation ran)</span>
+    <div class="code-block">' Double-check no mailbox has been provisioned in the time since automation queued this process
+Dim uid As String = $UID_AADUser$
+Dim count As Integer = Session.Source().Count("O365Mailbox", "UID_AADUser = '" &amp; uid &amp; "'")
+If count > 0 Then
+    Return False   ' Mailbox now exists — skip step
+End If
+Return True</div>
+
+    <span class="label-teal">Step 2 — Set deduplication flag</span>
+    <table>
+      <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Step name</td><td><code>Set_AlertSentFlag</code></td></tr>
+        <tr><td>Component</td><td>SQL / HandleObject</td></tr>
+        <tr><td>Action</td><td>Set <code>CCC_IsFirstAlertSent = 1</code> on the current <code>AADUser</code> object</td></tr>
+        <tr><td>WhereClause</td><td><code>UID_AADUser = '$UID_AADUser$'</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Part D — Process: CCC_AAD_SendNoMailboxEscalation</div>
+    <p>Create identically to Part C, with these differences:</p>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td><code>CCC_AAD_SendNoMailboxEscalation</code></td></tr>
+        <tr><td>Step 1 mail template</td><td><code>CCC_AAD_NoMailbox_Escalation</code></td></tr>
+        <tr><td>Step 1 recipient</td><td>Value of config param <code>Custom\AAD\Notifications\ITManagerEmail</code></td></tr>
+        <tr><td>Step 2 sets</td><td><code>CCC_IsEscalationSent = 1</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <span>Section 5 — Process Automation Designer Guide</span>
+    <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International. All documents remain strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- SECTION 6 — Testing -->
+<div class="page content-page" id="section-6">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">6.</span> TESTING &amp; VALIDATION</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Mail Template Preview in Designer</div>
+    <ol>
+      <li>Open the mail template in <strong>Notifications → Mail templates</strong>.</li>
+      <li>Click <strong>Preview</strong> in the toolbar.</li>
+      <li>Select an existing <code>AADUser</code> test record from the object picker.</li>
+      <li>Verify all <code>$Token$</code> values resolve to real data in both HTML and plain-text views.</li>
+      <li>If a token renders as the literal text <code>$ColumnName$</code>, the column name is wrong — verify via Schema Browser → AADUser table.</li>
+    </ol>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">End-to-End Test Procedure</div>
+    <ol>
+      <li><strong>Create a test AADUser</strong> record in the non-production OIM tenant with no linked <code>O365Mailbox</code> row.</li>
+      <li><strong>Temporarily shorten the automation query</strong> threshold from 1 hour to 0 minutes to avoid waiting:
+        <div class="code-block">-- Temporary test version
+AND XDateInserted &lt; DATEADD(MINUTE, 0, GETUTCDATE())</div>
+      </li>
+      <li><strong>Manually trigger the automation</strong> from Designer → Process Automations → right-click → Run now.</li>
+      <li><strong>Watch Job Queue Info</strong> — the process should appear and both steps should reach <code>Finished</code> status.</li>
+      <li><strong>Check the test inbox</strong> for the alert email. Verify HTML rendering in Outlook.</li>
+      <li><strong>Confirm the flag is set</strong>: query <code>SELECT CCC_IsFirstAlertSent FROM AADUser WHERE UID_AADUser = '...'</code> — should return <code>1</code>.</li>
+      <li><strong>Run the automation again</strong> — the object should NOT be picked up a second time (flag = 1 excludes it).</li>
+      <li><strong>Restore thresholds</strong> to 1 hour and 4 hours before go-live.</li>
+    </ol>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Test Checklist</div>
+    <table>
+      <thead><tr><th>Test</th><th>Expected Result</th><th>Pass?</th></tr></thead>
+      <tbody>
+        <tr><td>Template preview — all tokens resolve</td><td>No literal <code>$Token$</code> in rendered output</td><td></td></tr>
+        <tr><td>Automation picks up test account</td><td>Process appears in Job Queue</td><td></td></tr>
+        <tr><td>Alert email received</td><td>In Service Desk test inbox, subject and body correct</td><td></td></tr>
+        <tr><td>HTML renders in Outlook</td><td>No broken layout or raw HTML tags visible</td><td></td></tr>
+        <tr><td>Flag set after send</td><td><code>CCC_IsFirstAlertSent = 1</code> in database</td><td></td></tr>
+        <tr><td>No re-send on second automation run</td><td>Object excluded from automation query</td><td></td></tr>
+        <tr><td>Escalation email at 4-hour mark</td><td>In IT Manager test inbox, dark red header, escalation tone</td><td></td></tr>
+        <tr><td>Pre-Script skips if mailbox appears</td><td>Provision a mailbox manually; step skips; flag still set</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <span>Section 6 — Testing &amp; Validation</span>
+    <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International. All documents remain strictly private and confidential.</span>
+  </div>
+</div>
+
+<!-- SECTION 7 — Troubleshooting -->
+<div class="page content-page" id="section-7">
+  <div class="intragen-logo">INTRAGEN<span class="logo-dot">.</span></div>
+  <div class="section-banner"><span class="section-num">7.</span> TROUBLESHOOTING</div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Common Issues &amp; Resolutions</div>
+    <table>
+      <thead><tr><th>Symptom</th><th>Likely Cause</th><th>Resolution</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Automation never picks up any objects</td>
+          <td>SQL query has wrong column name, or threshold too strict</td>
+          <td>Run the SQL directly in SSMS against the OIM database. Verify <code>O365Mailbox.UID_AADUser</code> column name in Schema Browser. Temporarily remove the time threshold to test.</td>
+        </tr>
+        <tr>
+          <td>Process appears in Job Queue but no email arrives</td>
+          <td>SMTP not configured, or wrong recipient address in config param</td>
+          <td>Check <strong>Base Data → Mail Server</strong> and send a test email. Verify the config parameter value under <strong>Base Data → Configuration Parameters</strong>.</td>
+        </tr>
+        <tr>
+          <td>Token renders as literal <code>$DisplayName$</code> in email</td>
+          <td>Column name wrong, or base object not set to <code>AADUser</code></td>
+          <td>Open the template in Designer → check Base object = <code>AADUser</code>. Cross-check column name against AADUser in Schema Browser.</td>
+        </tr>
+        <tr>
+          <td>Same account gets the email every automation run</td>
+          <td><code>CCC_IsFirstAlertSent</code> flag not being set, or Set step failing</td>
+          <td>Check Job Queue for step <code>Set_AlertSentFlag</code> — is it <code>Finished</code> or <code>Error</code>? Check step configuration and WhereClause. Query the DB to confirm flag value.</td>
+        </tr>
+        <tr>
+          <td>Pre-Script skips the email step unexpectedly</td>
+          <td>Mailbox appeared between automation query and step execution, OR script logic error</td>
+          <td>This is correct behaviour if a mailbox was provisioned. To debug a logic error, temporarily remove the Pre-Script and re-test. Re-add incrementally.</td>
+        </tr>
+        <tr>
+          <td>Process step status = Frozen</td>
+          <td>A Wait step condition is never satisfied (should not apply here unless added)</td>
+          <td>Navigate to Job Queue → Frozen → inspect the frozen step condition. Unfreeze after investigating.</td>
+        </tr>
+        <tr>
+          <td>Generating Condition syntax error in Designer</td>
+          <td>Multi-line VB.NET used instead of single inline expression</td>
+          <td>The Generating Condition field only accepts a single inline expression: <code>{Value = SomeBooleanExpression}</code>. Move complex logic to a Pre-Script on the process step instead.</td>
+        </tr>
+        <tr>
+          <td>Schema extension columns not visible in process parameters</td>
+          <td>Schema compiled but database not yet updated</td>
+          <td>After adding custom columns in Designer, run <strong>Database → Update database</strong> to apply the schema change to the physical database.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection-box">
+    <div class="subsection-title">Key Log Locations</div>
+    <table>
+      <thead><tr><th>Log</th><th>Location</th><th>What to Check</th></tr></thead>
+      <tbody>
+        <tr><td>Process execution</td><td>OIM → Job Queue Info</td><td>Step status, error message, retry count</td></tr>
+        <tr><td>SMTP dispatch</td><td>Job Server log directory — <code>JobService.log</code></td><td>Connection errors, authentication failures</td></tr>
+        <tr><td>Process Automation runs</td><td>OIM → Process Automation History</td><td>How many objects were collected per run, errors</td></tr>
+        <tr><td>Sync / connector errors</td><td>OIM → Synchronisation History</td><td>Azure connector failures affecting mailbox data</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <span>Section 7 — Troubleshooting</span>
+    <span>This document may be reproduced for use within the circulated parties but remains copyright of Intragen International. All documents remain strictly private and confidential.</span>
+  </div>
+</div>
+
+</body>
+</html>

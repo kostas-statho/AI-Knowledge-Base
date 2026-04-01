@@ -1,0 +1,14 @@
+{
+    "name": "Junior IAM Engineer",
+    "skills": [
+        { "name": "Coding", "level": "Intermediate" },
+        { "name": "SQL", "level": "Intermediate" },
+        { "name": "DevOps", "level": "Intermediate" },
+        { "name": "Automations", "level": "Intermediate" }
+    ],
+    "interests": [
+        { "name": "AI Agents", "level": "Beginner" }
+    ],
+    "domains": [ "IAM Policies on One Identity Manager" ],
+    "goals": []
+}

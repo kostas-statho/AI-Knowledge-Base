@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O3EMailbox Shared/Regular Conversion &#8212; Implementation Notes | Intragen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple:      #7B2D8B;
+    --purple-dark: #5C1F6B;
+    --teal:        #007B77;
+    --golden:      #F0A800;
+    --body-bg:     #FAF8F5;
+    --code-bg:     #1E1E1E;
+    --border:      #DDD;
+    --text:        #2C2C2C;
+    --muted:       #6B6B6B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #F0EDE8;
+    color: var(--text);
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    background: var(--purple);
+    color: #fff;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 0 0 2rem 0;
+  }
+
+  .sidebar-header {
+    background: rgba(0,0,0,0.18);
+    padding: 1.4rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .sidebar-logo {
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-logo span { color: var(--golden); }
+
+  .sidebar-module-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--golden);
+    margin-bottom: 0.15rem;
+  }
+
+  .sidebar-module-sub {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.55);
+  }
+
+  .sidebar-section {
+    padding: 1rem 1rem 0.35rem 1rem;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+  }
+
+  aside nav a {
+    display: block;
+    padding: 0.5rem 1rem 0.5rem 1.25rem;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.82rem;
+    border-left: 3px solid transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  aside nav a:hover {
+    background: rgba(255,255,255,0.08);
+    border-left-color: var(--teal);
+    color: #fff;
+  }
+
+  .sidebar-meta {
+    margin: 1.4rem 1rem 0 1rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    padding: 0.9rem;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .sidebar-meta .meta-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+  }
+
+  .sidebar-meta .meta-row:last-child { margin-bottom: 0; }
+  .sidebar-meta .meta-label { color: rgba(255,255,255,0.4); }
+
+  /* ── MAIN ── */
+  main {
+    padding: 2rem 2.5rem;
+    max-width: 960px;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    background: linear-gradient(135deg, #5C1F6B, #7B2D8B);
+    color: #fff;
+    border-radius: 10px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header .watermark {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.45;
+    color: #fff;
+  }
+
+  .page-header .breadcrumb {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+  }
+
+  .page-header h1 span { color: var(--golden); }
+
+  .page-header .subtitle {
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.72);
+    margin-bottom: 1rem;
+  }
+
+  .badge-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.22rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-info    { background: rgba(255,255,255,0.15); color: #fff; }
+  .badge-warn    { background: #FFF3CD; color: #856404; }
+  .badge-purple  { background: rgba(240,168,0,0.2); color: var(--golden); }
+
+  /* ── SECTION HEADINGS ── */
+  h2 {
+    font-size: 1.1rem;
+    color: var(--purple-dark);
+    margin-bottom: 1rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  h2 .section-icon {
+    display: inline-block;
+    background: var(--purple-dark);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.45rem 0.85rem;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  h3 {
+    font-size: 0.92rem;
+    color: var(--purple-dark);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .content-section { margin-bottom: 2.25rem; }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: 0 6px 6px 0;
+    padding: 0.9rem 1.1rem;
+    margin: 0.85rem 0;
+    font-size: 0.875rem;
+    border-left: 4px solid;
+  }
+
+  .callout-title {
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.35rem;
+  }
+
+  .callout-warn  { background: #FFF8E1; border-color: #F59E0B; }
+  .callout-warn  .callout-title { color: #B45309; }
+  .callout-tip   { background: #F0FDF4; border-color: #22C55E; }
+  .callout-tip   .callout-title { color: #15803D; }
+  .callout-note  { background: #E8F4FF; border-color: #2D6DB5; }
+  .callout-note  .callout-title { color: #1E4D8C; }
+  .callout-important { background: #F5EFF8; border-color: var(--purple); }
+  .callout-important .callout-title { color: var(--purple-dark); }
+
+  /* ── IMPL CARD ── */
+  .impl-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--teal);
+    border-radius: 0 8px 8px 0;
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+
+  .impl-header {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .impl-num {
+    background: var(--purple);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-family: Consolas, monospace;
+    white-space: nowrap;
+  }
+
+  .impl-title {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--purple-dark);
+  }
+
+  /* ── SUB-LABEL ── */
+  .sub-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    background: var(--purple-dark);
+    color: #fff;
+    padding: 0.42rem 0.85rem;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 0.9rem 0 0.5rem 0;
+  }
+
+  /* ── STEPS ── */
+  .steps-list { list-style: none; padding: 0; margin-bottom: 0.6rem; }
+
+  .steps-list li {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    font-size: 0.875rem;
+    padding: 0.28rem 0;
+  }
+
+  .step-dot {
+    width: 8px; height: 8px;
+    background: var(--teal);
+    border-radius: 50%;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  /* ── CONFIG TABLE ── */
+  .config-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.845rem;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    margin: 0.75rem 0 1rem 0;
+  }
+
+  .config-table thead tr { background: var(--purple-dark); color: #fff; }
+
+  .config-table th {
+    padding: 0.5rem 0.85rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .config-table td {
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .config-table tbody tr:nth-child(even) td { background: #F8F5FB; }
+  .config-table tbody tr:last-child td { border-bottom: none; }
+
+  .config-table td:first-child {
+    font-weight: 700;
+    color: var(--purple-dark);
+  }
+
+  /* ── PROCESS TILES ── */
+  .process-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+    margin: 0.75rem 0;
+  }
+
+  .process-tile {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    border-top: 3px solid var(--purple);
+  }
+
+  .process-tile .pt-name {
+    font-family: Consolas, monospace;
+    font-size: 0.83rem;
+    font-weight: 700;
+    color: var(--purple-dark);
+    margin-bottom: 0.3rem;
+  }
+
+  .process-tile .pt-detail {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  /* ── SCRIPT TILES ── */
+  .script-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.9rem;
+    margin: 0.75rem 0;
+  }
+
+  .script-tile {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--teal);
+  }
+
+  .script-tile .st-verb {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: var(--teal);
+    margin-bottom: 0.25rem;
+  }
+
+  .script-tile .st-name {
+    font-family: Consolas, monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--purple-dark);
+    margin-bottom: 0.3rem;
+  }
+
+  .script-tile .st-note {
+    font-size: 0.77rem;
+    color: var(--muted);
+  }
+
+  /* ── CODE ── */
+  pre, .code-block {
+    background: var(--code-bg);
+    color: #D4D4D4;
+    font-family: Consolas, monospace;
+    padding: 0.85rem 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 0.6rem 0;
+    font-size: 0.82rem;
+    line-height: 1.65;
+  }
+
+  code {
+    font-family: Consolas, monospace;
+    font-size: 0.84em;
+    background: #EDE8F0;
+    color: #8B2080;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+
+  p { font-size: 0.875rem; margin-bottom: 0.5rem; }
+  p + p { margin-top: 0.25rem; }
+
+  footer {
+    margin-top: 3rem;
+    padding: 1.25rem 2rem;
+    background: #F5EFF8;
+    border-top: 2px solid #EDE8F0;
+    font-size: 0.78rem;
+    color: #6B6B6B;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
+<aside>
+  <div class="sidebar-header">
+    <div class="sidebar-logo">INTRAGEN<span>.</span></div>
+    <div class="sidebar-module-title">EXO Mailbox Conversion</div>
+    <div class="sidebar-module-sub">Implementation Notes</div>
+  </div>
+
+  <div class="sidebar-section">On This Page</div>
+  <nav>
+    <a href="#note">&#9888; Important Note</a>
+    <a href="#config">1 &mdash; Config Parameters</a>
+    <a href="#scripts">2 &mdash; PowerShell Scripts</a>
+    <a href="#processes">3 &mdash; OIM Processes</a>
+  </nav>
+
+  <div class="sidebar-meta">
+    <div class="meta-row">
+      <span class="meta-label">Target Table</span>
+      <span>O3EMailbox / Person</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Prefix</span>
+      <span>CCC_</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Type</span>
+      <span>EXO Integration</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Status</span>
+      <span>Implemented</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════ MAIN ═══════════════════════════════════ -->
+<main>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="watermark">INTRAGEN.</div>
+    <div class="breadcrumb">Implementation Guides &rsaquo; Exchange Online &rsaquo; O3EMailbox</div>
+    <h1>O3EMailbox <span>Shared / Regular</span> Conversion</h1>
+    <p class="subtitle">Implementation notes for the Exchange Online shared mailbox conversion workflow in OIM</p>
+    <div class="badge-row">
+      <span class="badge badge-info">EXO Integration</span>
+      <span class="badge badge-purple">Person Table</span>
+      <span class="badge badge-warn">Pre-configured Processes</span>
+    </div>
+  </div>
+
+  <!-- ─── IMPORTANT NOTE ─── -->
+  <div class="callout callout-warn" id="note">
+    <div class="callout-title">&#9888; Important — CCC_ConversionDate Not Set</div>
+    <strong>CCC_ConversionDate</strong> is <em>not</em> populated by the conversion process because
+    <code>UID_Person</code> is empty on the <code>O3EMailbox</code> object at the time of conversion.
+    This is expected behaviour — do not treat the blank date as an error.
+  </div>
+
+  <!-- ─── 1. CONFIG PARAMETERS ─── -->
+  <div class="content-section" id="config">
+    <h2><span class="section-icon">01</span> Config Parameters</h2>
+
+    <div class="impl-card">
+      <div class="impl-header">
+        <span class="impl-num">STEP</span>
+        <span class="impl-title">Three new parameters created under <code>Custom\</code> in the OIM Config Store</span>
+      </div>
+
+      <p>All three parameters are set to <strong>Enabled</strong> and must be populated before running any conversion script or triggering a process.</p>
+
+      <table class="config-table">
+        <thead>
+          <tr>
+            <th>Config Path</th>
+            <th>Purpose</th>
+            <th>Example Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Custom\EXO\AppID</td>
+            <td>Azure App Registration (Client ID) used to authenticate against Exchange Online</td>
+            <td><code>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</code></td>
+          </tr>
+          <tr>
+            <td>Custom\EXO\Certificate</td>
+            <td>Thumbprint of the certificate installed on the OIM server, used for app-only auth</td>
+            <td><code>ABCDEF1234567890...</code></td>
+          </tr>
+          <tr>
+            <td>Custom\EXO\Organization</td>
+            <td>Exchange Online tenant domain (e.g. the <code>.onmicrosoft.com</code> address)</td>
+            <td><code>contoso.onmicrosoft.com</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">Where to set these</div>
+        In the OIM Designer: <strong>Base Data &rsaquo; General &rsaquo; Configuration Parameters</strong>.
+        Expand <code>Custom</code>, locate or create the <code>EXO</code> sub-node, and add each parameter.
+        Tick <em>Enabled</em> on each one before saving.
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 2. POWERSHELL SCRIPTS ─── -->
+  <div class="content-section" id="scripts">
+    <h2><span class="section-icon">02</span> PowerShell Scripts</h2>
+
+    <div class="impl-card">
+      <div class="impl-header">
+        <span class="impl-num">LOCATION</span>
+        <span class="impl-title">3 scripts saved in the <code>Documents</code> folder, each with an <code>example_run.txt</code></span>
+      </div>
+
+      <div class="script-grid">
+        <div class="script-tile">
+          <div class="st-verb">Get</div>
+          <div class="st-name">Get-O3EMailbox.ps1</div>
+          <div class="st-note">Retrieves current mailbox type from Exchange Online for inspection / pre-flight checks</div>
+        </div>
+        <div class="script-tile">
+          <div class="st-verb">Convert</div>
+          <div class="st-name">Convert-O3EMailbox.ps1</div>
+          <div class="st-note">Converts a regular mailbox to a <strong>Shared</strong> mailbox in Exchange Online</div>
+        </div>
+        <div class="script-tile">
+          <div class="st-verb">Revert</div>
+          <div class="st-name">Revert-O3EMailbox.ps1</div>
+          <div class="st-note">Reverts a shared mailbox back to a <strong>Regular</strong> (user) mailbox</div>
+        </div>
+      </div>
+
+      <div class="sub-label">How to Run</div>
+      <ul class="steps-list">
+        <li><span class="step-dot"></span><span>Open the script file (<code>.ps1</code>) in <strong>Windows PowerShell ISE</strong> (not VS Code, not plain PowerShell console).</span></li>
+        <li><span class="step-dot"></span><span>Press <strong>F5</strong> (or click <em>Run Script</em>) to load the script and its functions into the session.</span></li>
+        <li><span class="step-dot"></span><span>Open the matching <code>example_run.txt</code> in the same folder.</span></li>
+        <li><span class="step-dot"></span><span>Copy the example command from the txt file and paste it into the ISE <strong>Console</strong> pane (bottom), then press <strong>Enter</strong>.</span></li>
+      </ul>
+
+      <div class="callout callout-note">
+        <div class="callout-title">Why ISE?</div>
+        These scripts use dot-sourcing patterns and rely on the ISE session to keep loaded functions in scope
+        between calls. Running them directly (<code>.\script.ps1</code>) in a plain console will unload the
+        functions immediately after execution.
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 3. OIM PROCESSES ─── -->
+  <div class="content-section" id="processes">
+    <h2><span class="section-icon">03</span> OIM Processes</h2>
+
+    <div class="impl-card">
+      <div class="impl-header">
+        <span class="impl-num">PERSON</span>
+        <span class="impl-title">2 pre-configured processes on the <code>Person</code> table</span>
+      </div>
+
+      <div class="callout callout-important">
+        <div class="callout-title">Do Not Generate These Processes</div>
+        Both processes already exist and are fully configured. <strong>Do not recreate or regenerate them
+        via the OIM Designer process generator</strong> — doing so will overwrite custom step sequences
+        and script bindings.
+      </div>
+
+      <div class="process-grid">
+        <div class="process-tile">
+          <div class="pt-name">CCC_O3EMailbox_toShared</div>
+          <div class="pt-detail">Triggers on the <code>Person</code> table to invoke the Convert script, changing the linked O3EMailbox to a <strong>Shared</strong> mailbox in Exchange Online.</div>
+        </div>
+        <div class="process-tile">
+          <div class="pt-name">CCC_O3EMailbox_toRegular</div>
+          <div class="pt-detail">Triggers on the <code>Person</code> table to invoke the Revert script, converting the linked O3EMailbox back to a <strong>Regular</strong> (user) mailbox.</div>
+        </div>
+      </div>
+
+      <div class="sub-label">Key Relationship</div>
+      <p>Both processes act on the <strong>Person</strong> table (not directly on <code>O3EMailbox</code>).
+      They resolve the associated O3EMailbox via the <code>UID_O3EMailbox</code> foreign key on the Person record
+      and pass the mailbox identity to the respective PowerShell script as a process step parameter.</p>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">CCC_ConversionDate Reminder</div>
+        Because <code>UID_Person</code> is empty on the <code>O3EMailbox</code> object at the time these
+        processes run, <strong>CCC_ConversionDate will remain blank</strong> — this is by design, not a defect.
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    INTRAGEN<span style="color:#F0A800">.</span> &mdash; Implementation Documentation &mdash;
+    &copy; Intragen International. This document remains strictly private and confidential.
+  </footer>
+</main>
+
+</body>
+</html>

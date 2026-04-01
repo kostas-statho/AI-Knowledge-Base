@@ -1,0 +1,44 @@
+﻿================================================
+  1-ON-1 GOAL REVIEW BRIEF
+================================================
+
+MEETING CONTEXT
+  Employee  : teamMember
+  Team Lead : teamLeader
+  Date      : 2026-03-17
+  Purpose   : Goal progress review and alignment
+
+------------------------------------------------
+GOALS OVERVIEW
+------------------------------------------------
+  Goal      : Develop a Small-Scale VB.net Project Focused on Secure Development
+  Progress  : 0/5 milestones (0% complete)
+  Pace      : Behind Schedule
+  Hrs/week  : 0
+  Note      : Initial engagement with resources has not started; need to allocate regular time.
+
+  Goal      : Engage With an Internal Security Community
+  Progress  : 0/5 milestones (0% complete)
+  Pace      : Behind Schedule
+  Hrs/week  : 0
+  Note      : No interaction undertaken; crucial to initiate connections and share expertise.
+
+------------------------------------------------
+KEY DISCUSSION POINTS
+------------------------------------------------
+  * Importance of scheduling consistent time slots for goal activities.
+  * Strategies to leverage IAM expertise within security community participation.
+  * Available resources and mentorship opportunities for VB.net project development.
+
+------------------------------------------------
+BLOCKERS & SUPPORT NEEDED
+------------------------------------------------
+  * None identified
+
+------------------------------------------------
+COMMITMENTS FOR NEXT REVIEW
+------------------------------------------------
+  * Allocate 3 hrs/week to progress VB.net project, starting with selecting a project.
+  * Join the internal security community and attend at least one meeting.
+
+================================================

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f4;padding:20px 0;">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" border="0"
+           style="background:#fff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);overflow:hidden;">
+
+      <!-- Escalation header — dark maroon -->
+      <tr><td style="background:#7B1818;padding:24px 32px;">
+        <p style="margin:0;font-size:11px;color:#FFBBBB;letter-spacing:1.5px;
+                   text-transform:uppercase;">One Identity Manager — ESCALATION ALERT</p>
+        <h1 style="margin:6px 0 0;color:#fff;font-size:20px;font-weight:700;">
+          SLA Breach Risk: No EXO Mailbox After 4 Hours</h1>
+      </td></tr>
+
+      <!-- Banner strip -->
+      <tr><td style="background:#FFE5E5;padding:10px 32px;font-size:13px;
+                      color:#7B1818;font-weight:700;border-bottom:1px solid #FFBBBB;">
+        A first alert was sent at the 1-hour mark. The issue has not been resolved.
+      </td></tr>
+
+      <!-- Body -->
+      <tr><td style="padding:28px 32px;">
+        <p style="margin:0 0 16px;font-size:15px;color:#333;">Hello IT Manager,</p>
+        <p style="margin:0 0 20px;font-size:14px;color:#555;line-height:1.6;">
+          An Azure AD account was created <strong>over 4 hours ago</strong> and still has
+          no Exchange Online mailbox provisioned. Immediate intervention is required.</p>
+
+        <!-- Account detail block -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="background:#FFF0F0;border-left:4px solid #7B1818;border-radius:4px;margin-bottom:24px;">
+          <tr><td style="padding:16px 20px;">
+            <p style="margin:0 0 8px;font-size:10px;color:#7B1818;font-weight:700;
+                       letter-spacing:1px;text-transform:uppercase;">Affected Account</p>
+            <table width="100%" cellpadding="4" cellspacing="0" border="0">
+              <tr>
+                <td style="font-size:12px;color:#888;width:160px;">Display Name</td>
+                <td style="font-size:13px;color:#222;font-weight:700;">$DisplayName$</td>
+              </tr>
+              <tr>
+                <td style="font-size:12px;color:#888;">User Principal Name</td>
+                <td style="font-size:13px;color:#222;">$UserPrincipalName$</td>
+              </tr>
+              <tr>
+                <td style="font-size:12px;color:#888;">Created (UTC)</td>
+                <td style="font-size:13px;color:#B91C1C;font-weight:700;">$XDateInserted$</td>
+              </tr>
+              <tr>
+                <td style="font-size:12px;color:#888;">Account Disabled</td>
+                <td style="font-size:13px;color:#222;">$AccountDisabled$</td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+
+        <!-- Escalation actions -->
+        <p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#7B1818;">
+          Immediate Actions Required</p>
+        <ol style="margin:0 0 20px 20px;font-size:13px;color:#555;line-height:1.8;">
+          <li>Contact the Service Desk lead to confirm a ticket was raised.</li>
+          <li>Log in to M365 Admin Centre and manually verify licence and provisioning.</li>
+          <li>Check the OIM Azure connector for sync failures or outages.</li>
+          <li>Perform a manual provisioning run in OIM if automated sync has stalled.</li>
+          <li>Raise a P1 incident if provisioning cannot be restored within 30 minutes.</li>
+        </ol>
+
+        <!-- Final warning -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="background:#7B1818;border-radius:4px;margin-bottom:24px;">
+          <tr><td style="padding:14px 18px;font-size:13px;color:#fff;line-height:1.6;">
+            <strong>This is the final automated notification.</strong>
+            No further emails will be sent. Manual investigation and closure is required.
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- Footer -->
+      <tr><td style="background:#F5F5F5;padding:12px 32px;font-size:11px;color:#999;
+                      border-top:1px solid #E0E0E0;">
+        Automated escalation — One Identity Manager. Do not reply.
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>
