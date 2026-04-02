@@ -22,7 +22,31 @@ $Global:OAISettings = Load-JsonConfig $OAISettingsPath ([PSCustomObject]@{
     maxSchemaChars     = 4000
     systemPromptAppend = ''
     sqlLibraryPath     = ''
+    claudeModel        = 'claude-sonnet-4-6'
+    grokModel          = 'grok-4.1-fast'
+    providerQueryEval  = 'openai'
+    providerGoals      = 'claude'
+    providerMeeting    = 'grok'
+    providerPresent    = 'claude'
+    providerDocBuild   = 'claude'
 })
+
+# Ensure new fields exist on loaded config (forward-compat)
+$_oaiDefaults = @{
+    claudeModel       = 'claude-sonnet-4-6'
+    grokModel         = 'grok-4.1-fast'
+    providerQueryEval = 'openai'
+    providerGoals     = 'claude'
+    providerMeeting   = 'grok'
+    providerPresent   = 'claude'
+    providerDocBuild  = 'claude'
+    sqlLibraryPath    = ''
+}
+foreach ($k in $_oaiDefaults.Keys) {
+    if (-not $Global:OAISettings.PSObject.Properties[$k]) {
+        $Global:OAISettings | Add-Member -NotePropertyName $k -NotePropertyValue $_oaiDefaults[$k]
+    }
+}
 
 $Global:PresentConfig = Load-JsonConfig $PresentConfigPath ([PSCustomObject]@{
     templatePath    = ''

@@ -311,8 +311,9 @@ $btnGenGoals.Add_Click({
     $Global:TargetDays  = $targetDays
     $Global:HoursPerDay = $hoursPerDay
 
-    $lblQStatus.Text = 'Generating goals... please wait.'
+    $lblQStatus.Text     = 'Generating goals... please wait.'
     $btnGenGoals.Enabled = $false
+    $btnGenGoals.Text    = 'Working...'
 
     $totalHours = $targetDays * $hoursPerDay
 
@@ -334,7 +335,8 @@ Requirements: (1) Goal titles start with a verb and are specific to the user's d
     $interestsStr = ($Script:InterestChips | ForEach-Object { "$($_.Name) [$($_.Level)]" }) -join ', '
     $usrMsg = "Domain(s) to improve: $domain`nName: $($Global:Profile.name)`nSkills: $skillsStr`nInterests: $interestsStr`nSWOT Analysis: $swotStr`nDiagnostic MCQ Answers: $answersStr"
 
-    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model=$Global:OAISettings.model;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2500;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
+    $pp = Get-ProviderParams 'providerGoals'
+    Invoke-Async $Script:ApiCallScript @{ApiKey=$pp.ApiKey;Model=$pp.Model;Provider=$pp.Provider;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2500;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
         -onDone {
             param($result)
             try {
@@ -347,11 +349,13 @@ Requirements: (1) Goal titles start with a verb and are specific to the user's d
                 $lblQStatus.Text = "Parse error: $_"
             }
             $btnGenGoals.Enabled = $true
+            $btnGenGoals.Text    = 'Generate Goals ->'
         } `
         -onError {
             param($err)
             Write-ErrorLog $err
-            $lblQStatus.Text = "Error: $err"
+            $lblQStatus.Text     = "Error: $err"
             $btnGenGoals.Enabled = $true
+            $btnGenGoals.Text    = 'Generate Goals ->'
         }
 })

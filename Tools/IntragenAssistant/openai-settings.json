@@ -7,5 +7,12 @@
   "maxRulesChars": 12000,
   "maxSchemaChars": 4000,
   "systemPromptAppend": "",
-  "sqlLibraryPath": ""
+  "sqlLibraryPath": "",
+  "claudeModel": "claude-sonnet-4-6",
+  "grokModel": "grok-4.1-fast",
+  "providerQueryEval": "openai",
+  "providerGoals": "claude",
+  "providerMeeting": "grok",
+  "providerPresent": "claude",
+  "providerDocBuild": "claude"
 }

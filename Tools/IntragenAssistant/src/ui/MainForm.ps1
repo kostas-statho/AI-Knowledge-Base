@@ -5,9 +5,10 @@ $form = New-Object System.Windows.Forms.Form
 $form.Text          = 'Intragen Assistant'
 $form.Size          = New-Object System.Drawing.Size(980, 760)
 $form.StartPosition = 'CenterScreen'
-$form.MinimumSize   = New-Object System.Drawing.Size(800, 600)
+$form.MinimumSize   = New-Object System.Drawing.Size(980, 720)
 $form.Font          = $fontLabel
 $form.BackColor     = $colBackground
+$form.KeyPreview    = $true
 
 # ── Menu bar ──────────────────────────────────
 $menu      = New-Object System.Windows.Forms.MenuStrip

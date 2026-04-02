@@ -228,7 +228,10 @@ $btnApplySuggestion.Add_Click({
         return
     }
 
+    $lblPresChatStatus.Text     = ''
     $btnApplySuggestion.Enabled = $false
+    $txtPresChat.Enabled        = $false
+    $txtPresNotes.Enabled       = $false
     $lblPresChatStatus.Text     = 'Getting AI suggestion...'
 
     $style = $Global:PresentStyle
@@ -256,9 +259,11 @@ Provide concise, actionable advice the user can apply manually in PowerPoint.
 
     $msgs = @(@{ role = 'system'; content = $sysMsg }) + $Script:PresentChatHistory
 
+    $pp = Get-ProviderParams 'providerPresent'
     $params = @{
-        ApiKey      = $Global:ApiKey
-        Model       = $Global:OAISettings.model
+        ApiKey      = $pp.ApiKey
+        Model       = $pp.Model
+        Provider    = $pp.Provider
         SystemMsg   = ''; UserMsg = ''
         MaxTokens   = 1500
         JsonMode    = $false
@@ -279,13 +284,17 @@ Provide concise, actionable advice the user can apply manually in PowerPoint.
         $rtbPresResponse.Text = $advice
 
         $t = Get-Date -Format 'HH:mm'
-        $lblPresChatStatus.Text = "Suggestion added ($t)  ($($result[1]) tokens)"
+        $lblPresChatStatus.Text     = "Suggestion added ($t)  ($($result[1]) tokens)"
         $btnApplySuggestion.Enabled = $true
+        $txtPresChat.Enabled        = $true
+        $txtPresNotes.Enabled       = $true
         $txtPresChat.Clear()
     } {
         param($err)
         Write-ErrorLog "Presentations: $err"
         $lblPresChatStatus.Text     = "Error: $err"
         $btnApplySuggestion.Enabled = $true
+        $txtPresChat.Enabled        = $true
+        $txtPresNotes.Enabled       = $true
     }
 })

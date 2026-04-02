@@ -31,5 +31,7 @@ Personal/
 # Academy — raw training source, 1,280 files, too large for GitHub HTTP push
 Academy/
 
-# IntragenAssistant — encrypted API key, never commit
+# IntragenAssistant — encrypted API keys, never commit
 Tools/IntragenAssistant/config.json
+Tools/IntragenAssistant/config_anthropic.json
+Tools/IntragenAssistant/config_grok.json

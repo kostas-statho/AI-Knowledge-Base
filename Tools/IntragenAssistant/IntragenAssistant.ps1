@@ -15,12 +15,14 @@ $ErrorActionPreference = 'Stop'
 $ScriptDir = if ($PSScriptRoot) { $PSScriptRoot } `
              elseif ($MyInvocation.MyCommand.Path) { Split-Path -Parent $MyInvocation.MyCommand.Path } `
              else { Split-Path -Parent $MyInvocation.MyCommand.Definition }
-$ConfigPath        = Join-Path $ScriptDir 'config.json'
-$ProfilePath       = Join-Path $ScriptDir 'profile.json'
-$OAISettingsPath   = Join-Path $ScriptDir 'openai-settings.json'
-$PresentConfigPath = Join-Path $ScriptDir 'presentation_config.json'
-$PresentStylePath  = Join-Path $ScriptDir 'presentation_style.json'
-$DocStylePath      = Join-Path $ScriptDir 'documentation_style.json'
+$ConfigPath          = Join-Path $ScriptDir 'config.json'
+$AnthropicConfigPath = Join-Path $ScriptDir 'config_anthropic.json'
+$GrokConfigPath      = Join-Path $ScriptDir 'config_grok.json'
+$ProfilePath         = Join-Path $ScriptDir 'profile.json'
+$OAISettingsPath     = Join-Path $ScriptDir 'openai-settings.json'
+$PresentConfigPath   = Join-Path $ScriptDir 'presentation_config.json'
+$PresentStylePath    = Join-Path $ScriptDir 'presentation_style.json'
+$DocStylePath        = Join-Path $ScriptDir 'documentation_style.json'
 
 try {
     # ── Utilities ─────────────────────────────────
@@ -29,10 +31,13 @@ try {
     . "$ScriptDir\src\Profile.ps1"
     . "$ScriptDir\src\Async.ps1"
     . "$ScriptDir\src\RulesLoader.ps1"
+    . "$ScriptDir\src\ProviderHelper.ps1"
 
     # ── Global state ──────────────────────────────
-    $Global:ApiKey  = Load-ApiKey  $ConfigPath
-    $Global:Profile = Load-Profile $ProfilePath
+    $Global:ApiKey       = Load-ApiKey      $ConfigPath
+    $Global:AnthropicKey = Load-AnthropicKey $AnthropicConfigPath
+    $Global:GrokKey      = Load-GrokKey      $GrokConfigPath
+    $Global:Profile      = Load-Profile      $ProfilePath
     . "$ScriptDir\src\GlobalState.ps1"
 
     # ── UI ────────────────────────────────────────

@@ -144,6 +144,7 @@ $btnGenMeeting.Add_Click({
 
     $lblMeetingStatus.Text   = 'Generating brief...'
     $btnGenMeeting.Enabled   = $false
+    $btnGenMeeting.Text      = 'Working...'
     $btnSaveSummary.Enabled  = $false
 
     $sysMsg = @'
@@ -208,20 +209,22 @@ Be concise and action-oriented. Replace all bracketed placeholders with real con
     $usrMsg += "`nGoals & Progress (with approach and milestones):`n$goalsSnap"
     if ($notes) { $usrMsg += "`n`nAdditional Topics:`n$notes" }
 
-    $apiKey = $Global:ApiKey
-    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model=$Global:OAISettings.model;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2500;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
+    $pp = Get-ProviderParams 'providerMeeting'
+    Invoke-Async $Script:ApiCallScript @{ApiKey=$pp.ApiKey;Model=$pp.Model;Provider=$pp.Provider;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2500;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
         -onDone {
             param($result)
             $txtMeetingSummary.Text  = $result[0] -replace "(?<!\r)`n", "`r`n"
             $btnSaveSummary.Enabled  = $true
             $lblMeetingStatus.Text   = 'Done.'
             $btnGenMeeting.Enabled   = $true
+            $btnGenMeeting.Text      = 'Generate 1-on-1 Brief'
         } `
         -onError {
             param($err)
             Write-ErrorLog $err
             $lblMeetingStatus.Text = "Error: $err"
             $btnGenMeeting.Enabled = $true
+            $btnGenMeeting.Text    = 'Generate 1-on-1 Brief'
         }
 })
 

@@ -104,10 +104,12 @@ $btnCopyDoc.Location = New-Object System.Drawing.Point(0, 528)
 $btnCopyDoc.Width    = 150
 Set-SecondaryButton $btnCopyDoc
 $btnCopyDoc.Add_Click({
-    if ($rtbDocOutput.Text.Trim()) {
-        [System.Windows.Forms.Clipboard]::SetText($rtbDocOutput.Text)
-        $lblDocStatus.Text = 'Copied to clipboard.'
+    if (-not $rtbDocOutput.Text.Trim()) {
+        $lblDocStatus.Text = 'Nothing to copy — generate first.'
+        return
     }
+    [System.Windows.Forms.Clipboard]::SetText($rtbDocOutput.Text)
+    $lblDocStatus.Text = 'Copied to clipboard.'
 })
 $pnlDoc.Controls.Add($btnCopyDoc)
 
@@ -117,7 +119,10 @@ $btnSaveMd.Location = New-Object System.Drawing.Point(158, 528)
 $btnSaveMd.Width    = 110
 Set-SecondaryButton $btnSaveMd
 $btnSaveMd.Add_Click({
-    if (-not $rtbDocOutput.Text.Trim()) { return }
+    if (-not $rtbDocOutput.Text.Trim()) {
+        [System.Windows.Forms.MessageBox]::Show('Nothing to save — generate documentation first.','Empty') | Out-Null
+        return
+    }
     $sfd = New-Object System.Windows.Forms.SaveFileDialog
     $sfd.Filter = 'Markdown (*.md)|*.md'
     if ($sfd.ShowDialog() -eq 'OK') {
@@ -133,7 +138,10 @@ $btnSaveHtml.Location = New-Object System.Drawing.Point(276, 528)
 $btnSaveHtml.Width    = 120
 Set-SecondaryButton $btnSaveHtml
 $btnSaveHtml.Add_Click({
-    if (-not $rtbDocOutput.Text.Trim()) { return }
+    if (-not $rtbDocOutput.Text.Trim()) {
+        [System.Windows.Forms.MessageBox]::Show('Nothing to save — generate documentation first.','Empty') | Out-Null
+        return
+    }
     $sfd = New-Object System.Windows.Forms.SaveFileDialog
     $sfd.Filter = 'HTML (*.html)|*.html'
     if ($sfd.ShowDialog() -eq 'OK') {
@@ -230,9 +238,11 @@ $btnGenDoc.Add_Click({
         return
     }
 
-    $btnGenDoc.Enabled  = $false
-    $btnGenDoc.Text     = 'Generating...'
-    $lblDocStatus.Text  = 'Sending to OpenAI...'
+    $lblDocStatus.Text    = ''
+    $btnGenDoc.Enabled    = $false
+    $btnGenDoc.Text       = 'Generating...'
+    $txtRawNotes.Enabled  = $false
+    $lblDocStatus.Text    = 'Sending to OpenAI...'
     $rtbDocOutput.Clear()
     $Script:DocRound    = 0
     $Script:DocHistory  = @()
@@ -245,9 +255,11 @@ $btnGenDoc.Add_Click({
         @{ role = 'user';   content = $userMsg }
     )
 
+    $pp = Get-ProviderParams 'providerDocBuild'
     $params = @{
-        ApiKey      = $Global:ApiKey
-        Model       = $Global:OAISettings.model
+        ApiKey      = $pp.ApiKey
+        Model       = $pp.Model
+        Provider    = $pp.Provider
         SystemMsg   = ''; UserMsg = ''
         MaxTokens   = [int]$Global:OAISettings.maxTokens
         JsonMode    = $false
@@ -268,12 +280,14 @@ $btnGenDoc.Add_Click({
         $lblDocRound.Text     = "Round $Script:DocRound/5"
         $btnGenDoc.Enabled    = $true
         $btnGenDoc.Text       = 'Generate Documentation'
+        $txtRawNotes.Enabled  = $true
     } {
         param($err)
         Write-ErrorLog "DocBuilder: $err"
-        $lblDocStatus.Text = "Error: $err"
-        $btnGenDoc.Enabled = $true
-        $btnGenDoc.Text    = 'Generate Documentation'
+        $lblDocStatus.Text   = "Error: $err"
+        $btnGenDoc.Enabled   = $true
+        $btnGenDoc.Text      = 'Generate Documentation'
+        $txtRawNotes.Enabled = $true
     }
 })
 
@@ -289,14 +303,18 @@ $btnRefineDoc.Add_Click({
         return
     }
 
+    $lblDocStatus.Text    = ''
     $btnRefineDoc.Enabled = $false
+    $txtRawNotes.Enabled  = $false
     $lblDocStatus.Text    = 'Refining...'
 
     $Script:DocHistory += @{ role = 'user'; content = $refinement }
 
+    $pp = Get-ProviderParams 'providerDocBuild'
     $params = @{
-        ApiKey      = $Global:ApiKey
-        Model       = $Global:OAISettings.model
+        ApiKey      = $pp.ApiKey
+        Model       = $pp.Model
+        Provider    = $pp.Provider
         SystemMsg   = ''; UserMsg = ''
         MaxTokens   = [int]$Global:OAISettings.maxTokens
         JsonMode    = $false
@@ -316,10 +334,12 @@ $btnRefineDoc.Add_Click({
         $lblDocStatus.Text    = "Refined round $Script:DocRound ($t)  ($($result[1]) tokens)"
         $lblDocRound.Text     = "Round $Script:DocRound/5"
         $btnRefineDoc.Enabled = ($Script:DocRound -lt 5)
+        $txtRawNotes.Enabled  = $true
     } {
         param($err)
         Write-ErrorLog "DocBuilder: $err"
         $lblDocStatus.Text    = "Error: $err"
         $btnRefineDoc.Enabled = ($Script:DocRound -lt 5)
+        $txtRawNotes.Enabled  = $true
     }
 })

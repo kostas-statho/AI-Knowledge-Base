@@ -97,6 +97,12 @@ $btnClear.Add_Click({
         $sp.lblPct.Text = ''
         $sp.lblStatus.Text = ''
     }
+    $pnlOverallFill.Width     = 0
+    $pnlOverallFill.BackColor = [System.Drawing.Color]::LightGray
+    $lblOverallPct.Text       = ''
+    $lblOverallVerb.Text      = ''
+    $btnSaveReport.Enabled    = $false
+    $lblQEStatus.Text         = ''
 })
 $pnlQE.Controls.AddRange(@($btnEvaluate, $cboModel, $btnClear, $btnHistory))
 
@@ -235,10 +241,11 @@ $lblVerdictHead.AutoSize = $true; $lblVerdictHead.Font = $fontSubhead
 $pnlQE.Controls.Add($lblVerdictHead)
 
 $lblVerdict = New-Object System.Windows.Forms.Label
-$lblVerdict.Location = New-Object System.Drawing.Point(0, ($scoreY + 22))
-$lblVerdict.Size     = New-Object System.Drawing.Size(760, 44)
-$lblVerdict.Font     = $fontLabel
-$lblVerdict.ForeColor = $colTextDark
+$lblVerdict.Location    = New-Object System.Drawing.Point(0, ($scoreY + 22))
+$lblVerdict.Size        = New-Object System.Drawing.Size(760, 66)
+$lblVerdict.Font        = $fontLabel
+$lblVerdict.ForeColor   = $colTextDark
+$lblVerdict.AutoEllipsis = $true
 $pnlQE.Controls.Add($lblVerdict)
 
 $btnSaveReport = New-Object System.Windows.Forms.Button
@@ -288,9 +295,6 @@ $btnSaveReport.Add_Click({
     $lblQEStatus.Text = "Saved: $(Split-Path $sfd.FileName -Leaf)"
 })
 $pnlQE.Controls.Add($btnSaveReport)
-
-# Wire Save Report disable into the Clear button (defined earlier)
-$btnClear.Add_Click({ $btnSaveReport.Enabled = $false; $lblQEStatus.Text = '' })
 
 $scoreY += 74
 
@@ -457,7 +461,9 @@ $btnEvaluate.Add_Click({
 
     $btnEvaluate.Enabled  = $false
     $btnEvaluate.Text     = 'Evaluating...'
-    $lblQEStatus.Text     = 'Sending to OpenAI...'
+    $txtSQL.Enabled       = $false
+    $txtIntent.Enabled    = $false
+    $lblQEStatus.Text     = 'Sending to AI...'
 
     $intentText = $txtIntent.Text.Trim()
     $userMsg    = if ($intentText) { "Query intent: $intentText`n`nSQL:`n$sql" } else { "Evaluate this SQL query:`n`n$sql" }
@@ -469,9 +475,11 @@ $btnEvaluate.Add_Click({
     )
     $Script:EvalRound = 0
 
+    $pp = Get-ProviderParams 'providerQueryEval'
     $params = @{
-        ApiKey      = $Global:ApiKey
-        Model       = $Global:OAISettings.model
+        ApiKey      = $pp.ApiKey
+        Model       = $pp.Model
+        Provider    = $pp.Provider
         SystemMsg   = ''
         UserMsg     = ''
         MaxTokens   = [int]$Global:OAISettings.maxTokens
@@ -492,18 +500,22 @@ $btnEvaluate.Add_Click({
             Render-EvalResult $eval
             $t = Get-Date -Format 'HH:mm'
             $lblQEStatus.Text = "Evaluated $t  ($($result[1]) tokens)"
-            Save-EvalHistoryEntry $txtSQL.Text "$($lblOverallPct.Text)" "$($lblOverallVerb.Text)"
+            if ($lblOverallPct.Text.Trim()) { Save-EvalHistoryEntry $txtSQL.Text "$($lblOverallPct.Text)" "$($lblOverallVerb.Text)" }
         } catch {
             $lblQEStatus.Text = "Parse error: $_"
         }
         $btnEvaluate.Enabled = $true
         $btnEvaluate.Text    = 'Evaluate Query'
+        $txtSQL.Enabled      = $true
+        $txtIntent.Enabled   = $true
     } {
         param($err)
         Write-ErrorLog "QueryEval: $err"
         $lblQEStatus.Text    = "Error: $err"
         $btnEvaluate.Enabled = $true
         $btnEvaluate.Text    = 'Evaluate Query'
+        $txtSQL.Enabled      = $true
+        $txtIntent.Enabled   = $true
     }
 })
 
@@ -520,14 +532,18 @@ $btnReEval.Add_Click({
     }
 
     $btnReEval.Enabled   = $false
+    $txtSQL.Enabled      = $false
+    $txtIntent.Enabled   = $false
     $lblQEStatus.Text    = 'Re-evaluating...'
 
     # Append user note + instruction to maintain JSON output
     $Script:EvalHistory += @{ role = 'user'; content = "$note`n`nPlease re-evaluate and return updated JSON using the same schema." }
 
+    $pp = Get-ProviderParams 'providerQueryEval'
     $params = @{
-        ApiKey      = $Global:ApiKey
-        Model       = $Global:OAISettings.model
+        ApiKey      = $pp.ApiKey
+        Model       = $pp.Model
+        Provider    = $pp.Provider
         SystemMsg   = ''
         UserMsg     = ''
         MaxTokens   = [int]$Global:OAISettings.maxTokens
@@ -552,11 +568,15 @@ $btnReEval.Add_Click({
             $lblQEStatus.Text = "Parse error: $_"
         }
         $btnReEval.Enabled = ($Script:EvalRound -lt 5)
+        $txtSQL.Enabled    = $true
+        $txtIntent.Enabled = $true
     } {
         param($err)
         Write-ErrorLog "QueryEval: $err"
         $lblQEStatus.Text  = "Error: $err"
         $btnReEval.Enabled = ($Script:EvalRound -lt 5)
+        $txtSQL.Enabled    = $true
+        $txtIntent.Enabled = $true
     }
 })
 
@@ -699,4 +719,15 @@ $btnHistory.Add_Click({
 
     $dlgHist.Controls.AddRange(@($btnLoadHist, $btnCloseHist))
     $dlgHist.ShowDialog() | Out-Null
+})
+
+# ── Ctrl+Enter shortcut — trigger Evaluate when Tab2 is active ────────────
+$form.Add_KeyDown({
+    param($s, $e)
+    if ($e.Control -and $e.KeyCode -eq [System.Windows.Forms.Keys]::Return) {
+        if ($tabs.SelectedTab -eq $tabQueryEval -and $btnEvaluate.Enabled) {
+            $btnEvaluate.PerformClick()
+            $e.Handled = $true
+        }
+    }
 })

@@ -126,8 +126,9 @@ $btnGenQuestions.Add_Click({
     $swotStr    = $Global:SwotJson | ConvertTo-Json -Compress
     $apiKey     = $Global:ApiKey
 
-    $lblQStatus.Text = 'Generating questions... please wait.'
+    $lblQStatus.Text         = 'Generating questions... please wait.'
     $btnGenQuestions.Enabled = $false
+    $btnGenQuestions.Text    = 'Working...'
 
     $targetDays  = [int]$nudTargetDays.Value
     $hoursPerDay = [int]$nudHoursPerDay.Value
@@ -146,7 +147,8 @@ Return ONLY a JSON array of exactly 5 objects: [{"question":"...","options":["A.
 '@
     $usrMsg = "Name: $($Global:Profile.name)`nDomain(s) to improve: $domain`nSkills: $($Global:Profile.skills -join ', ')`nInterests: $($Global:Profile.interests -join ', ')`nSWOT Analysis: $swotStr`nTime commitment: $targetDays working days at $hoursPerDay hrs/day."
 
-    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model=$Global:OAISettings.model;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2000;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
+    $pp = Get-ProviderParams 'openai'
+    Invoke-Async $Script:ApiCallScript @{ApiKey=$pp.ApiKey;Model=$pp.Model;Provider=$pp.Provider;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2000;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
         -onDone {
             param($result)
             try {
@@ -157,11 +159,13 @@ Return ONLY a JSON array of exactly 5 objects: [{"question":"...","options":["A.
                 $lblQStatus.Text = "Parse error: $_"
             }
             $btnGenQuestions.Enabled = $true
+            $btnGenQuestions.Text    = 'Generate Questions ->'
         } `
         -onError {
             param($err)
             Write-ErrorLog $err
-            $lblQStatus.Text = "Error: $err"
+            $lblQStatus.Text         = "Error: $err"
             $btnGenQuestions.Enabled = $true
+            $btnGenQuestions.Text    = 'Generate Questions ->'
         }
 })

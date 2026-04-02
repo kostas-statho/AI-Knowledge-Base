@@ -530,6 +530,7 @@ $btnAnalyse.Add_Click({
     if (-not $domain) { [System.Windows.Forms.MessageBox]::Show('Please add at least one domain.', 'Required') | Out-Null; return }
 
     $btnAnalyse.Enabled = $false
+    $btnAnalyse.Text    = 'Working...'
     $lblSpinner.ForeColor = $colTextMuted
     $lblSpinner.Text  = '|'
     $lblSpinner.Visible = $true
@@ -550,7 +551,8 @@ Rules: (1) Each quadrant has 4-6 complete, actionable sentences  -  no generic f
     $usrMsg  = "Name: $($Global:Profile.name)`nDomain(s) to improve: $domain`nSkills: $skillsStr`nInterests: $interestsStr`nTime available: $targetDays working days at $hoursPerDay hrs/day."
     $apiKey  = $Global:ApiKey
 
-    Invoke-Async $Script:ApiCallScript @{ApiKey=$apiKey;Model=$Global:OAISettings.model;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2000;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
+    $pp = Get-ProviderParams 'providerGoals'
+    Invoke-Async $Script:ApiCallScript @{ApiKey=$pp.ApiKey;Model=$pp.Model;Provider=$pp.Provider;SystemMsg=$sysMsg;UserMsg=$usrMsg;MaxTokens=2000;Temperature=$Global:OAISettings.temperature;TopP=$Global:OAISettings.topP} `
         -onDone {
             param($result)
             $raw = $result[0]
@@ -575,6 +577,7 @@ Rules: (1) Each quadrant has 4-6 complete, actionable sentences  -  no generic f
                 [System.Windows.Forms.MessageBox]::Show("Analyse failed: $_`n`nCheck your API key and try again.", 'Error') | Out-Null
             }
             $btnAnalyse.Enabled = $true
+            $btnAnalyse.Text    = 'Analyse (SWOT)'
         } `
         -onError {
             param($err)
@@ -583,6 +586,7 @@ Rules: (1) Each quadrant has 4-6 complete, actionable sentences  -  no generic f
             $lblSpinner.Text      = [char]0x2717   # ✗
             $lblSpinner.ForeColor = [System.Drawing.Color]::IndianRed
             $btnAnalyse.Enabled = $true
+            $btnAnalyse.Text    = 'Analyse (SWOT)'
             [System.Windows.Forms.MessageBox]::Show("Analyse error:`n$err", 'Error') | Out-Null
         }
 })
