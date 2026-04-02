@@ -237,7 +237,7 @@ $btnApplySuggestion.Add_Click({
     $style = $Global:PresentStyle
     $prof  = $Global:Profile
     $profRole = if ($prof.PSObject.Properties['role']) { $prof.role } else { 'OIM Developer' }
-    $profOrg  = if ($prof.PSObject.Properties['organisation']) { $prof.organisation } else { 'Intragen' }
+    $profOrg  = if ($prof.PSObject.Properties['organisation']) { $prof.organisation } else { '' }
 
     $sysMsg = @"
 You are a presentation advisor for $profOrg. The user is a $profRole.

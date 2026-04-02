@@ -152,7 +152,7 @@ $btnSaveHtml.Add_Click({
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Intragen Documentation</title>
+<title>Documentation</title>
 <style>
   body { font-family: 'Segoe UI', sans-serif; background: #F5F1EA; color: #2D2332; max-width: 900px; margin: 40px auto; padding: 0 20px; }
   h1,h2,h3 { color: #703069; }
@@ -165,7 +165,7 @@ $btnSaveHtml.Add_Click({
 </style>
 </head>
 <body>
-<div class="header"><strong>Intragen</strong> — Documentation</div>
+<div class="header"><strong>Person Assistant</strong> — Documentation</div>
 <pre>$safeContent</pre>
 </body>
 </html>
@@ -208,7 +208,7 @@ function Build-DocSystemPrompt {
     $prof    = $Global:Profile
     $profName = if ($prof.name) { $prof.name } else { 'the user' }
     $profRole = if ($prof.PSObject.Properties['role']) { $prof.role } else { 'OIM Developer' }
-    $profOrg  = if ($prof.PSObject.Properties['organisation']) { $prof.organisation } else { 'Intragen' }
+    $profOrg  = if ($prof.PSObject.Properties['organisation']) { $prof.organisation } else { '' }
     $docType  = $cboDocType.SelectedItem
     $fmt      = $cboFormat.SelectedItem
     $append   = if ($Global:OAISettings.systemPromptAppend) { "`n$($Global:OAISettings.systemPromptAppend)" } else { '' }

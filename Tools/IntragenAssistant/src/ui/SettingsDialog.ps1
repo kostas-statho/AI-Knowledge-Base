@@ -183,7 +183,7 @@ function Show-SettingsDialog {
 
     Dlg-Label 'Organisation:' $tProf 112
     $txtProfOrg = Dlg-TextBox $tProf 130 300
-    $txtProfOrg.Text = if ($Global:Profile.PSObject.Properties['organisation']) { "$($Global:Profile.organisation)" } else { 'Intragen' }
+    $txtProfOrg.Text = if ($Global:Profile.PSObject.Properties['organisation']) { "$($Global:Profile.organisation)" } else { '' }
 
     # ── Tab: Models & Providers ───────────────
     $tMP = New-Object System.Windows.Forms.TabPage('Models & Providers')

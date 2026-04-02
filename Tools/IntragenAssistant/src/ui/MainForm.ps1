@@ -1,8 +1,8 @@
 # ==============================================
-# MAIN FORM — Intragen Assistant
+# MAIN FORM — Person Assistant
 # ==============================================
 $form = New-Object System.Windows.Forms.Form
-$form.Text          = 'Intragen Assistant'
+$form.Text          = 'Person Assistant'
 $form.Size          = New-Object System.Drawing.Size(980, 760)
 $form.StartPosition = 'CenterScreen'
 $form.MinimumSize   = New-Object System.Drawing.Size(980, 720)
@@ -30,7 +30,7 @@ $pnlHeader.Height    = 70
 $pnlHeader.BackColor = $colPurple
 
 $lblHeaderTitle = New-Object System.Windows.Forms.Label
-$lblHeaderTitle.Text      = 'Intragen Assistant'
+$lblHeaderTitle.Text      = 'Person Assistant'
 $lblHeaderTitle.Font      = $fontTitle
 $lblHeaderTitle.ForeColor = $colWhite
 $lblHeaderTitle.Location  = New-Object System.Drawing.Point(24, 12)

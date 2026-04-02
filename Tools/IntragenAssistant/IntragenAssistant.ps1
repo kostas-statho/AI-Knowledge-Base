@@ -54,7 +54,7 @@ try {
 } catch {
     [void][System.Windows.Forms.MessageBox]::Show(
         "Startup error:`n`n$_`n`nAt: $($_.InvocationInfo.PositionMessage)",
-        'Intragen Assistant — Error',
+        'Person Assistant — Error',
         [System.Windows.Forms.MessageBoxButtons]::OK,
         [System.Windows.Forms.MessageBoxIcon]::Error)
 }

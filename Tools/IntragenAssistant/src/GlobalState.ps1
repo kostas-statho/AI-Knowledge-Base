@@ -55,12 +55,12 @@ $Global:PresentConfig = Load-JsonConfig $PresentConfigPath ([PSCustomObject]@{
 })
 
 $Global:PresentStyle = Load-JsonConfig $PresentStylePath ([PSCustomObject]@{
-    colourScheme   = 'Intragen Corporate'
+    colourScheme   = 'Corporate'
     tone           = 'Professional'
     targetAudience = 'Junior Developers'
     language       = 'English'
     slideStructure = @('Title','Agenda','Content','Summary','Q&A')
-    brandingNotes  = 'Use Intragen purple/gold palette.'
+    brandingNotes  = ''
 })
 
 $Global:DocStyle = Load-JsonConfig $DocStylePath ([PSCustomObject]@{
@@ -70,7 +70,7 @@ $Global:DocStyle = Load-JsonConfig $DocStylePath ([PSCustomObject]@{
     includeExamples      = $true
     includeTableOfContents = $true
     language             = 'English'
-    brandingNotes        = 'Intragen Academy style.'
+    brandingNotes        = ''
 })
 
 # ── Goals state (mirrors GoalSetter) ─────────
