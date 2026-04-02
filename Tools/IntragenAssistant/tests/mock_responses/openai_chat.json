@@ -1,0 +1,20 @@
+{
+  "id": "chatcmpl-test001",
+  "object": "chat.completion",
+  "model": "gpt-4o",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Test OpenAI response."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 28,
+    "completion_tokens": 14,
+    "total_tokens": 42
+  }
+}

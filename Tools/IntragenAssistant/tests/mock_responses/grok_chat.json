@@ -1,0 +1,20 @@
+{
+  "id": "chatcmpl-grok-test001",
+  "object": "chat.completion",
+  "model": "grok-4.1-fast",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Test Grok response."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 18,
+    "total_tokens": 38
+  }
+}

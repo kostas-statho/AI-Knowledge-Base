@@ -1,0 +1,20 @@
+{
+  "id": "chatcmpl-trunc001",
+  "object": "chat.completion",
+  "model": "gpt-4o",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"dimensions\":{\"safety\":{\"score\":90,\"issues\":[]}"
+      },
+      "finish_reason": "length"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 400,
+    "completion_tokens": 8192,
+    "total_tokens": 8592
+  }
+}

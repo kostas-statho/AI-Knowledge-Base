@@ -1,0 +1,14 @@
+Tab: Query Evaluator
+Purpose: Evaluate OIM SQL queries across 7 dimensions
+API: Calls OpenAI / Claude / Grok via configurable provider
+Inputs: SQL text, intent description
+Output: JSON scorecard with dimension scores and verdict
+
+Key scoring dimensions:
+- Safety: no destructive statements, parameterisation
+- SARGability: index-friendly predicates
+- OIM Correctness: correct table/column names for OIM 9.x
+- Optimization: efficient joins, no unnecessary nesting
+- Structural Opt: select only needed columns
+- Academic Risk: no anti-patterns from training material
+- Code Quality: formatting, aliases, readability

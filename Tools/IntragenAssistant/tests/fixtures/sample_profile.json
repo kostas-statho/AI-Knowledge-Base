@@ -1,0 +1,23 @@
+{
+    "name":  "Alex Johnson",
+    "role":  "OIM Developer",
+    "organisation":  "Intragen",
+    "skills":  [
+        { "name": "SQL",               "level": "Advanced"     },
+        { "name": "PowerShell",        "level": "Intermediate" },
+        { "name": "C#",                "level": "Intermediate" },
+        { "name": "OIM Administration","level": "Beginner"     }
+    ],
+    "interests":  [
+        { "name": "Identity Governance", "level": "Advanced"     },
+        { "name": "Process Automation",  "level": "Intermediate" },
+        { "name": "API Development",     "level": "Beginner"     }
+    ],
+    "domains":  [ "OIM Development", "Coding" ],
+    "goals":  [],
+    "lastUpdated":  "2026-04-02",
+    "preferences":  {
+        "defaultSqlCategory":  "_Scratch",
+        "defaultOutputDir":  ""
+    }
+}

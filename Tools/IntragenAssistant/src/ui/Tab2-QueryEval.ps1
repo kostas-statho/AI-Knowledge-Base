@@ -10,6 +10,10 @@ $pnlQE.Dock        = 'Fill'
 $pnlQE.Padding     = New-Object System.Windows.Forms.Padding(10)
 $pnlQE.BackColor   = $colBackground
 $pnlQE.AutoScroll  = $true
+$pnlQE.HorizontalScroll.Maximum = 0   # UI-006: force vertical scrollbar always visible
+$pnlQE.AutoScroll = $false
+$pnlQE.VerticalScroll.Visible = $true
+$pnlQE.AutoScroll = $true
 $tabQueryEval.Controls.Add($pnlQE)
 
 # ── Intent ────────────────────────────────────
@@ -119,6 +123,15 @@ $lblScorecard.Text     = 'Scorecard'
 $lblScorecard.Location = New-Object System.Drawing.Point(0, 218)
 $lblScorecard.AutoSize = $true; $lblScorecard.Font = $fontSubhead
 $pnlQE.Controls.Add($lblScorecard)
+
+# UI-002: empty-state hint — hidden once results load
+$lblScoreHint = New-Object System.Windows.Forms.Label
+$lblScoreHint.Text      = 'Paste SQL above and click Evaluate Query to see scores.'
+$lblScoreHint.Location  = New-Object System.Drawing.Point(0, 244)
+$lblScoreHint.AutoSize  = $true
+$lblScoreHint.Font      = $fontCaption
+$lblScoreHint.ForeColor = $colTextMuted
+$pnlQE.Controls.Add($lblScoreHint)
 
 $dimensions = @(
     @{ key = 'safety';          label = 'Safety' }
@@ -343,6 +356,7 @@ function Get-IssueSeverityColor($deduction) {
 
 # ── Render evaluation result ──────────────────
 function Render-EvalResult($eval) {
+    $lblScoreHint.Visible = $false   # UI-002: hide empty-state hint once results load
     # Scorecard bars
     foreach ($dim in $dimensions) {
         $key = $dim.key

@@ -37,7 +37,7 @@ $lblHeaderTitle.Location  = New-Object System.Drawing.Point(24, 12)
 $lblHeaderTitle.AutoSize  = $true
 
 $lblHeaderSub = New-Object System.Windows.Forms.Label
-$lblHeaderSub.Text      = 'Goals  ·  Query Evaluator  ·  Presentations  ·  Doc Builder'
+$lblHeaderSub.Text      = 'Goals  |  Query Evaluator  |  Presentations  |  Doc Builder'
 $lblHeaderSub.Font      = $fontCaption
 $lblHeaderSub.ForeColor = [System.Drawing.Color]::FromArgb(200, 180, 200)
 $lblHeaderSub.Location  = New-Object System.Drawing.Point(26, 44)

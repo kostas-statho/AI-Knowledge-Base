@@ -35,3 +35,7 @@ Academy/
 Tools/IntragenAssistant/config.json
 Tools/IntragenAssistant/config_anthropic.json
 Tools/IntragenAssistant/config_grok.json
+# IntragenAssistant — runtime/temp files, never commit
+Tools/IntragenAssistant/profile.json
+Tools/IntragenAssistant/tests/screenshots/
+Tools/IntragenAssistant/_*.ps1

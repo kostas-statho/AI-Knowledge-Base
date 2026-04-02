@@ -13,6 +13,7 @@ function Show-SettingsDialog {
     $dlgTabs = New-Object System.Windows.Forms.TabControl
     $dlgTabs.Location = New-Object System.Drawing.Point(8, 8)
     $dlgTabs.Size     = New-Object System.Drawing.Size(532, 490)
+    $dlgTabs.SizeMode = 'FillToRight'   # UI-003: prevent tab header truncation
     $dlg.Controls.Add($dlgTabs)
 
     # ── Tab: API ──────────────────────────────
@@ -39,18 +40,22 @@ function Show-SettingsDialog {
     Dlg-Label 'OpenAI API Key:' $tAPI 12
     $txtKey = Dlg-TextBox $tAPI 30 490 $true
     $txtKey.Text = if ($Global:ApiKey) { $Global:ApiKey } else { '' }
+    $txtKey.PlaceholderText = 'sk-...'   # UI-004
 
     Dlg-Label 'Model:' $tAPI 70
     $txtModel = Dlg-TextBox $tAPI 88 220
     $txtModel.Text = $Global:OAISettings.model
+    $txtModel.PlaceholderText = 'gpt-4o'   # UI-004
 
     Dlg-Label 'Temperature (0.0–2.0):' $tAPI 118
     $txtTemp = Dlg-TextBox $tAPI 136 80
     $txtTemp.Text = "$($Global:OAISettings.temperature)"
+    $txtTemp.PlaceholderText = '0.7'   # UI-004
 
     Dlg-Label 'Max Tokens:' $tAPI 166
     $txtMaxTok = Dlg-TextBox $tAPI 184 80
     $txtMaxTok.Text = "$($Global:OAISettings.maxTokens)"
+    $txtMaxTok.PlaceholderText = '2000'   # UI-004
 
     Dlg-Label 'System prompt append (optional):' $tAPI 214
     $txtSysAppend = Dlg-TextBox $tAPI 232 490
@@ -188,6 +193,7 @@ function Show-SettingsDialog {
     # ── Tab: Models & Providers ───────────────
     $tMP = New-Object System.Windows.Forms.TabPage('Models & Providers')
     $dlgTabs.TabPages.Add($tMP)
+    $tMP.AutoScroll = $true   # UI-005: scroll when provider rows overflow dialog
 
     # Section 1 — API Keys
     $lblMPKeys = New-Object System.Windows.Forms.Label

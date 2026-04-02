@@ -1,0 +1,20 @@
+{
+  "id": "chatcmpl-eval001",
+  "object": "chat.completion",
+  "model": "gpt-4o",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"dimensions\":{\"safety\":{\"score\":90,\"issues\":[]},\"sargability\":{\"score\":75,\"issues\":[{\"deduction\":25,\"code\":\"S1\",\"description\":\"LIKE with leading wildcard is not SARGable\",\"fix\":\"Add a full-text index or rewrite the filter\"}]},\"oim_correctness\":{\"score\":85,\"issues\":[]},\"optimization\":{\"score\":80,\"issues\":[]},\"structural_opt\":{\"score\":70,\"issues\":[{\"deduction\":10,\"code\":\"O1\",\"description\":\"SELECT * not used but selecting many columns\",\"fix\":\"Select only required columns\"}]},\"academic_risk\":{\"score\":95,\"issues\":[]},\"code_quality\":{\"score\":80,\"issues\":[]}},\"overall\":78,\"verdict\":\"Query is functionally correct but has a non-SARGable LIKE predicate that will cause a full table scan on large datasets. Review the OrgName filter.\",\"top_priority_fix\":\"Replace LIKE '%IT%' with a SARGable alternative or full-text search\"}"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 320,
+    "completion_tokens": 180,
+    "total_tokens": 500
+  }
+}
