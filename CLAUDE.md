@@ -46,6 +46,11 @@ INDEX.md               Master registry — one-liner per section, auto-updated
 | New module doc (HTML) | `/intragen-doc` | Reading existing doc style + templates |
 | Validate IntragenAssistant (automated) | `/intragen-test` | Automated 15-test pre-flight + per-test fix guidance |
 | Validate IntragenAssistant (manual) | `/intragen-validate` | Manual tab-by-tab walkthrough with sample data |
+| Write OIM process chain | `/oim-process` | Reading Academy/007-Processes/ exercises |
+| Generate Pester/Gherkin test | `/oim-testassist` | Reading TestAssist framework docs |
+| Generate PR description | `/pr-description` | Writing PR summary manually |
+| Update CHANGELOG | `/changelog-update` | Manual changelog curation |
+| Validate C# before commit | `/oim-hook` | Manually checking 8 C# conventions |
 
 ## C# Plugins — Quick Reference
 
@@ -169,5 +174,10 @@ After every import: update the relevant `INDEX.md` → run `/git-commit-push`
 | `intragen-test` | Automated 15-test pre-flight for IntragenAssistant — no GUI, per-test fix steps |
 | `intragen-validate` | Full manual validation walkthrough for IntragenAssistant (all 4 tabs) |
 | `oim-query-evaluation` | Score an OIM SQL query on 7 dimensions (Safety, SARGability, OIM Correctness, etc.) |
+| `oim-process` | Generate OIM process chain definition (spec for Designer) |
+| `oim-testassist` | Generate Pester test stub or Gherkin feature file |
+| `pr-description` | Generate PR title + body from git diff |
+| `changelog-update` | Build CHANGELOG entry from commits since last tag |
+| `oim-hook` | Pre-commit validation of C# plugin conventions |
 | `git-commit-push` | Stage, commit (conventional message), and push to GitHub |
 | `gdrive-sync` | Sync repo to Google Drive via rclone (service account key) or SSH |

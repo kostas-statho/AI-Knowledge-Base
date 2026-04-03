@@ -58,6 +58,9 @@
 |---|---|---|---|
 | `/git-commit-push` | Stage, commit (conventional message), push to GitHub | Git commit + push | Avoids git syntax lookup |
 | `/gdrive-sync` | Sync repo to Google Drive via rclone | rclone transfer | Avoids rclone syntax lookup |
+| `/pr-description` | Generate PR title + body from current git diff | `gh pr create`-ready markdown | Avoids manually writing PR summaries |
+| `/changelog-update` | Build CHANGELOG entry from commits since last tag | Updated `CHANGELOG.md` | Avoids manual changelog curation |
+| `/oim-hook` | Validate staged `.cs` files for OIM conventions before commit | Pass/fail report | Catches ConfigureAwait, namespace, IApiProviderFor issues before push |
 
 ---
 
@@ -81,3 +84,13 @@
 | intragen-guide | 2026-04-01 | Output: `Learning/Mentoring/guides/` (was Mentoring_Documentation/guides/) |
 | intragen-presentation | 2026-04-01 | Output: `Learning/Mentoring/presentations/` (was Mentoring_Documentation/presentations/) |
 | intragen-test | 2026-04-02 | Script: `Tools/IntragenAssistant/Test-IntragenAssistant.ps1` — 15 tests, 5 groups, -SkipApi flag |
+| oim-vbnet | 2026-04-02 | New: `.claude/skills/oim-vbnet/SKILL.md` — 12 categories, OIM Session patterns |
+| oim-posh | 2026-04-02 | New: `.claude/skills/oim-posh/SKILL.md` — IdentityManager.PoSh module |
+| oim-process | 2026-04-02 | New: `.claude/skills/oim-process/SKILL.md` — process chain spec (design doc, no file output) |
+| oim-troubleshoot | 2026-04-02 | New: `.claude/skills/oim-troubleshoot/SKILL.md` — 6 symptom categories |
+| oim-testassist | 2026-04-02 | New: `.claude/skills/oim-testassist/SKILL.md` — Pester + Gherkin templates |
+| oim-academy-search | 2026-04-02 | New: `.claude/skills/oim-academy-search/SKILL.md` — searches Academy/ + Reference_Implementations/ |
+| kb-import | 2026-04-02 | New: `.claude/skills/kb-import/SKILL.md` — metadata validation + INDEX entry generation |
+| pr-description | 2026-04-02 | New: `.claude/skills/pr-description/SKILL.md` — git diff → gh pr create |
+| changelog-update | 2026-04-02 | New: `.claude/skills/changelog-update/SKILL.md` — Keep a Changelog format |
+| oim-hook | 2026-04-02 | New: `.claude/skills/oim-hook/SKILL.md` — 8 C# convention checks |
